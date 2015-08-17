@@ -13,11 +13,12 @@ var DefaultLayout = React.createClass({
   },
   render() {
     return (
-      <div className="row" style={{marginTop:'20px', marginBottom:'50px'}}>
-        {Navbar({
-          uri: this.props.uri
-        })}
-        {this.props.children}
+      <div>
+        {Navbar({uri: this.props.uri})}
+
+        <div className="container" style={{marginTop:'20px', marginBottom:'50px'}}>
+          {this.props.children}
+        </div>
       </div>
     );
   }

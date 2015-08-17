@@ -14,7 +14,7 @@ var Navbar = React.createClass({
 
   render() {
     return (
-      <nav className="navbar navbar-inverse">
+      <nav className="navbar">
         {Link({
           style: {
             marginRight: '30px'

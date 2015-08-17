@@ -1,4 +1,7 @@
-# React, Flux with Router Boilerplate
+# daily-scrum
+Là dự án quản lý công việc hằng ngày, phát triển để đáp ứng nhu cầu daily-scrum, đồng thời thêm một số công cụ thống kê, để đánh giá khối lượng công việc của từng thành viên.
+
+### React, Flux with Router Boilerplate
 
 [react-flux-router-boilerplate](https://github.com/apzentral/react-flux-router-boilerplate)
 A boilerplate for a full React, Flux and Router application development.

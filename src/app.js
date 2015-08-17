@@ -55,6 +55,7 @@ var router = new Router({
     render(router.getRoute(), page);
   }
 });
+
 router.configure({
   html5history: false
 }).init('/');

@@ -39,22 +39,7 @@ var ToDo = React.createClass({
     var todos = this.state.todo;
     return (
       <div>
-        <h1>Example: To Do Application with Flux</h1>
-        <hr/>
-        <form role="form" ref="todo-form" onSubmit={this._toDoSubmit}>
-          <div className="form-group">
-            <input type="text" className="form-control" placeholder="What needs to be done?" ref="todo-text" />
-          </div>
-        </form>
-        <div className="todo-container">
-          {todos.map(function(element, index) {
-            if (DEBUG) {
-              console.log('[*] ' + _name + ':render-map-todos ---');
-              console.log(element);
-            }
-            return (<ToDoElement data={element} key={element.id} />);
-          }, this)}
-        </div>
+        <p>Todos</p>
       </div>
     );
   },

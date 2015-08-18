@@ -17,7 +17,7 @@ var DailyPage = React.createClass({
 
   render: function() {
     return (
-      <div className="container">
+      <div className="">
         <h4>DAILY <small>The more you plan, the better you success !</small></h4>
 
         <div className="day-block">

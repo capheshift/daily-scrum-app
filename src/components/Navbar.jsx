@@ -15,28 +15,17 @@ var Navbar = React.createClass({
   render() {
     return (
       <nav className="navbar">
-        {Link({
-          style: {
-            marginRight: '30px'
-          },
-          className: 'navbar-brand',
-          to: '/'
-        }, 'Welcome')}
+        {Link({ className: 'navbar-brand', to: '/' }, 'DAILY SCRUM')}
+
         <ul className="nav navbar-nav">
           <li className={this._checkUri('')}>
-            {Link({
-              to: '/'
-            }, 'Home')}
+            {Link({ className: 'navbar-item', to: '/daily' }, 'DAILY')}
           </li>
           <li className={this._checkUri('libraries')}>
-            {Link({
-              to: '/libraries'
-            }, 'Libraries')}
+            {Link({ className: 'navbar-item', to: '/report' }, 'REPORT')}
           </li>
           <li className={this._checkUri('todo')}>
-            {Link({
-              to: '/todo'
-            }, 'To Do Application')}
+            {Link({ className: 'navbar-item', to: '/project' }, 'PROJECT')}
           </li>
         </ul>
       </nav>

@@ -42,16 +42,28 @@ function render(uri, page) {
 // See https://github.com/flatiron/director
 var router = new Router({
   // Main Route
-  '/': function() {
-    var page = React.createFactory(require('./pages/Index'));
-    render(router.getRoute(), page);
-  },
   '/libraries': function() {
     var page = React.createFactory(require('./pages/Libraries'));
     render(router.getRoute(), page);
   },
   '/todo': function() {
     var page = React.createFactory(require('./pages/ToDo'));
+    render(router.getRoute(), page);
+  },
+  '/': function() {
+    var page = React.createFactory(require('./pages/Daily'));
+    render(router.getRoute(), page);
+  },
+  '/daily': function() {
+    var page = React.createFactory(require('./pages/Daily'));
+    render(router.getRoute(), page);
+  },
+  '/report': function() {
+    var page = React.createFactory(require('./pages/Report'));
+    render(router.getRoute(), page);
+  },
+  '/project': function() {
+    var page = React.createFactory(require('./pages/Project'));
     render(router.getRoute(), page);
   }
 });

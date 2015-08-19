@@ -18,7 +18,7 @@ var ProjectPage = React.createClass({
   render: function() {
     return (
       <div>
-        <p>PROJECT</p>
+        <h4>PROJECT</h4>
       </div>
     );
   }

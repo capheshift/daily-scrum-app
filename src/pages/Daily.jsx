@@ -18,14 +18,16 @@ var DailyPage = React.createClass({
   },
 
   getInitialState: function() {
+    var currentDate = moment();
+
     return {
       dateList: [{
         displayName: 'TODAY',
-        value: '20150822',
+        value: currentDate.format('YYYYMMDD'),
         index: 1
       },{
         displayName: 'TOMORROW',
-        value: '20150823',
+        value: currentDate.add(1, 'days').format('YYYYMMDD'),
         index: 2
       }],
       taskList: []
@@ -45,9 +47,10 @@ var DailyPage = React.createClass({
     // only add the next day, when click on the last item
     newDateList = this.state.dateList;
     if (dateItem.index === newDateList.length) {
+      var m = moment(dateItem.value, 'YYYYMMDD').add(1, 'days');
       newDateList.push({
-        displayName: 'TOMORROW',
-        value: '20150822',
+        displayName: m.format('MMM DD ddd'),
+        value: m.format('YYYYMMDD'),
         index: dateItem.index + 1
       });
     }
@@ -98,7 +101,7 @@ var DailyPage = React.createClass({
         {this.state.dateList.map(function(item, i) {
           return (
             <div className="day-block">
-              <p>{item.displayName}</p>
+              <p className="day-title">{item.displayName}</p>
               {this.renderTaskList(item)}
             </div>
           )

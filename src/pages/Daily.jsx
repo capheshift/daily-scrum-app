@@ -3,8 +3,10 @@
  */
 'use strict';
 
-var React = require('react');
-var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var React = require('react'),
+  DefaultLayout = React.createFactory(require('../layouts/Default')),
+  lodash = require('lodash'),
+  moment = require('moment');
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -19,53 +21,65 @@ var DailyPage = React.createClass({
     return {
       dateList: [{
         displayName: 'TODAY',
-        value: '20150822'
+        value: '20150822',
+        index: 1
+      },{
+        displayName: 'TOMORROW',
+        value: '20150823',
+        index: 2
       }],
-      taskList: [{
-        date: '2015022',
-        task: 'Nếu biết tình như thế, chẳng lớn lên làm gì',
-        isCompleted: false
-      },
-      {
-        date: '2015022',
-        task: 'Thà như ngày thơ ấu, hai đứa cầm tay đi',
-        isCompleted: false
-      }]
+      taskList: []
     }
   },
 
   newTaskOnClicked: function(dateItem) {
     console.log('newTaskOnClicked', dateItem);
-    var newTaskList = this.state.taskList.concat([{
+    var newDateList, newTaskList;
+
+    newTaskList = this.state.taskList.concat([{
       date: dateItem.value,
       isCompleted: false,
       value: ''
     }]);
 
+    // only add the next day, when click on the last item
+    newDateList = this.state.dateList;
+    if (dateItem.index === newDateList.length) {
+      newDateList.push({
+        displayName: 'TOMORROW',
+        value: '20150822',
+        index: dateItem.index + 1
+      });
+    }
+
     this.setState({
-      taskList: newTaskList
+      taskList: newTaskList,
+      dateList: newDateList
     });
   },
 
   renderTaskList: function(dateItem) {
-    if (!this.state.taskList.length) {
+    if (!this.state.taskList) {
       return '';
     }
 
+    var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
+    var renderList = filterTask.map(function(item, i) {
+      return (
+        <li className="daily-item">
+          <div className="input-group">
+            <span className="input-group-addon"> <input type="checkbox" /></span>
+            <input className="form-control" id="prependedcheckbox"
+              name="prependedcheckbox" placeholder="your task" type="text"
+              value={item.task} />
+          </div>
+        </li>
+      )
+    })
+
     return (
       <ul className="daily-list">
-        {this.state.taskList.map(function(item, i) {
-          return (
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value={item.task} />
-              </div>
-            </li>
-          )
-        })}
+        {renderList}
         <li className="daily-item">
           <button className="btn btn-sm btn-default"
             onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>

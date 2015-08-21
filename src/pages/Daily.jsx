@@ -18,18 +18,24 @@ var DailyPage = React.createClass({
   },
 
   getInitialState: function() {
-    var currentDate = moment();
+    var m = moment(), dateList = [];
+
+    // create default data
+    dateList.push({
+      displayName: 'TODAY - ' + m.format('MMM DD'),
+      value: m.format('YYYYMMDD'),
+      index: 1
+    });
+
+    m.add(1, 'days');
+    dateList.push({
+      displayName: 'TOMORROW - ' + m.format('MMM DD'),
+      value: m.format('YYYYMMDD'),
+      index: 2
+    });
 
     return {
-      dateList: [{
-        displayName: 'TODAY',
-        value: currentDate.format('YYYYMMDD'),
-        index: 1
-      },{
-        displayName: 'TOMORROW',
-        value: currentDate.add(1, 'days').format('YYYYMMDD'),
-        index: 2
-      }],
+      dateList: dateList,
       taskList: []
     }
   },
@@ -92,7 +98,7 @@ var DailyPage = React.createClass({
   },
 
   renderDateList: function() {
-    if (!this.state.dateList.length) {
+    if (!this.state.dateList) {
       return '';
     }
 

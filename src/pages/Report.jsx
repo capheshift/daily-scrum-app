@@ -5,6 +5,7 @@
 
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var Rating = require('react-rating');
 
 var ReportPage = React.createClass({
   displayName: 'Report',

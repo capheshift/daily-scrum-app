@@ -100,6 +100,7 @@
     "osenv": "^0.1.0",
     "protractor": "^1.6.1",
     "psi": "^1.0.6",
+    "react-rating": "0.0.13",
     "react-tools": "^0.12.2",
     "readable-stream": "^1.0.33",
     "run-sequence": "^1.0.2",

@@ -16,7 +16,35 @@ var LoginPage = React.createClass({
   render: function() {
     return (
       <div>
-        <p>Index</p>
+        <div className="panel panel-login col-sm-4 col-sm-offset-4">
+          <div className="panel-heading">
+            <div className="panel-title text-center">
+              Login
+            </div>
+          </div>
+
+          <div className="panel-body">
+            <form className="form-horizontal" enctype="multipart/form-data" id="form" method="post" name="form">
+              <div className="input-group">
+                <span className="input-group-addon glyphicon glyphicon-user"></span>
+                <input className="form-control" id="user" name="user" placeholder="User" type="text" value="" />
+              </div>
+
+              <div className="input-group">
+                <span className="input-group-addon glyphicon glyphicon-lock"></span>
+                <input className="form-control" id="password" name="password" placeholder="Password" type="password" />
+              </div>
+
+              <div className="form-group">
+                <div className="col-sm-12 controls">
+                  <button className="btn btn-default pull-right" type="submit">
+                    <i className="glyphicon glyphicon-log-in"></i> Log in
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     );
   }

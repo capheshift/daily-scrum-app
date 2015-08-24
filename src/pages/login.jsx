@@ -5,6 +5,7 @@
 
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
+// var Auth = require('');
 
 var LoginPage = React.createClass({
   displayName: 'Login Page',

@@ -6,22 +6,20 @@
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
 
-var ProjectPage = React.createClass({
-  displayName: 'Project',
-
+var LoginPage = React.createClass({
+  displayName: 'Login Page',
   getDefaultProps: function() {
     return {
       layout: DefaultLayout
     };
   },
-
   render: function() {
     return (
       <div>
-        <h4>PROJECT</h4>
+        <p>Index</p>
       </div>
     );
   }
 });
 
-module.exports = ProjectPage;
+module.exports = LoginPage;

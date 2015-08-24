@@ -6,8 +6,8 @@
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
 
-var ProjectPage = React.createClass({
-  displayName: 'Project',
+var MemberPage = React.createClass({
+  displayName: 'Member',
 
   getDefaultProps: function() {
     return {
@@ -18,10 +18,10 @@ var ProjectPage = React.createClass({
   render: function() {
     return (
       <div>
-        <h4>PROJECT</h4>
+        <h4>MEMBER</h4>
       </div>
     );
   }
 });
 
-module.exports = ProjectPage;
+module.exports = MemberPage;

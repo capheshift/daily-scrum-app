@@ -1,0 +1,21 @@
+
+.daily-list {
+}
+
+.daily-item {
+  width: 50%;
+  margin-top: 4px;
+}
+
+.day-block {
+  margin-top: 15px;
+
+  &::first-child {
+    margin-top: 0;
+  }
+
+  .day-title {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+}

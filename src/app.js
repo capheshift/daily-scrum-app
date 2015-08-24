@@ -65,6 +65,10 @@ var router = new Router({
   '/project': function() {
     var page = React.createFactory(require('./pages/Project'));
     render(router.getRoute(), page);
+  },
+  '/member': function() {
+    var page = React.createFactory(require('./pages/Member'));
+    render(router.getRoute(), page);
   }
 });
 

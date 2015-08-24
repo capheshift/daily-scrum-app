@@ -31,6 +31,12 @@ var Navbar = React.createClass({
             {Link({ className: 'navbar-item', to: '/member' }, 'MEMBER')}
           </li>
         </ul>
+
+        <ul className="nav navbar-nav navbar-right">
+          <li className={this._checkUri('todo')}>
+            {Link({ className: 'navbar-item', to: '/login' }, 'LOGIN')}
+          </li>
+        </ul>
       </nav>
     );
   },

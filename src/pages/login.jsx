@@ -22,7 +22,7 @@ var LoginPage = React.createClass({
   render: function() {
     return (
       <div>
-        <div className="panel panel-login col-sm-4 col-sm-offset-4">
+        <div className="panel-login col-sm-4 col-sm-offset-4">
           <div className="panel-heading">
             <div className="panel-title text-center">
               Login

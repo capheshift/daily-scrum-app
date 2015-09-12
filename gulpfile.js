@@ -62,7 +62,7 @@ gulp.task('assets', function() {
   // Compile Scss
   return gulp.src(src.assets)
     .pipe($.changed(out, {
-      extension: '.css'
+      extension: '.scss'
     }))
     .pipe($.if('*.scss', $.sass()))
     .pipe(gulp.dest(out))

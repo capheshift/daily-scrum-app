@@ -50,6 +50,7 @@
     "ansi-styles": "^2.0.1",
     "autoprefixer-loader": "^1.1.0",
     "babel-jest": "^5.2.0",
+    "bootstrap-sass": "^3.3.5",
     "clone": "^1.0.2",
     "clone-stats": "0.0.1",
     "config-chain": "^1.1.8",

@@ -71,6 +71,21 @@ gulp.task('assets', function() {
     }));
 });
 
+// Assets
+gulp.task('public', function() {
+  src.public = ['src/public/**'];
+  // Out Put Location
+  var out = DEST + '/';
+
+  // Compile Scss
+  return gulp.src(src.public)
+    .pipe($.changed(out))
+    .pipe(gulp.dest(out))
+    .pipe($.size({
+      title: 'public'
+    }));
+});
+
 // HTML pages
 gulp.task('pages', function() {
   src.pages = ['src/pages/**/*.html'];
@@ -100,9 +115,11 @@ gulp.task('bundle', function(cb) {
       throw new $.util.PluginError('webpack', err);
     }
 
-    !!argv.verbose && $.util.log('[webpack]', stats.toString({
-      colors: true
-    }));
+    if (!!argv.verbose) {
+      $.util.log('[webpack]', stats.toString({
+        colors: true
+      }));
+    }
 
     if (!started) {
       started = true;
@@ -119,9 +136,10 @@ gulp.task('bundle', function(cb) {
 
 // Build the app from source code
 gulp.task('build', ['clean'], function(cb) {
-  runSequence(['assets', 'pages', 'bundle'], function() {
+  runSequence(['public', 'assets', 'pages', 'bundle'], function() {
     // If watch flag is set
     if (watch) {
+      gulp.watch(src.public, ['public']);
       gulp.watch(src.assets, ['assets']);
       gulp.watch(src.pages, ['pages']);
       gulp.watch(DEST + '/**/*.*', function(file) {
@@ -167,6 +185,7 @@ gulp.task('serve', function(cb) {
       }
     });
 
+    gulp.watch(src.public, ['public']);
     gulp.watch(src.assets, ['assets']);
     gulp.watch(src.pages, ['pages']);
     gulp.watch(DEST + '/**/*.*', function(file) {

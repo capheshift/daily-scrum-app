@@ -73,9 +73,28 @@ var DailyPage = React.createClass({
   },
 
   renderTaskList: function(dateItem) {
-    var options = [
-      { value: 'one', label: 'One' },
-      { value: 'two', label: 'Two' }
+    var projectOptions = [
+      { value: 'vib', label: 'VIB' },
+      { value: 'nafoods', label: 'Nafoods' },
+      { value: 'daily-scrum', label: 'Daily Scrum' }
+    ];
+    var timeRangeOptions = [
+      { value: '0.5hours', label: '30 phút' },
+      { value: '1hours', label: '1 giờ' },
+      { value: '1.5hours', label: '1 giờ 30 phút' },
+      { value: '2hours', label: '2 giờ' },
+      { value: '2.5hours', label: '2 giờ 30 phút' },
+      { value: '3hours', label: '3 giờ' },
+      { value: '3.5hours', label: '3 giờ 30 phút' },
+      { value: '4hours', label: '4 giờ' },
+      { value: '4.5hours', label: '4 giờ 30 phút' },
+      { value: '5hours', label: '5 giờ' },
+      { value: '5.5hours', label: '5 giờ 30 phút' },
+      { value: '6hours', label: '6 giờ' },
+      { value: '6.5hours', label: '6 giờ 30 phút' },
+      { value: '7hours', label: '7 giờ' },
+      { value: '7.5hours', label: '7 giờ 30 phút' },
+      { value: '8hours', label: '8 giờ' },
     ];
 
     if (!this.state.taskList) {
@@ -95,8 +114,12 @@ var DailyPage = React.createClass({
             </div>
           </div>
           <div className="col-sm-2">
-            <Select name="form-field-name" value="one" clearable={false}
-              options={options} />
+            <Select name="estimation" value="0.5hours" clearable={false}
+              options={timeRangeOptions} />
+          </div>
+          <div className="col-sm-2">
+            <Select name="project" value="vib" clearable={false}
+              options={projectOptions} />
           </div>
         </li>
       )

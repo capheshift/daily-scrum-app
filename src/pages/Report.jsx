@@ -22,9 +22,10 @@ var ReportPage = React.createClass({
   },
 
   render: function() {
-    var options = [
-      { value: 'one', label: 'One' },
-      { value: 'two', label: 'Two' }
+    var projectOptions = [
+      { value: 'vib', label: 'VIB' },
+      { value: 'nafoods', label: 'Nafoods' },
+      { value: 'daily-scrum', label: 'Daily Scrum' }
     ];
 
     return (
@@ -32,8 +33,8 @@ var ReportPage = React.createClass({
         <div className="row">
           <div className="col-sm-6">
             <h4>CHOOSE PROJECT</h4>
-            <Select name="form-field-name" value="one" clearable={false}
-              options={options} onChange={this.onSelectChanged} />
+            <Select name="form-field-name" value="nafoods" clearable={false}
+              options={projectOptions} onChange={this.onSelectChanged} />
           </div>
         </div>
 
@@ -41,20 +42,24 @@ var ReportPage = React.createClass({
         <div className="day-block">
           <p>PHẠM MINH TÂM</p>
           <ul className="daily-list">
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="input-group">
+                  <span className="input-group-addon"> <input type="checkbox" /></span>
+                  <input className="form-control" id="prependedcheckbox"
+                    name="prependedcheckbox" placeholder="your task" type="text"
+                    value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
+                </div>
               </div>
             </li>
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="input-group">
+                  <span className="input-group-addon"> <input type="checkbox" /></span>
+                  <input className="form-control" id="prependedcheckbox"
+                    name="prependedcheckbox" placeholder="your task" type="text"
+                    value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
+                </div>
               </div>
             </li>
           </ul>
@@ -62,28 +67,34 @@ var ReportPage = React.createClass({
         <div className="day-block">
           <p>NGUYỄN TRỌNG TẤN</p>
           <ul className="daily-list">
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="input-group">
+                  <span className="input-group-addon"> <input type="checkbox" /></span>
+                  <input className="form-control" id="prependedcheckbox"
+                    name="prependedcheckbox" placeholder="your task" type="text"
+                    value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
+                </div>
               </div>
             </li>
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" checked /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="input-group">
+                  <span className="input-group-addon"> <input type="checkbox" checked /></span>
+                  <input className="form-control" id="prependedcheckbox"
+                    name="prependedcheckbox" placeholder="your task" type="text"
+                    value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
+                </div>
               </div>
             </li>
-            <li className="daily-item">
-              <div className="input-group">
-                <span className="input-group-addon"> <input type="checkbox" checked /></span>
-                <input className="form-control" id="prependedcheckbox"
-                  name="prependedcheckbox" placeholder="your task" type="text"
-                  value="Ai bảo say sưa là khổ" />
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="input-group">
+                  <span className="input-group-addon"> <input type="checkbox" checked /></span>
+                  <input className="form-control" id="prependedcheckbox"
+                    name="prependedcheckbox" placeholder="your task" type="text"
+                    value="Ai bảo say sưa là khổ" />
+                </div>
               </div>
             </li>
           </ul>

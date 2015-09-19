@@ -5,6 +5,7 @@
 
 var React = require('react'),
   DefaultLayout = React.createFactory(require('../layouts/Default')),
+  Select = React.createFactory(require('react-select')),
   lodash = require('lodash'),
   moment = require('moment');
 
@@ -18,13 +19,17 @@ var DailyPage = React.createClass({
   },
 
   getInitialState: function() {
-    var m = moment(), dateList = [];
+    var m = moment(), dateList = [], taskList = [];
 
     // create default data
     dateList.push({
       displayName: 'TODAY - ' + m.format('MMM DD'),
       value: m.format('YYYYMMDD'),
       index: 1
+    });
+
+    taskList.push({
+      date: m.format('YYYYMMDD')
     });
 
     m.add(1, 'days');
@@ -36,8 +41,8 @@ var DailyPage = React.createClass({
 
     return {
       dateList: dateList,
-      taskList: []
-    }
+      taskList: taskList
+    };
   },
 
   newTaskOnClicked: function(dateItem) {
@@ -68,6 +73,11 @@ var DailyPage = React.createClass({
   },
 
   renderTaskList: function(dateItem) {
+    var options = [
+      { value: 'one', label: 'One' },
+      { value: 'two', label: 'Two' }
+    ];
+
     if (!this.state.taskList) {
       return '';
     }
@@ -75,12 +85,18 @@ var DailyPage = React.createClass({
     var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
     var renderList = filterTask.map(function(item, i) {
       return (
-        <li className="daily-item">
-          <div className="input-group">
-            <span className="input-group-addon"> <input type="checkbox" /></span>
-            <input className="form-control" id="prependedcheckbox"
-              name="prependedcheckbox" placeholder="your task" type="text"
-              value={item.task} />
+        <li className="daily-item row">
+          <div className="col-sm-5">
+            <div className="input-group">
+              <span className="input-group-addon"> <input type="checkbox" /></span>
+              <input className="form-control" id="prependedcheckbox"
+                name="prependedcheckbox" placeholder="your task" type="text"
+                value={item.task} />
+            </div>
+          </div>
+          <div className="col-sm-2">
+            <Select name="form-field-name" value="one" clearable={false}
+              options={options} />
           </div>
         </li>
       )

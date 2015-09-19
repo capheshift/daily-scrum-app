@@ -6,6 +6,7 @@
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
 var Rating = require('react-rating');
+var Select = React.createFactory(require('react-select'));
 
 var ReportPage = React.createClass({
   displayName: 'Report',
@@ -16,10 +17,27 @@ var ReportPage = React.createClass({
     };
   },
 
+  onSelectChanged: function() {
+    console.log('onSelectChanged');
+  },
+
   render: function() {
+    var options = [
+      { value: 'one', label: 'One' },
+      { value: 'two', label: 'Two' }
+    ];
+
     return (
       <div>
-        <h4>REPORT/MAY 5th</h4>
+        <div className="row">
+          <div className="col-sm-6">
+            <h4>CHOOSE PROJECT</h4>
+            <Select name="form-field-name" value="one"
+              options={options} onChange={this.onSelectChanged} />
+          </div>
+        </div>
+
+        <h4 className="header-title">REPORT/MAY 5th</h4>
         <div className="day-block">
           <p>PHẠM MINH TÂM</p>
           <ul className="daily-list">
@@ -71,7 +89,7 @@ var ReportPage = React.createClass({
           </ul>
         </div>
 
-        <h4>REPORT/TODAY</h4>
+        <h4 className="header-title">REPORT/TODAY</h4>
         <div className="day-block">
           <p>PHẠM MINH TÂM</p>
           <ul className="daily-list">

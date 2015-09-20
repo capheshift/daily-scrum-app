@@ -105,19 +105,19 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/report': function() {
-	    var page = React.createFactory(__webpack_require__(273));
+	    var page = React.createFactory(__webpack_require__(274));
 	    render(router.getRoute(), page);
 	  },
 	  '/project': function() {
-	    var page = React.createFactory(__webpack_require__(275));
-	    render(router.getRoute(), page);
-	  },
-	  '/member': function() {
 	    var page = React.createFactory(__webpack_require__(276));
 	    render(router.getRoute(), page);
 	  },
-	  '/login': function() {
+	  '/member': function() {
 	    var page = React.createFactory(__webpack_require__(277));
+	    render(router.getRoute(), page);
+	  },
+	  '/login': function() {
+	    var page = React.createFactory(__webpack_require__(278));
 	    render(router.getRoute(), page);
 	  }
 	});
@@ -34092,8 +34092,8 @@
 	var React = __webpack_require__(1),
 	  DefaultLayout = React.createFactory(__webpack_require__(165)),
 	  Select = React.createFactory(__webpack_require__(266)),
-	  Guid = __webpack_require__(278),
-	  lodash = __webpack_require__(272),
+	  Guid = __webpack_require__(272),
+	  lodash = __webpack_require__(273),
 	  moment = __webpack_require__(177);
 
 	var DailyPage = React.createClass({
@@ -34153,7 +34153,8 @@
 	      newDateList.push({
 	        displayName: m.format('MMM DD ddd'),
 	        value: m.format('YYYYMMDD'),
-	        index: dateItem.index + 1
+	        index: dateItem.index + 1,
+	        totalTime: 0
 	      });
 	    }
 
@@ -34173,6 +34174,31 @@
 	    return null;
 	  },
 
+	  findDateItem: function(arr, dateStr) {
+	    for (var i=0; i<arr.length; i++) {
+	      if (arr[i].value === dateStr) {
+	        return arr[i];
+	      }
+	    }
+	    return null;
+	  },
+
+	  /**
+	   * [getTotalTime description]
+	   * @param  {[type]} item [a task item]
+	   * @return {[type]}      [description]
+	   */
+	  getTotalTime: function(arr, item) {
+	    var filterTask = lodash.filter(arr, {date: item.date});
+	    var total = 0;
+
+	    for (var i = 0; i < filterTask.length; i++) {
+	      total += parseFloat(filterTask[i].estimate) || 0;
+	    }
+
+	    return total;
+	  },
+
 	  onTaskChanged: function(id, e) {
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
@@ -34185,11 +34211,17 @@
 
 	  onEstimateChanged: function(id, newValue) {
 	    var nList = this.state.taskList;
+	    var nDateList = this.state.dateList;
 	    var currItem = this.findItem(nList, id);
+	    var currDate = this.findDateItem(this.state.dateList, currItem.date);
+
 	    currItem.estimate = newValue;
+	    // update total time
+	    currDate.totalTime = this.getTotalTime(nList, currItem);
 
 	    this.setState({
-	      taskList: nList
+	      taskList: nList,
+	      dateList: nDateList
 	    });
 	  },
 
@@ -34210,22 +34242,22 @@
 	      { value: 'daily-scrum', label: 'Daily Scrum' }
 	    ];
 	    var timeRangeOptions = [
-	      { value: '0.5hours', label: '30 phút' },
-	      { value: '1hours', label: '1 giờ' },
-	      { value: '1.5hours', label: '1 giờ 30 phút' },
-	      { value: '2hours', label: '2 giờ' },
-	      { value: '2.5hours', label: '2 giờ 30 phút' },
-	      { value: '3hours', label: '3 giờ' },
-	      { value: '3.5hours', label: '3 giờ 30 phút' },
-	      { value: '4hours', label: '4 giờ' },
-	      { value: '4.5hours', label: '4 giờ 30 phút' },
-	      { value: '5hours', label: '5 giờ' },
-	      { value: '5.5hours', label: '5 giờ 30 phút' },
-	      { value: '6hours', label: '6 giờ' },
-	      { value: '6.5hours', label: '6 giờ 30 phút' },
-	      { value: '7hours', label: '7 giờ' },
-	      { value: '7.5hours', label: '7 giờ 30 phút' },
-	      { value: '8hours', label: '8 giờ' },
+	      { value: '0.5', label: '30 phút' },
+	      { value: '1', label: '1 giờ' },
+	      { value: '1.5', label: '1 giờ 30 phút' },
+	      { value: '2', label: '2 giờ' },
+	      { value: '2.5', label: '2 giờ 30 phút' },
+	      { value: '3', label: '3 giờ' },
+	      { value: '3.5', label: '3 giờ 30 phút' },
+	      { value: '4', label: '4 giờ' },
+	      { value: '4.5', label: '4 giờ 30 phút' },
+	      { value: '5', label: '5 giờ' },
+	      { value: '5.5', label: '5 giờ 30 phút' },
+	      { value: '6', label: '6 giờ' },
+	      { value: '6.5', label: '6 giờ 30 phút' },
+	      { value: '7', label: '7 giờ' },
+	      { value: '7.5', label: '7 giờ 30 phút' },
+	      { value: '8', label: '8 giờ' },
 	    ];
 
 	    if (!this.state.taskList) {
@@ -34267,7 +34299,7 @@
 	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task"), 
 
 	            React.DOM.span({className: "pull-right"}, 
-	              "Total: 8 hours"
+	              "Total: ",  dateItem.totalTime || 0, " hours"
 	            )
 	          )
 	        )
@@ -35539,6 +35571,75 @@
 
 /***/ },
 /* 272 */
+/***/ function(module, exports) {
+
+	(function () {
+	  var validator = new RegExp("^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$", "i");
+
+	  function gen(count) {
+	    var out = "";
+	    for (var i=0; i<count; i++) {
+	      out += (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	    }
+	    return out;
+	  }
+
+	  function Guid(guid) {
+	    if (!guid) throw new TypeError("Invalid argument; `value` has no value.");
+	      
+	    this.value = Guid.EMPTY;
+	    
+	    if (guid && guid instanceof Guid) {
+	      this.value = guid.toString();
+
+	    } else if (guid && Object.prototype.toString.call(guid) === "[object String]" && Guid.isGuid(guid)) {
+	      this.value = guid;
+	    }
+	    
+	    this.equals = function(other) {
+	      // Comparing string `value` against provided `guid` will auto-call
+	      // toString on `guid` for comparison
+	      return Guid.isGuid(other) && this.value == other;
+	    };
+
+	    this.isEmpty = function() {
+	      return this.value === Guid.EMPTY;
+	    };
+	    
+	    this.toString = function() {
+	      return this.value;
+	    };
+	    
+	    this.toJSON = function() {
+	      return this.value;
+	    };
+	  };
+
+	  Guid.EMPTY = "00000000-0000-0000-0000-000000000000";
+
+	  Guid.isGuid = function(value) {
+	    return value && (value instanceof Guid || validator.test(value.toString()));
+	  };
+
+	  Guid.create = function() {
+	    return new Guid([gen(2), gen(1), gen(1), gen(1), gen(3)].join("-"));
+	  };
+
+	  Guid.raw = function() {
+	    return [gen(2), gen(1), gen(1), gen(1), gen(3)].join("-");
+	  };
+
+	  if(typeof module != 'undefined' && module.exports) {
+	    module.exports = Guid;
+	  }
+	  else if (typeof window != 'undefined') {
+	    window.Guid = Guid;
+	  }
+	})();
+
+
+/***/ },
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -47896,7 +47997,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(178)(module), (function() { return this; }())))
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -47906,7 +48007,7 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = React.createFactory(__webpack_require__(274));
+	var Rating = React.createFactory(__webpack_require__(275));
 	var Select = React.createFactory(__webpack_require__(266));
 
 	var ReportPage = React.createClass({
@@ -48023,7 +48124,7 @@
 
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
@@ -48350,7 +48451,7 @@
 	;
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -48383,7 +48484,7 @@
 
 
 /***/ },
-/* 276 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -48416,7 +48517,7 @@
 
 
 /***/ },
-/* 277 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -48479,75 +48580,6 @@
 	});
 
 	module.exports = LoginPage;
-
-
-/***/ },
-/* 278 */
-/***/ function(module, exports) {
-
-	(function () {
-	  var validator = new RegExp("^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$", "i");
-
-	  function gen(count) {
-	    var out = "";
-	    for (var i=0; i<count; i++) {
-	      out += (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-	    }
-	    return out;
-	  }
-
-	  function Guid(guid) {
-	    if (!guid) throw new TypeError("Invalid argument; `value` has no value.");
-	      
-	    this.value = Guid.EMPTY;
-	    
-	    if (guid && guid instanceof Guid) {
-	      this.value = guid.toString();
-
-	    } else if (guid && Object.prototype.toString.call(guid) === "[object String]" && Guid.isGuid(guid)) {
-	      this.value = guid;
-	    }
-	    
-	    this.equals = function(other) {
-	      // Comparing string `value` against provided `guid` will auto-call
-	      // toString on `guid` for comparison
-	      return Guid.isGuid(other) && this.value == other;
-	    };
-
-	    this.isEmpty = function() {
-	      return this.value === Guid.EMPTY;
-	    };
-	    
-	    this.toString = function() {
-	      return this.value;
-	    };
-	    
-	    this.toJSON = function() {
-	      return this.value;
-	    };
-	  };
-
-	  Guid.EMPTY = "00000000-0000-0000-0000-000000000000";
-
-	  Guid.isGuid = function(value) {
-	    return value && (value instanceof Guid || validator.test(value.toString()));
-	  };
-
-	  Guid.create = function() {
-	    return new Guid([gen(2), gen(1), gen(1), gen(1), gen(3)].join("-"));
-	  };
-
-	  Guid.raw = function() {
-	    return [gen(2), gen(1), gen(1), gen(1), gen(3)].join("-");
-	  };
-
-	  if(typeof module != 'undefined' && module.exports) {
-	    module.exports = Guid;
-	  }
-	  else if (typeof window != 'undefined') {
-	    window.Guid = Guid;
-	  }
-	})();
 
 
 /***/ }

@@ -6,6 +6,7 @@
 var React = require('react'),
   DefaultLayout = React.createFactory(require('../layouts/Default')),
   Select = React.createFactory(require('react-select')),
+  Guid = require('guid'),
   lodash = require('lodash'),
   moment = require('moment');
 
@@ -29,7 +30,10 @@ var DailyPage = React.createClass({
     });
 
     taskList.push({
-      date: m.format('YYYYMMDD')
+      id: Guid.raw(),
+      date: m.format('YYYYMMDD'),
+      isCompleted: false,
+      value: ''
     });
 
     m.add(1, 'days');
@@ -50,6 +54,7 @@ var DailyPage = React.createClass({
     var newDateList, newTaskList;
 
     newTaskList = this.state.taskList.concat([{
+      id: Guid.raw(),
       date: dateItem.value,
       isCompleted: false,
       value: ''
@@ -72,18 +77,40 @@ var DailyPage = React.createClass({
     });
   },
 
-  onEstimateChanged: function(index, newValue) {
+  findItem: function(arr, id) {
+    for (var i=0; i<arr.length; i++) {
+      if (arr[i].id === id) {
+        return arr[i];
+      }
+    }
+
+    return null;
+  },
+
+  onTaskChanged: function(id, e) {
     var nList = this.state.taskList;
-    nList[index].estimate = newValue;
+    var currItem = this.findItem(nList, id);
+    currItem.task = e.target.value;
 
     this.setState({
       taskList: nList
     });
   },
 
-  onProjectChanged: function(i, newValue) {
+  onEstimateChanged: function(id, newValue) {
     var nList = this.state.taskList;
-    nList[i].project = newValue;
+    var currItem = this.findItem(nList, id);
+    currItem.estimate = newValue;
+
+    this.setState({
+      taskList: nList
+    });
+  },
+
+  onProjectChanged: function(id, newValue) {
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    currItem.project = newValue;
 
     this.setState({
       taskList: nList
@@ -128,16 +155,18 @@ var DailyPage = React.createClass({
               <span className="input-group-addon"> <input type="checkbox" /></span>
               <input className="form-control" id="prependedcheckbox"
                 name="prependedcheckbox" placeholder="your task" type="text"
-                value={item.task} />
+                value={item.task}
+                onChange={this.onTaskChanged.bind(null, item.id)} />
             </div>
           </div>
           <div className="col-sm-2">
             <Select name="project" clearable={false} value={item.project}
-              options={projectOptions} onChange={this.onProjectChanged.bind(null, i)} />
+              options={projectOptions} onChange={this.onProjectChanged.bind(null, item.id)} />
           </div>
           <div className="col-sm-2">
             <Select name="estimation" clearable={false}
-              value={item.estimate} options={timeRangeOptions} onChange={this.onEstimateChanged.bind(null, i)} />
+              value={item.estimate} options={timeRangeOptions}
+              onChange={this.onEstimateChanged.bind(null, item.id)} />
           </div>
         </li>
       )

@@ -5,7 +5,7 @@
 
 var React = require('react');
 var DefaultLayout = React.createFactory(require('../layouts/Default'));
-var Rating = require('react-rating');
+var Rating = React.createFactory(require('react-rating'));
 var Select = React.createFactory(require('react-select'));
 
 var ReportPage = React.createClass({
@@ -62,10 +62,17 @@ var ReportPage = React.createClass({
                 </div>
               </div>
             </li>
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="pull-right">
+                  <Rating />
+                </div>
+              </div>
+            </li>
           </ul>
         </div>
         <div className="day-block">
-          <p>NGUYỄN TRỌNG TẤN</p>
+          <p>NGUYỄN DUY TÂN</p>
           <ul className="daily-list">
             <li className="row daily-item">
               <div className="col-sm-6">
@@ -94,6 +101,13 @@ var ReportPage = React.createClass({
                   <input className="form-control" id="prependedcheckbox"
                     name="prependedcheckbox" placeholder="your task" type="text"
                     value="Ai bảo say sưa là khổ" />
+                </div>
+              </div>
+            </li>
+            <li className="row daily-item">
+              <div className="col-sm-6">
+                <div className="pull-right">
+                  <Rating />
                 </div>
               </div>
             </li>

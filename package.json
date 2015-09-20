@@ -58,6 +58,7 @@
     "del": "^1.1.1",
     "escape-string-regexp": "^1.0.3",
     "graceful-fs": "^3.0.6",
+    "guid": "0.0.12",
     "gulp": "^3.8.11",
     "gulp-autoprefixer": "^2.1.0",
     "gulp-babel": "^5.1.0",

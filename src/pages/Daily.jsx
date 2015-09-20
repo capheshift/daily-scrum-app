@@ -6,6 +6,7 @@
 var React = require('react'),
   DefaultLayout = React.createFactory(require('../layouts/Default')),
   Select = React.createFactory(require('react-select')),
+  Guid = require('guid'),
   lodash = require('lodash'),
   moment = require('moment');
 
@@ -23,18 +24,21 @@ var DailyPage = React.createClass({
 
     // create default data
     dateList.push({
-      displayName: 'TODAY - ' + m.format('MMM DD'),
+      displayName: m.format('MMM DD ddd') + ' - TODAY',
       value: m.format('YYYYMMDD'),
       index: 1
     });
 
     taskList.push({
-      date: m.format('YYYYMMDD')
+      id: Guid.raw(),
+      date: m.format('YYYYMMDD'),
+      isCompleted: false,
+      value: ''
     });
 
     m.add(1, 'days');
     dateList.push({
-      displayName: 'TOMORROW - ' + m.format('MMM DD'),
+      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
       value: m.format('YYYYMMDD'),
       index: 2
     });
@@ -50,6 +54,7 @@ var DailyPage = React.createClass({
     var newDateList, newTaskList;
 
     newTaskList = this.state.taskList.concat([{
+      id: Guid.raw(),
       date: dateItem.value,
       isCompleted: false,
       value: ''
@@ -69,6 +74,46 @@ var DailyPage = React.createClass({
     this.setState({
       taskList: newTaskList,
       dateList: newDateList
+    });
+  },
+
+  findItem: function(arr, id) {
+    for (var i=0; i<arr.length; i++) {
+      if (arr[i].id === id) {
+        return arr[i];
+      }
+    }
+
+    return null;
+  },
+
+  onTaskChanged: function(id, e) {
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    currItem.task = e.target.value;
+
+    this.setState({
+      taskList: nList
+    });
+  },
+
+  onEstimateChanged: function(id, newValue) {
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    currItem.estimate = newValue;
+
+    this.setState({
+      taskList: nList
+    });
+  },
+
+  onProjectChanged: function(id, newValue) {
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    currItem.project = newValue;
+
+    this.setState({
+      taskList: nList
     });
   },
 
@@ -110,27 +155,35 @@ var DailyPage = React.createClass({
               <span className="input-group-addon"> <input type="checkbox" /></span>
               <input className="form-control" id="prependedcheckbox"
                 name="prependedcheckbox" placeholder="your task" type="text"
-                value={item.task} />
+                value={item.task}
+                onChange={this.onTaskChanged.bind(null, item.id)} />
             </div>
           </div>
           <div className="col-sm-2">
-            <Select name="estimation" value="0.5hours" clearable={false}
-              options={timeRangeOptions} />
+            <Select name="project" clearable={false} value={item.project}
+              options={projectOptions} onChange={this.onProjectChanged.bind(null, item.id)} />
           </div>
           <div className="col-sm-2">
-            <Select name="project" value="vib" clearable={false}
-              options={projectOptions} />
+            <Select name="estimation" clearable={false}
+              value={item.estimate} options={timeRangeOptions}
+              onChange={this.onEstimateChanged.bind(null, item.id)} />
           </div>
         </li>
       )
-    })
+    }.bind(this));
 
     return (
       <ul className="daily-list">
         {renderList}
-        <li className="daily-item">
-          <button className="btn btn-sm btn-default"
-            onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
+        <li className="daily-item row">
+          <div className="col-sm-9">
+            <button className="btn btn-sm btn-default"
+              onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
+
+            <span className="pull-right">
+              Total: 8 hours
+            </span>
+          </div>
         </li>
       </ul>
     );

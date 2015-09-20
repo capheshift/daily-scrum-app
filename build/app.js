@@ -34092,6 +34092,7 @@
 	var React = __webpack_require__(1),
 	  DefaultLayout = React.createFactory(__webpack_require__(165)),
 	  Select = React.createFactory(__webpack_require__(266)),
+	  Guid = __webpack_require__(278),
 	  lodash = __webpack_require__(272),
 	  moment = __webpack_require__(177);
 
@@ -34109,18 +34110,21 @@
 
 	    // create default data
 	    dateList.push({
-	      displayName: 'TODAY - ' + m.format('MMM DD'),
+	      displayName: m.format('MMM DD ddd') + ' - TODAY',
 	      value: m.format('YYYYMMDD'),
 	      index: 1
 	    });
 
 	    taskList.push({
-	      date: m.format('YYYYMMDD')
+	      id: Guid.raw(),
+	      date: m.format('YYYYMMDD'),
+	      isCompleted: false,
+	      value: ''
 	    });
 
 	    m.add(1, 'days');
 	    dateList.push({
-	      displayName: 'TOMORROW - ' + m.format('MMM DD'),
+	      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
 	      value: m.format('YYYYMMDD'),
 	      index: 2
 	    });
@@ -34136,6 +34140,7 @@
 	    var newDateList, newTaskList;
 
 	    newTaskList = this.state.taskList.concat([{
+	      id: Guid.raw(),
 	      date: dateItem.value,
 	      isCompleted: false,
 	      value: ''
@@ -34155,6 +34160,46 @@
 	    this.setState({
 	      taskList: newTaskList,
 	      dateList: newDateList
+	    });
+	  },
+
+	  findItem: function(arr, id) {
+	    for (var i=0; i<arr.length; i++) {
+	      if (arr[i].id === id) {
+	        return arr[i];
+	      }
+	    }
+
+	    return null;
+	  },
+
+	  onTaskChanged: function(id, e) {
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    currItem.task = e.target.value;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
+	  onEstimateChanged: function(id, newValue) {
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    currItem.estimate = newValue;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
+	  onProjectChanged: function(id, newValue) {
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    currItem.project = newValue;
+
+	    this.setState({
+	      taskList: nList
 	    });
 	  },
 
@@ -34196,27 +34241,35 @@
 	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                value: item.task})
+	                value: item.task, 
+	                onChange: this.onTaskChanged.bind(null, item.id)})
 	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "estimation", value: "0.5hours", clearable: false, 
-	              options: timeRangeOptions})
+	            Select({name: "project", clearable: false, value: item.project, 
+	              options: projectOptions, onChange: this.onProjectChanged.bind(null, item.id)})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "project", value: "vib", clearable: false, 
-	              options: projectOptions})
+	            Select({name: "estimation", clearable: false, 
+	              value: item.estimate, options: timeRangeOptions, 
+	              onChange: this.onEstimateChanged.bind(null, item.id)})
 	          )
 	        )
 	      )
-	    })
+	    }.bind(this));
 
 	    return (
 	      React.DOM.ul({className: "daily-list"}, 
 	        renderList, 
-	        React.DOM.li({className: "daily-item"}, 
-	          React.DOM.button({className: "btn btn-sm btn-default", 
-	            onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task")
+	        React.DOM.li({className: "daily-item row"}, 
+	          React.DOM.div({className: "col-sm-9"}, 
+	            React.DOM.button({className: "btn btn-sm btn-default", 
+	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task"), 
+
+	            React.DOM.span({className: "pull-right"}, 
+	              "Total: 8 hours"
+	            )
+	          )
 	        )
 	      )
 	    );
@@ -47853,7 +47906,7 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = __webpack_require__(274);
+	var Rating = React.createFactory(__webpack_require__(274));
 	var Select = React.createFactory(__webpack_require__(266));
 
 	var ReportPage = React.createClass({
@@ -47909,11 +47962,18 @@
 	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
 	                )
 	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-6"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              )
 	            )
 	          )
 	        ), 
 	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "NGUYỄN TRỌNG TẤN"), 
+	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
 	          React.DOM.ul({className: "daily-list"}, 
 	            React.DOM.li({className: "row daily-item"}, 
 	              React.DOM.div({className: "col-sm-6"}, 
@@ -47942,6 +48002,13 @@
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Ai bảo say sưa là khổ"})
+	                )
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-6"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
 	                )
 	              )
 	            )
@@ -48412,6 +48479,75 @@
 	});
 
 	module.exports = LoginPage;
+
+
+/***/ },
+/* 278 */
+/***/ function(module, exports) {
+
+	(function () {
+	  var validator = new RegExp("^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$", "i");
+
+	  function gen(count) {
+	    var out = "";
+	    for (var i=0; i<count; i++) {
+	      out += (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	    }
+	    return out;
+	  }
+
+	  function Guid(guid) {
+	    if (!guid) throw new TypeError("Invalid argument; `value` has no value.");
+	      
+	    this.value = Guid.EMPTY;
+	    
+	    if (guid && guid instanceof Guid) {
+	      this.value = guid.toString();
+
+	    } else if (guid && Object.prototype.toString.call(guid) === "[object String]" && Guid.isGuid(guid)) {
+	      this.value = guid;
+	    }
+	    
+	    this.equals = function(other) {
+	      // Comparing string `value` against provided `guid` will auto-call
+	      // toString on `guid` for comparison
+	      return Guid.isGuid(other) && this.value == other;
+	    };
+
+	    this.isEmpty = function() {
+	      return this.value === Guid.EMPTY;
+	    };
+	    
+	    this.toString = function() {
+	      return this.value;
+	    };
+	    
+	    this.toJSON = function() {
+	      return this.value;
+	    };
+	  };
+
+	  Guid.EMPTY = "00000000-0000-0000-0000-000000000000";
+
+	  Guid.isGuid = function(value) {
+	    return value && (value instanceof Guid || validator.test(value.toString()));
+	  };
+
+	  Guid.create = function() {
+	    return new Guid([gen(2), gen(1), gen(1), gen(1), gen(3)].join("-"));
+	  };
+
+	  Guid.raw = function() {
+	    return [gen(2), gen(1), gen(1), gen(1), gen(3)].join("-");
+	  };
+
+	  if(typeof module != 'undefined' && module.exports) {
+	    module.exports = Guid;
+	  }
+	  else if (typeof window != 'undefined') {
+	    window.Guid = Guid;
+	  }
+	})();
 
 
 /***/ }

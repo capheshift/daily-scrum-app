@@ -24,7 +24,7 @@ var DailyPage = React.createClass({
 
     // create default data
     dateList.push({
-      displayName: 'TODAY - ' + m.format('MMM DD'),
+      displayName: m.format('MMM DD ddd') + ' - TODAY',
       value: m.format('YYYYMMDD'),
       index: 1
     });
@@ -38,7 +38,7 @@ var DailyPage = React.createClass({
 
     m.add(1, 'days');
     dateList.push({
-      displayName: 'TOMORROW - ' + m.format('MMM DD'),
+      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
       value: m.format('YYYYMMDD'),
       index: 2
     });
@@ -175,9 +175,15 @@ var DailyPage = React.createClass({
     return (
       <ul className="daily-list">
         {renderList}
-        <li className="daily-item">
-          <button className="btn btn-sm btn-default"
-            onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
+        <li className="daily-item row">
+          <div className="col-sm-9">
+            <button className="btn btn-sm btn-default"
+              onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
+
+            <span className="pull-right">
+              Total: 8 hours
+            </span>
+          </div>
         </li>
       </ul>
     );

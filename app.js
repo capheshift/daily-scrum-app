@@ -34158,6 +34158,24 @@
 	    });
 	  },
 
+	  onEstimateChanged: function(index, newValue) {
+	    var nList = this.state.taskList;
+	    nList[index].estimate = newValue;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
+	  onProjectChanged: function(i, newValue) {
+	    var nList = this.state.taskList;
+	    nList[i].project = newValue;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
 	  renderTaskList: function(dateItem) {
 	    var projectOptions = [
 	      { value: 'vib', label: 'VIB' },
@@ -34200,16 +34218,16 @@
 	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "estimation", value: "0.5hours", clearable: false, 
-	              options: timeRangeOptions})
+	            Select({name: "project", clearable: false, value: item.project, 
+	              options: projectOptions, onChange: this.onProjectChanged.bind(null, i)})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "project", value: "vib", clearable: false, 
-	              options: projectOptions})
+	            Select({name: "estimation", clearable: false, 
+	              value: item.estimate, options: timeRangeOptions, onChange: this.onEstimateChanged.bind(null, i)})
 	          )
 	        )
 	      )
-	    })
+	    }.bind(this));
 
 	    return (
 	      React.DOM.ul({className: "daily-list"}, 

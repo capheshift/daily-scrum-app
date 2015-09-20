@@ -34092,6 +34092,7 @@
 	var React = __webpack_require__(1),
 	  DefaultLayout = React.createFactory(__webpack_require__(165)),
 	  Select = React.createFactory(__webpack_require__(266)),
+	  Guid = __webpack_require__(278),
 	  lodash = __webpack_require__(272),
 	  moment = __webpack_require__(177);
 
@@ -34115,7 +34116,10 @@
 	    });
 
 	    taskList.push({
-	      date: m.format('YYYYMMDD')
+	      id: Guid.raw(),
+	      date: m.format('YYYYMMDD'),
+	      isCompleted: false,
+	      value: ''
 	    });
 
 	    m.add(1, 'days');
@@ -34136,6 +34140,7 @@
 	    var newDateList, newTaskList;
 
 	    newTaskList = this.state.taskList.concat([{
+	      id: Guid.raw(),
 	      date: dateItem.value,
 	      isCompleted: false,
 	      value: ''
@@ -34158,18 +34163,40 @@
 	    });
 	  },
 
-	  onEstimateChanged: function(index, newValue) {
+	  findItem: function(arr, id) {
+	    for (var i=0; i<arr.length; i++) {
+	      if (arr[i].id === id) {
+	        return arr[i];
+	      }
+	    }
+
+	    return null;
+	  },
+
+	  onTaskChanged: function(id, e) {
 	    var nList = this.state.taskList;
-	    nList[index].estimate = newValue;
+	    var currItem = this.findItem(nList, id);
+	    currItem.task = e.target.value;
 
 	    this.setState({
 	      taskList: nList
 	    });
 	  },
 
-	  onProjectChanged: function(i, newValue) {
+	  onEstimateChanged: function(id, newValue) {
 	    var nList = this.state.taskList;
-	    nList[i].project = newValue;
+	    var currItem = this.findItem(nList, id);
+	    currItem.estimate = newValue;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
+	  onProjectChanged: function(id, newValue) {
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    currItem.project = newValue;
 
 	    this.setState({
 	      taskList: nList
@@ -34214,16 +34241,18 @@
 	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                value: item.task})
+	                value: item.task, 
+	                onChange: this.onTaskChanged.bind(null, item.id)})
 	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            Select({name: "project", clearable: false, value: item.project, 
-	              options: projectOptions, onChange: this.onProjectChanged.bind(null, i)})
+	              options: projectOptions, onChange: this.onProjectChanged.bind(null, item.id)})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            Select({name: "estimation", clearable: false, 
-	              value: item.estimate, options: timeRangeOptions, onChange: this.onEstimateChanged.bind(null, i)})
+	              value: item.estimate, options: timeRangeOptions, 
+	              onChange: this.onEstimateChanged.bind(null, item.id)})
 	          )
 	        )
 	      )
@@ -48430,6 +48459,75 @@
 	});
 
 	module.exports = LoginPage;
+
+
+/***/ },
+/* 278 */
+/***/ function(module, exports) {
+
+	(function () {
+	  var validator = new RegExp("^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$", "i");
+
+	  function gen(count) {
+	    var out = "";
+	    for (var i=0; i<count; i++) {
+	      out += (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+	    }
+	    return out;
+	  }
+
+	  function Guid(guid) {
+	    if (!guid) throw new TypeError("Invalid argument; `value` has no value.");
+	      
+	    this.value = Guid.EMPTY;
+	    
+	    if (guid && guid instanceof Guid) {
+	      this.value = guid.toString();
+
+	    } else if (guid && Object.prototype.toString.call(guid) === "[object String]" && Guid.isGuid(guid)) {
+	      this.value = guid;
+	    }
+	    
+	    this.equals = function(other) {
+	      // Comparing string `value` against provided `guid` will auto-call
+	      // toString on `guid` for comparison
+	      return Guid.isGuid(other) && this.value == other;
+	    };
+
+	    this.isEmpty = function() {
+	      return this.value === Guid.EMPTY;
+	    };
+	    
+	    this.toString = function() {
+	      return this.value;
+	    };
+	    
+	    this.toJSON = function() {
+	      return this.value;
+	    };
+	  };
+
+	  Guid.EMPTY = "00000000-0000-0000-0000-000000000000";
+
+	  Guid.isGuid = function(value) {
+	    return value && (value instanceof Guid || validator.test(value.toString()));
+	  };
+
+	  Guid.create = function() {
+	    return new Guid([gen(2), gen(1), gen(1), gen(1), gen(3)].join("-"));
+	  };
+
+	  Guid.raw = function() {
+	    return [gen(2), gen(1), gen(1), gen(1), gen(3)].join("-");
+	  };
+
+	  if(typeof module != 'undefined' && module.exports) {
+	    module.exports = Guid;
+	  }
+	  else if (typeof window != 'undefined') {
+	    window.Guid = Guid;
+	  }
+	})();
 
 
 /***/ }

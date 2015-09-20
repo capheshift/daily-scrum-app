@@ -67,7 +67,8 @@ var DailyPage = React.createClass({
       newDateList.push({
         displayName: m.format('MMM DD ddd'),
         value: m.format('YYYYMMDD'),
-        index: dateItem.index + 1
+        index: dateItem.index + 1,
+        totalTime: 0
       });
     }
 
@@ -87,6 +88,31 @@ var DailyPage = React.createClass({
     return null;
   },
 
+  findDateItem: function(arr, dateStr) {
+    for (var i=0; i<arr.length; i++) {
+      if (arr[i].value === dateStr) {
+        return arr[i];
+      }
+    }
+    return null;
+  },
+
+  /**
+   * [getTotalTime description]
+   * @param  {[type]} item [a task item]
+   * @return {[type]}      [description]
+   */
+  getTotalTime: function(arr, item) {
+    var filterTask = lodash.filter(arr, {date: item.date});
+    var total = 0;
+
+    for (var i = 0; i < filterTask.length; i++) {
+      total += parseFloat(filterTask[i].estimate) || 0;
+    }
+
+    return total;
+  },
+
   onTaskChanged: function(id, e) {
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
@@ -99,11 +125,17 @@ var DailyPage = React.createClass({
 
   onEstimateChanged: function(id, newValue) {
     var nList = this.state.taskList;
+    var nDateList = this.state.dateList;
     var currItem = this.findItem(nList, id);
+    var currDate = this.findDateItem(this.state.dateList, currItem.date);
+
     currItem.estimate = newValue;
+    // update total time
+    currDate.totalTime = this.getTotalTime(nList, currItem);
 
     this.setState({
-      taskList: nList
+      taskList: nList,
+      dateList: nDateList
     });
   },
 
@@ -124,22 +156,22 @@ var DailyPage = React.createClass({
       { value: 'daily-scrum', label: 'Daily Scrum' }
     ];
     var timeRangeOptions = [
-      { value: '0.5hours', label: '30 phút' },
-      { value: '1hours', label: '1 giờ' },
-      { value: '1.5hours', label: '1 giờ 30 phút' },
-      { value: '2hours', label: '2 giờ' },
-      { value: '2.5hours', label: '2 giờ 30 phút' },
-      { value: '3hours', label: '3 giờ' },
-      { value: '3.5hours', label: '3 giờ 30 phút' },
-      { value: '4hours', label: '4 giờ' },
-      { value: '4.5hours', label: '4 giờ 30 phút' },
-      { value: '5hours', label: '5 giờ' },
-      { value: '5.5hours', label: '5 giờ 30 phút' },
-      { value: '6hours', label: '6 giờ' },
-      { value: '6.5hours', label: '6 giờ 30 phút' },
-      { value: '7hours', label: '7 giờ' },
-      { value: '7.5hours', label: '7 giờ 30 phút' },
-      { value: '8hours', label: '8 giờ' },
+      { value: '0.5', label: '30 phút' },
+      { value: '1', label: '1 giờ' },
+      { value: '1.5', label: '1 giờ 30 phút' },
+      { value: '2', label: '2 giờ' },
+      { value: '2.5', label: '2 giờ 30 phút' },
+      { value: '3', label: '3 giờ' },
+      { value: '3.5', label: '3 giờ 30 phút' },
+      { value: '4', label: '4 giờ' },
+      { value: '4.5', label: '4 giờ 30 phút' },
+      { value: '5', label: '5 giờ' },
+      { value: '5.5', label: '5 giờ 30 phút' },
+      { value: '6', label: '6 giờ' },
+      { value: '6.5', label: '6 giờ 30 phút' },
+      { value: '7', label: '7 giờ' },
+      { value: '7.5', label: '7 giờ 30 phút' },
+      { value: '8', label: '8 giờ' },
     ];
 
     if (!this.state.taskList) {
@@ -181,7 +213,7 @@ var DailyPage = React.createClass({
               onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
 
             <span className="pull-right">
-              Total: 8 hours
+              Total: { dateItem.totalTime || 0 } hours
             </span>
           </div>
         </li>

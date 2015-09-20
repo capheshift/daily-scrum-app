@@ -47906,7 +47906,7 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = __webpack_require__(274);
+	var Rating = React.createFactory(__webpack_require__(274));
 	var Select = React.createFactory(__webpack_require__(266));
 
 	var ReportPage = React.createClass({
@@ -47962,6 +47962,13 @@
 	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
 	                )
 	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-6"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              )
 	            )
 	          )
 	        ), 
@@ -47995,6 +48002,13 @@
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Ai bảo say sưa là khổ"})
+	                )
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-6"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
 	                )
 	              )
 	            )

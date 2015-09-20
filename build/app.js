@@ -47966,7 +47966,7 @@
 	          )
 	        ), 
 	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "NGUYỄN TRỌNG TẤN"), 
+	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
 	          React.DOM.ul({className: "daily-list"}, 
 	            React.DOM.li({className: "row daily-item"}, 
 	              React.DOM.div({className: "col-sm-6"}, 

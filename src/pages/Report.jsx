@@ -65,7 +65,7 @@ var ReportPage = React.createClass({
           </ul>
         </div>
         <div className="day-block">
-          <p>NGUYỄN TRỌNG TẤN</p>
+          <p>NGUYỄN DUY TÂN</p>
           <ul className="daily-list">
             <li className="row daily-item">
               <div className="col-sm-6">

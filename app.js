@@ -34110,7 +34110,7 @@
 
 	    // create default data
 	    dateList.push({
-	      displayName: 'TODAY - ' + m.format('MMM DD'),
+	      displayName: m.format('MMM DD ddd') + ' - TODAY',
 	      value: m.format('YYYYMMDD'),
 	      index: 1
 	    });
@@ -34124,7 +34124,7 @@
 
 	    m.add(1, 'days');
 	    dateList.push({
-	      displayName: 'TOMORROW - ' + m.format('MMM DD'),
+	      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
 	      value: m.format('YYYYMMDD'),
 	      index: 2
 	    });
@@ -34261,9 +34261,15 @@
 	    return (
 	      React.DOM.ul({className: "daily-list"}, 
 	        renderList, 
-	        React.DOM.li({className: "daily-item"}, 
-	          React.DOM.button({className: "btn btn-sm btn-default", 
-	            onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task")
+	        React.DOM.li({className: "daily-item row"}, 
+	          React.DOM.div({className: "col-sm-9"}, 
+	            React.DOM.button({className: "btn btn-sm btn-default", 
+	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task"), 
+
+	            React.DOM.span({className: "pull-right"}, 
+	              "Total: 8 hours"
+	            )
+	          )
 	        )
 	      )
 	    );

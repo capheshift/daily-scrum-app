@@ -48473,8 +48473,26 @@
 
 	  render: function() {
 	    return (
-	      React.DOM.div(null, 
-	        React.DOM.h4(null, "PROJECT")
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "PROJECT")
+	        ), 
+
+	        React.DOM.div({className: "col-md-6"}, 
+	          React.DOM.div({className: "input-group"}, 
+	            React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	            React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	              name: "prependedcheckbox", placeholder: "your task", type: "text"})
+	          )
+	        ), 
+
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.ul({className: "project-list"}, 
+	            React.DOM.li({className: "project-item"}, "VIB"), 
+	            React.DOM.li({className: "project-item"}, "Nafoods"), 
+	            React.DOM.li({className: "project-item"}, "Daily Scrum")
+	          )
+	        )
 	      )
 	    );
 	  }

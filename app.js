@@ -48461,6 +48461,7 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Select = React.createFactory(__webpack_require__(266));
 
 	var ProjectPage = React.createClass({
 	  displayName: 'Project',
@@ -48472,25 +48473,82 @@
 	  },
 
 	  render: function() {
+	    var projectOptions = [
+	      { value: 'vib', label: 'VIB' },
+	      { value: 'nafoods', label: 'Nafoods' },
+	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+
 	    return (
 	      React.DOM.div({className: "row"}, 
 	        React.DOM.div({className: "col-sm-12"}, 
 	          React.DOM.h4(null, "PROJECT")
 	        ), 
 
-	        React.DOM.div({className: "col-md-6"}, 
-	          React.DOM.div({className: "input-group"}, 
-	            React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	            React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	              name: "prependedcheckbox", placeholder: "your task", type: "text"})
+	        React.DOM.div({className: "col-sm-6"}, 
+	          React.DOM.table({className: "table table-striped"}, 
+	            React.DOM.thead(null, 
+	              React.DOM.tr(null, 
+	                React.DOM.th(null, "#"), 
+	                React.DOM.th(null, "Project Name"), 
+	                React.DOM.th(null, "Leader")
+	              )
+	            ), 
+	            React.DOM.tbody(null, 
+	              React.DOM.tr(null, 
+	                React.DOM.th({scope: "row"}, "1"), 
+	                React.DOM.td(null, "VIB"), 
+	                React.DOM.td(null, "Otto")
+	              ), 
+	              React.DOM.tr(null, 
+	                React.DOM.th({scope: "row"}, "2"), 
+	                React.DOM.td(null, "Nafoods"), 
+	                React.DOM.td(null, "Thornton")
+	              ), 
+	              React.DOM.tr(null, 
+	                React.DOM.th({scope: "row"}, "3"), 
+	                React.DOM.td(null, "Daily Scrum"), 
+	                React.DOM.td(null, "the Bird")
+	              )
+	            )
 	          )
 	        ), 
 
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.ul({className: "project-list"}, 
-	            React.DOM.li({className: "project-item"}, "VIB"), 
-	            React.DOM.li({className: "project-item"}, "Nafoods"), 
-	            React.DOM.li({className: "project-item"}, "Daily Scrum")
+	        React.DOM.div({className: "col-sm-6"}, 
+	          React.DOM.form({className: "form-horizontal"}, 
+	            React.DOM.fieldset(null, 
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Project"), 
+	                React.DOM.div({className: "col-sm-9"}, 
+	                  React.DOM.input({id: "textinput", name: "textinput", type: "text", placeholder: "name of project", 
+	                    className: "form-control input-md"})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Leader"), 
+	                React.DOM.div({className: "col-sm-9"}, 
+	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
+	                    options: projectOptions, onChange: this.onSelectChanged})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Members"), 
+	                React.DOM.div({className: "col-sm-9"}, 
+	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
+	                    options: projectOptions, onChange: this.onSelectChanged})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "button1id"}), 
+	                React.DOM.div({className: "col-md-9"}, 
+	                  React.DOM.button({id: "button1id", name: "button1id", className: "btn btn-success pull-right"}, "Create project")
+	                )
+	              )
+
+	            )
 	          )
 	        )
 	      )

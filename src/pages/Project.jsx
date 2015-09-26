@@ -36,6 +36,7 @@ var ProjectPage = React.createClass({
                 <th>#</th>
                 <th>Project Name</th>
                 <th>Leader</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -43,16 +44,31 @@ var ProjectPage = React.createClass({
                 <th scope="row">1</th>
                 <td>VIB</td>
                 <td>Otto</td>
+                <td><a href="">Detail</a></td>
               </tr>
               <tr>
                 <th scope="row">2</th>
                 <td>Nafoods</td>
                 <td>Thornton</td>
+                <td><a href="">Detail</a></td>
               </tr>
               <tr>
                 <th scope="row">3</th>
                 <td>Daily Scrum</td>
                 <td>the Bird</td>
+                <td><a href="">Detail</a></td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td>Daily Scrum</td>
+                <td>the Bird</td>
+                <td><a href="">Detail</a></td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td>Daily Scrum</td>
+                <td>the Bird</td>
+                <td><a href="">Detail</a></td>
               </tr>
             </tbody>
           </table>

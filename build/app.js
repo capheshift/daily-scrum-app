@@ -48472,11 +48472,50 @@
 	    };
 	  },
 
+	  getInitialState: function() {
+	    return {
+	      model: {},
+	      projectList: [
+	        { name: 'VIB', leader: 'Tam Pham' },
+	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
+	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
+	      ]
+	    };
+	  },
+
+	  onCreateProjectClicked: function(e) {
+	    e.preventDefault();
+
+	    var pList = this.state.projectList;
+	    pList.push({
+	      name: this.state.model.name,
+	      leader: 'Ngan Nguyen'
+	    });
+
+	    this.setState({
+	      projectList: pList,
+	      model: { name: '' }
+	    });
+	  },
+
+	  onChange: function(e) {
+	    var model = this.state.model;
+	    model[e.target.name] = e.target.value;
+	    this.setState({model: model});
+	  },
+
 	  render: function() {
 	    var projectOptions = [
 	      { value: 'vib', label: 'VIB' },
 	      { value: 'nafoods', label: 'Nafoods' },
 	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+
+	    var userOptions = [
+	      { value: 'tampham', label: 'Tam Pham' },
+	      { value: 'tannguyen', label: 'Tan Nguyen' },
+	      { value: 'giangstrider', label: 'Giang Strider' },
+	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
 	    ];
 
 	    return (
@@ -48496,36 +48535,16 @@
 	              )
 	            ), 
 	            React.DOM.tbody(null, 
-	              React.DOM.tr(null, 
-	                React.DOM.th({scope: "row"}, "1"), 
-	                React.DOM.td(null, "VIB"), 
-	                React.DOM.td(null, "Otto"), 
-	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	              ), 
-	              React.DOM.tr(null, 
-	                React.DOM.th({scope: "row"}, "2"), 
-	                React.DOM.td(null, "Nafoods"), 
-	                React.DOM.td(null, "Thornton"), 
-	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	              ), 
-	              React.DOM.tr(null, 
-	                React.DOM.th({scope: "row"}, "3"), 
-	                React.DOM.td(null, "Daily Scrum"), 
-	                React.DOM.td(null, "the Bird"), 
-	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	              ), 
-	              React.DOM.tr(null, 
-	                React.DOM.th({scope: "row"}, "4"), 
-	                React.DOM.td(null, "Daily Scrum"), 
-	                React.DOM.td(null, "the Bird"), 
-	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	              ), 
-	              React.DOM.tr(null, 
-	                React.DOM.th({scope: "row"}, "5"), 
-	                React.DOM.td(null, "Daily Scrum"), 
-	                React.DOM.td(null, "the Bird"), 
-	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	              )
+	              this.state.projectList.map(function(item) {
+	                return (
+	                  React.DOM.tr(null, 
+	                    React.DOM.th({scope: "row"}, "1"), 
+	                    React.DOM.td(null, item.name), 
+	                    React.DOM.td(null, item.leader), 
+	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	                  )
+	                );
+	              })
 	            )
 	          )
 	        ), 
@@ -48536,13 +48555,14 @@
 	              React.DOM.div({className: "form-group"}, 
 	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Project"), 
 	                React.DOM.div({className: "col-sm-9"}, 
-	                  React.DOM.input({id: "textinput", name: "textinput", type: "text", placeholder: "name of project", 
-	                    className: "form-control input-md"})
+	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
+	                    className: "form-control input-md", 
+	                    value: this.state.model.name, onChange: this.onChange})
 	                )
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Leader"), 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Scrum Master"), 
 	                React.DOM.div({className: "col-sm-9"}, 
 	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
 	                    options: projectOptions, onChange: this.onSelectChanged})
@@ -48550,17 +48570,20 @@
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Members"), 
+	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Team Members"), 
 	                React.DOM.div({className: "col-sm-9"}, 
-	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
-	                    options: projectOptions, onChange: this.onSelectChanged})
+	                  Select({name: "form-field-name", value: "", 
+	                    multi: true, clearable: true, 
+	                    options: userOptions, onChange: this.onSelectChanged})
 	                )
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
 	                React.DOM.label({className: "col-sm-3 control-label", for: "button1id"}), 
 	                React.DOM.div({className: "col-md-9"}, 
-	                  React.DOM.button({id: "button1id", name: "button1id", className: "btn btn-success pull-right"}, "Create project")
+	                  React.DOM.button({id: "button1id", name: "button1id", 
+	                    className: "btn btn-success pull-right", 
+	                    onClick: this.onCreateProjectClicked}, "Create project")
 	                )
 	              )
 

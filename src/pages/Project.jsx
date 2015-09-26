@@ -16,11 +16,50 @@ var ProjectPage = React.createClass({
     };
   },
 
+  getInitialState: function() {
+    return {
+      model: {},
+      projectList: [
+        { name: 'VIB', leader: 'Tam Pham' },
+        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
+        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
+      ]
+    };
+  },
+
+  onCreateProjectClicked: function(e) {
+    e.preventDefault();
+
+    var pList = this.state.projectList;
+    pList.push({
+      name: this.state.model.name,
+      leader: 'Ngan Nguyen'
+    });
+
+    this.setState({
+      projectList: pList,
+      model: { name: '' }
+    });
+  },
+
+  onChange: function(e) {
+    var model = this.state.model;
+    model[e.target.name] = e.target.value;
+    this.setState({model: model});
+  },
+
   render: function() {
     var projectOptions = [
       { value: 'vib', label: 'VIB' },
       { value: 'nafoods', label: 'Nafoods' },
       { value: 'daily-scrum', label: 'Daily Scrum' }
+    ];
+
+    var userOptions = [
+      { value: 'tampham', label: 'Tam Pham' },
+      { value: 'tannguyen', label: 'Tan Nguyen' },
+      { value: 'giangstrider', label: 'Giang Strider' },
+      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
     ];
 
     return (
@@ -40,36 +79,16 @@ var ProjectPage = React.createClass({
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>VIB</td>
-                <td>Otto</td>
-                <td><a href="">Detail</a></td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Nafoods</td>
-                <td>Thornton</td>
-                <td><a href="">Detail</a></td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>Daily Scrum</td>
-                <td>the Bird</td>
-                <td><a href="">Detail</a></td>
-              </tr>
-              <tr>
-                <th scope="row">4</th>
-                <td>Daily Scrum</td>
-                <td>the Bird</td>
-                <td><a href="">Detail</a></td>
-              </tr>
-              <tr>
-                <th scope="row">5</th>
-                <td>Daily Scrum</td>
-                <td>the Bird</td>
-                <td><a href="">Detail</a></td>
-              </tr>
+              {this.state.projectList.map(function(item) {
+                return (
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>{item.name}</td>
+                    <td>{item.leader}</td>
+                    <td><a href="">Detail</a></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -80,13 +99,14 @@ var ProjectPage = React.createClass({
               <div className="form-group">
                 <label className="col-sm-3 control-label" for="textinput">Project</label>
                 <div className="col-sm-9">
-                  <input id="textinput" name="textinput" type="text" placeholder="name of project"
-                    className="form-control input-md" />
+                  <input id="textinput" name="name" type="text" placeholder="name of project"
+                    className="form-control input-md"
+                    value={this.state.model.name} onChange={this.onChange} />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="textinput">Leader</label>
+                <label className="col-sm-3 control-label" for="textinput">Scrum Master</label>
                 <div className="col-sm-9">
                   <Select name="form-field-name" value="nafoods" clearable={false}
                     options={projectOptions} onChange={this.onSelectChanged} />
@@ -94,17 +114,20 @@ var ProjectPage = React.createClass({
               </div>
 
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="textinput">Members</label>
+                <label className="col-sm-3 control-label" for="textinput">Team Members</label>
                 <div className="col-sm-9">
-                  <Select name="form-field-name" value="nafoods" clearable={false}
-                    options={projectOptions} onChange={this.onSelectChanged} />
+                  <Select name="form-field-name" value=""
+                    multi={true} clearable={true}
+                    options={userOptions} onChange={this.onSelectChanged} />
                 </div>
               </div>
 
               <div className="form-group">
                 <label className="col-sm-3 control-label" for="button1id"></label>
                 <div className="col-md-9">
-                  <button id="button1id" name="button1id" className="btn btn-success pull-right">Create project</button>
+                  <button id="button1id" name="button1id"
+                    className="btn btn-success pull-right"
+                    onClick={this.onCreateProjectClicked}>Create project</button>
                 </div>
               </div>
 

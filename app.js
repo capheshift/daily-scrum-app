@@ -48491,24 +48491,40 @@
 	              React.DOM.tr(null, 
 	                React.DOM.th(null, "#"), 
 	                React.DOM.th(null, "Project Name"), 
-	                React.DOM.th(null, "Leader")
+	                React.DOM.th(null, "Leader"), 
+	                React.DOM.th(null)
 	              )
 	            ), 
 	            React.DOM.tbody(null, 
 	              React.DOM.tr(null, 
 	                React.DOM.th({scope: "row"}, "1"), 
 	                React.DOM.td(null, "VIB"), 
-	                React.DOM.td(null, "Otto")
+	                React.DOM.td(null, "Otto"), 
+	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
 	              ), 
 	              React.DOM.tr(null, 
 	                React.DOM.th({scope: "row"}, "2"), 
 	                React.DOM.td(null, "Nafoods"), 
-	                React.DOM.td(null, "Thornton")
+	                React.DOM.td(null, "Thornton"), 
+	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
 	              ), 
 	              React.DOM.tr(null, 
 	                React.DOM.th({scope: "row"}, "3"), 
 	                React.DOM.td(null, "Daily Scrum"), 
-	                React.DOM.td(null, "the Bird")
+	                React.DOM.td(null, "the Bird"), 
+	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	              ), 
+	              React.DOM.tr(null, 
+	                React.DOM.th({scope: "row"}, "4"), 
+	                React.DOM.td(null, "Daily Scrum"), 
+	                React.DOM.td(null, "the Bird"), 
+	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	              ), 
+	              React.DOM.tr(null, 
+	                React.DOM.th({scope: "row"}, "5"), 
+	                React.DOM.td(null, "Daily Scrum"), 
+	                React.DOM.td(null, "the Bird"), 
+	                React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
 	              )
 	            )
 	          )
@@ -48582,8 +48598,58 @@
 
 	  render: function() {
 	    return (
-	      React.DOM.div(null, 
-	        React.DOM.h4(null, "MEMBER")
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "MEMBER")
+	        ), 
+
+	        React.DOM.div({className: "col-sm-6"}, 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", alt: "..."})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Tam Pham"), 
+	              React.DOM.h5(null, "Javascript Developer"), 
+	              React.DOM.span({className: "label label-default"}, "HTML5/CSS3"), 
+	              React.DOM.span({className: "label label-default"}, "jQuery"), 
+	              React.DOM.span({className: "label label-info"}, "CakePHP"), 
+	              React.DOM.span({className: "label label-default"}, "Android")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", alt: "..."})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", alt: "..."})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", alt: "..."})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Giang Strider")
+	            )
+	          )
+	        )
 	      )
 	    );
 	  }

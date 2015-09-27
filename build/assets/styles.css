@@ -313,9 +313,13 @@ li {
 
 .media-object {
   background-color: whitesmoke;
-  width: 80px;
-  height: 80px;
-  border-radius: 80px; }
+  width: 45px;
+  height: 45px;
+  border-radius: 45px;
+  border: 0; }
 
 .label {
   margin-right: 4px; }
+
+.member-list {
+  margin-top: 1rem; }

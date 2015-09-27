@@ -13,7 +13,7 @@ var ToDoElement = React.createFactory(require('../components/ToDoElement'));
 function getToDoState() {
   return {
     todo: ToDoStore.getAllToDo()
-  }
+  };
 }
 
 var ToDo = React.createClass({

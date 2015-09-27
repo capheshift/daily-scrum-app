@@ -21878,7 +21878,7 @@
 	function getToDoState() {
 	  return {
 	    todo: ToDoStore.getAllToDo()
-	  }
+	  };
 	}
 
 	var ToDo = React.createClass({
@@ -48626,50 +48626,49 @@
 	          React.DOM.h4(null, "MEMBER")
 	        ), 
 
-	        React.DOM.div({className: "col-sm-6"}, 
+	        React.DOM.div({className: "col-sm-6 member-list"}, 
 	          React.DOM.div({className: "media"}, 
 	            React.DOM.div({className: "media-left"}, 
 	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", alt: "..."})
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
 	              )
 	            ), 
 	            React.DOM.div({className: "media-body"}, 
 	              React.DOM.h4({className: "media-heading"}, "Tam Pham"), 
-	              React.DOM.h5(null, "Javascript Developer"), 
-	              React.DOM.span({className: "label label-default"}, "HTML5/CSS3"), 
-	              React.DOM.span({className: "label label-default"}, "jQuery"), 
-	              React.DOM.span({className: "label label-info"}, "CakePHP"), 
-	              React.DOM.span({className: "label label-default"}, "Android")
+	              React.DOM.h5(null, "Javascript Developer")
 	            )
 	          ), 
 	          React.DOM.div({className: "media"}, 
 	            React.DOM.div({className: "media-left"}, 
 	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", alt: "..."})
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
 	              )
 	            ), 
 	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn")
+	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn"), 
+	              React.DOM.h5(null, "Javascript Developer")
 	            )
 	          ), 
 	          React.DOM.div({className: "media"}, 
 	            React.DOM.div({className: "media-left"}, 
 	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", alt: "..."})
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
 	              )
 	            ), 
 	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn")
+	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn"), 
+	              React.DOM.h5(null, "Javascript Developer")
 	            )
 	          ), 
 	          React.DOM.div({className: "media"}, 
 	            React.DOM.div({className: "media-left"}, 
 	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", alt: "..."})
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
 	              )
 	            ), 
 	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Giang Strider")
+	              React.DOM.h4({className: "media-heading"}, "Giang Strider"), 
+	              React.DOM.h5(null, "Javascript Developer")
 	            )
 	          )
 	        )

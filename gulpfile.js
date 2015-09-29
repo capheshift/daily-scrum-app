@@ -88,7 +88,7 @@ gulp.task('public', function() {
 
 // HTML pages
 gulp.task('pages', function() {
-  src.pages = ['src/pages/**/*.html'];
+  src.pages = ['src/**/*.html'];
   return gulp.src(src.pages)
     .pipe($.changed(DEST, {
       extension: '.html'

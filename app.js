@@ -21681,7 +21681,7 @@
 	      value: m.format('YYYYMMDD'),
 	      index: 1
 	    });
-
+	    // add task list for today day
 	    taskList.push({
 	      id: Guid.raw(),
 	      date: m.format('YYYYMMDD'),
@@ -21689,11 +21689,18 @@
 	      value: ''
 	    });
 
+	    // add
 	    m.add(1, 'days');
 	    dateList.push({
 	      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
 	      value: m.format('YYYYMMDD'),
 	      index: 2
+	    });
+	    taskList.push({
+	      id: Guid.raw(),
+	      date: m.format('YYYYMMDD'),
+	      isCompleted: false,
+	      value: ''
 	    });
 
 	    return {
@@ -47230,11 +47237,29 @@
 	      { value: 'nafoods', label: 'Nafoods' },
 	      { value: 'daily-scrum', label: 'Daily Scrum' }
 	    ];
+	    var timeRangeOptions = [
+	      { value: '0.5', label: '30 mins' },
+	      { value: '1', label: '1 hour' },
+	      { value: '1.5', label: '1 hours 30 mins' },
+	      { value: '2', label: '2 hours' },
+	      { value: '2.5', label: '2 hours 30 mins' },
+	      { value: '3', label: '3 hours' },
+	      { value: '3.5', label: '3 hours 30 mins' },
+	      { value: '4', label: '4 hours' },
+	      { value: '4.5', label: '4 hours 30 mins' },
+	      { value: '5', label: '5 hours' },
+	      { value: '5.5', label: '5 hours 30 mins' },
+	      { value: '6', label: '6 hours' },
+	      { value: '6.5', label: '6 hours 30 mins' },
+	      { value: '7', label: '7 hours' },
+	      { value: '7.5', label: '7 hours 30 mins' },
+	      { value: '8', label: '8 hours' },
+	    ];
 
 	    return (
 	      React.DOM.div(null, 
 	        React.DOM.div({className: "row"}, 
-	          React.DOM.div({className: "col-sm-6"}, 
+	          React.DOM.div({className: "col-sm-5"}, 
 	            React.DOM.h4(null, "CHOOSE PROJECT"), 
 	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
 	              options: projectOptions, onChange: this.onSelectChanged})
@@ -47246,27 +47271,39 @@
 	          React.DOM.p(null, "PHẠM MINH TÂM"), 
 	          React.DOM.ul({className: "daily-list"}, 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "input-group"}, 
 	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "input-group"}, 
 	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "pull-right"}, 
 	                  Rating(null)
 	                )
@@ -47278,37 +47315,55 @@
 	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
 	          React.DOM.ul({className: "daily-list"}, 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "input-group"}, 
 	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "input-group"}, 
 	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "input-group"}, 
 	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
 	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
 	                    value: "Ai bảo say sưa là khổ"})
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-6"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "pull-right"}, 
 	                  Rating(null)
 	                )
@@ -47725,7 +47780,7 @@
 	          React.DOM.h4(null, "PROJECT")
 	        ), 
 
-	        React.DOM.div({className: "col-sm-6"}, 
+	        React.DOM.div({className: "col-sm-8"}, 
 	          React.DOM.table({className: "table table-striped"}, 
 	            React.DOM.thead(null, 
 	              React.DOM.tr(null, 
@@ -47750,12 +47805,12 @@
 	          )
 	        ), 
 
-	        React.DOM.div({className: "col-sm-6"}, 
+	        React.DOM.div({className: "col-sm-4 "}, 
 	          React.DOM.form({className: "form-horizontal"}, 
 	            React.DOM.fieldset(null, 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Project"), 
-	                React.DOM.div({className: "col-sm-9"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
+	                React.DOM.div({className: "col-sm-12"}, 
 	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
 	                    className: "form-control input-md", 
 	                    value: this.state.model.name, onChange: this.onChange})
@@ -47763,16 +47818,16 @@
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Scrum Master"), 
-	                React.DOM.div({className: "col-sm-9"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
+	                React.DOM.div({className: "col-sm-12"}, 
 	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
 	                    options: projectOptions, onChange: this.onSelectChanged})
 	                )
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "textinput"}, "Team Members"), 
-	                React.DOM.div({className: "col-sm-9"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
+	                React.DOM.div({className: "col-sm-12"}, 
 	                  Select({name: "form-field-name", value: "", 
 	                    multi: true, clearable: true, 
 	                    options: userOptions, onChange: this.onSelectChanged})
@@ -47780,8 +47835,8 @@
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-3 control-label", for: "button1id"}), 
-	                React.DOM.div({className: "col-md-9"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
+	                React.DOM.div({className: "col-md-12"}, 
 	                  React.DOM.button({id: "button1id", name: "button1id", 
 	                    className: "btn btn-success pull-right", 
 	                    onClick: this.onCreateProjectClicked}, "Create project")

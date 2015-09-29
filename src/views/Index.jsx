@@ -4,24 +4,22 @@
 'use strict';
 
 var React = require('react');
-var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var DefaultLayout = React.createFactory(require('./layouts/Default'));
 
-var ProjectPage = React.createClass({
-  displayName: 'Project',
-
+var HomePage = React.createClass({
+  displayName: 'Index.jsx',
   getDefaultProps: function() {
     return {
       layout: DefaultLayout
     };
   },
-
   render: function() {
     return (
       <div>
-        <h4>PROJECT</h4>
+        <p>Index</p>
       </div>
     );
   }
 });
 
-module.exports = ProjectPage;
+module.exports = HomePage;

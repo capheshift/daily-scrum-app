@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('react');
-var RouteActions = require('../actions/RouteActions');
+var RouteActions = require('../../actions/RouteActions');
 var assign = require('react/lib/Object.assign');
 
 var Link = React.createClass({

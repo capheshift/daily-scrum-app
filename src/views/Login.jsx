@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('react');
-var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var DefaultLayout = React.createFactory(require('./layouts/Default'));
 // var Auth = require('');
 
 var LoginPage = React.createClass({
@@ -45,7 +45,7 @@ var LoginPage = React.createClass({
                 <div className="col-sm-12 controls">
                   <button className="btn btn-default pull-right" type="submit"
                     onClick={this.login.bind(this)}>
-                    <i className="glyphicon glyphicon-log-in"></i> Log in
+                    Log in
                   </button>
                 </div>
               </div>

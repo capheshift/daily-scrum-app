@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var AppDispatcher = require('../dispatcher/AppDispatcher');
+var AppDispatcher = require('../AppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 
 var AppActions = {

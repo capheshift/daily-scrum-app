@@ -10,7 +10,7 @@
 var React = require('react');
 var assign = require('react/lib/Object.assign');
 var {Router} = require('director');
-var AppDispatcher = require('./dispatcher/AppDispatcher');
+var AppDispatcher = require('./AppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 var AppConfig = require('./config.js');
 

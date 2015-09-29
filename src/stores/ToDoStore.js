@@ -6,7 +6,7 @@
 /**
  * Libraries
  */
-var AppDispatcher = require('../dispatcher/AppDispatcher');
+var AppDispatcher = require('./AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('react/lib/Object.assign');
 var Constants = require('../constants/ActionTypes');

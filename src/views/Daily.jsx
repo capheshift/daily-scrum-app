@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('react'),
-  DefaultLayout = React.createFactory(require('../layouts/Default')),
+  DefaultLayout = React.createFactory(require('./layouts/Default')),
   Select = React.createFactory(require('react-select')),
   Guid = require('guid'),
   lodash = require('lodash'),

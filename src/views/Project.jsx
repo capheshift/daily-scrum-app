@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('react');
-var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var Select = React.createFactory(require('react-select'));
 
 var ProjectPage = React.createClass({

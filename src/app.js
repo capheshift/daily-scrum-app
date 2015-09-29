@@ -11,7 +11,7 @@ var React = require('react');
 var assign = require('react/lib/Object.assign');
 var {Router} = require('director');
 var AppDispatcher = require('./AppDispatcher');
-var ActionTypes = require('./constants/ActionTypes');
+var ActionTypes = require('./commons/ActionTypes');
 var AppConfig = require('./config.js');
 
 // Export React so the dev tools can find it
@@ -42,36 +42,28 @@ function render(uri, page) {
 // See https://github.com/flatiron/director
 var router = new Router({
   // Main Route
-  '/libraries': function() {
-    var page = React.createFactory(require('./pages/Libraries'));
-    render(router.getRoute(), page);
-  },
-  '/todo': function() {
-    var page = React.createFactory(require('./pages/ToDo'));
-    render(router.getRoute(), page);
-  },
   '/': function() {
-    var page = React.createFactory(require('./pages/Daily'));
+    var page = React.createFactory(require('./views/Daily'));
     render(router.getRoute(), page);
   },
   '/daily': function() {
-    var page = React.createFactory(require('./pages/Daily'));
+    var page = React.createFactory(require('./views/Daily'));
     render(router.getRoute(), page);
   },
   '/report': function() {
-    var page = React.createFactory(require('./pages/Report'));
+    var page = React.createFactory(require('./views/Report'));
     render(router.getRoute(), page);
   },
   '/project': function() {
-    var page = React.createFactory(require('./pages/Project'));
+    var page = React.createFactory(require('./views/Project'));
     render(router.getRoute(), page);
   },
   '/member': function() {
-    var page = React.createFactory(require('./pages/Member'));
+    var page = React.createFactory(require('./views/Member'));
     render(router.getRoute(), page);
   },
   '/login': function() {
-    var page = React.createFactory(require('./pages/Login'));
+    var page = React.createFactory(require('./views/Login'));
     render(router.getRoute(), page);
   }
 });

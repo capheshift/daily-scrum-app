@@ -4,7 +4,7 @@
 'use strict';
 
 var React = require('react');
-var DefaultLayout = React.createFactory(require('../layouts/Default'));
+var DefaultLayout = React.createFactory(require('./layouts/Default'));
 
 var MemberPage = React.createClass({
   displayName: 'Member',

@@ -68,7 +68,7 @@ var ProjectPage = React.createClass({
           <h4>PROJECT</h4>
         </div>
 
-        <div className="col-sm-6">
+        <div className="col-sm-8">
           <table className="table table-striped">
             <thead>
               <tr>
@@ -93,12 +93,12 @@ var ProjectPage = React.createClass({
           </table>
         </div>
 
-        <div className="col-sm-6">
+        <div className="col-sm-4 ">
           <form className="form-horizontal">
             <fieldset>
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="textinput">Project</label>
-                <div className="col-sm-9">
+                <label className="col-sm-12 control-label" for="textinput">Project</label>
+                <div className="col-sm-12">
                   <input id="textinput" name="name" type="text" placeholder="name of project"
                     className="form-control input-md"
                     value={this.state.model.name} onChange={this.onChange} />
@@ -106,16 +106,16 @@ var ProjectPage = React.createClass({
               </div>
 
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="textinput">Scrum Master</label>
-                <div className="col-sm-9">
+                <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
+                <div className="col-sm-12">
                   <Select name="form-field-name" value="nafoods" clearable={false}
                     options={projectOptions} onChange={this.onSelectChanged} />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="textinput">Team Members</label>
-                <div className="col-sm-9">
+                <label className="col-sm-12 control-label" for="textinput">Team Members</label>
+                <div className="col-sm-12">
                   <Select name="form-field-name" value=""
                     multi={true} clearable={true}
                     options={userOptions} onChange={this.onSelectChanged} />
@@ -123,8 +123,8 @@ var ProjectPage = React.createClass({
               </div>
 
               <div className="form-group">
-                <label className="col-sm-3 control-label" for="button1id"></label>
-                <div className="col-md-9">
+                <label className="col-sm-12 control-label" for="button1id"></label>
+                <div className="col-md-12">
                   <button id="button1id" name="button1id"
                     className="btn btn-success pull-right"
                     onClick={this.onCreateProjectClicked}>Create project</button>

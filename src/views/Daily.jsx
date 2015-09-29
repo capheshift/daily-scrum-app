@@ -28,7 +28,7 @@ var DailyPage = React.createClass({
       value: m.format('YYYYMMDD'),
       index: 1
     });
-
+    // add task list for today day
     taskList.push({
       id: Guid.raw(),
       date: m.format('YYYYMMDD'),
@@ -36,11 +36,18 @@ var DailyPage = React.createClass({
       value: ''
     });
 
+    // add
     m.add(1, 'days');
     dateList.push({
       displayName: m.format('MMM DD ddd') + ' - TOMORROW',
       value: m.format('YYYYMMDD'),
       index: 2
+    });
+    taskList.push({
+      id: Guid.raw(),
+      date: m.format('YYYYMMDD'),
+      isCompleted: false,
+      value: ''
     });
 
     return {

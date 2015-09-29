@@ -323,3 +323,6 @@ li {
 
 .member-list {
   margin-top: 1rem; }
+
+.form-horizontal .control-label {
+  text-align: left; }

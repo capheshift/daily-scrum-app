@@ -45,7 +45,7 @@ var LoginPage = React.createClass({
                 <div className="col-sm-12 controls">
                   <button className="btn btn-default pull-right" type="submit"
                     onClick={this.login.bind(this)}>
-                    <i className="glyphicon glyphicon-log-in"></i> Log in
+                    Log in
                   </button>
                 </div>
               </div>

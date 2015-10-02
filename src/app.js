@@ -65,7 +65,11 @@ var router = new Router({
   '/login': function() {
     var page = React.createFactory(require('./views/Login'));
     render(router.getRoute(), page);
-  }
+  },
+  '/register': function() {
+    var page = React.createFactory(require('./views/Register'));
+    render(router.getRoute(), page);
+  },
 });
 
 router.configure({

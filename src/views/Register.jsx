@@ -25,12 +25,17 @@ var LoginPage = React.createClass({
         <div className="panel-login col-sm-4 col-sm-offset-4">
           <div className="panel-heading">
             <div className="panel-title text-center">
-              Login
+              Register
             </div>
           </div>
 
           <div className="panel-body">
             <form className="form-horizontal" enctype="multipart/form-data" id="form" method="post" name="form">
+              <div className="input-group">
+                <span className="input-group-addon glyphicon glyphicon-knight"></span>
+                <input className="form-control" id="fullname" name="fullname" placeholder="full name" type="text" />
+              </div>
+
               <div className="input-group">
                 <span className="input-group-addon glyphicon glyphicon-send"></span>
                 <input className="form-control" id="email" name="email" placeholder="your email" type="text" />
@@ -45,7 +50,7 @@ var LoginPage = React.createClass({
                 <div className="col-sm-12 controls">
                   <button className="btn btn-default pull-right" type="submit"
                     onClick={this.login.bind(this)}>
-                    Log in
+                    Register
                   </button>
                 </div>
               </div>

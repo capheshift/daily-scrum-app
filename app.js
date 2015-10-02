@@ -111,7 +111,11 @@
 	  '/login': function() {
 	    var page = React.createFactory(__webpack_require__(269));
 	    render(router.getRoute(), page);
-	  }
+	  },
+	  '/register': function() {
+	    var page = React.createFactory(__webpack_require__(270));
+	    render(router.getRoute(), page);
+	  },
 	});
 
 	router.configure({
@@ -47296,10 +47300,10 @@
 	                )
 	              ), 
 	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
 	              ), 
 	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
@@ -47312,10 +47316,10 @@
 	                )
 	              ), 
 	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
 	              ), 
 	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
 	              )
 	            ), 
 	            React.DOM.li({className: "row daily-item"}, 
@@ -47323,6 +47327,9 @@
 	                React.DOM.div({className: "pull-right"}, 
 	                  Rating(null)
 	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-4"}, 
+	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
 	              )
 	            )
 	          )
@@ -47990,13 +47997,13 @@
 	          React.DOM.div({className: "panel-body"}, 
 	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
 	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-user"}), 
-	                React.DOM.input({className: "form-control", id: "user", name: "user", placeholder: "User", type: "text"})
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
+	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text"})
 	              ), 
 
 	              React.DOM.div({className: "input-group"}, 
 	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
-	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "Password", type: "password"})
+	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password"})
 	              ), 
 
 	              React.DOM.div({className: "form-group"}, 
@@ -48004,6 +48011,77 @@
 	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
 	                    onClick: this.login.bind(this)}, 
 	                    "Log in"
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = LoginPage;
+
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	// var Auth = require('');
+
+	var LoginPage = React.createClass({
+	  displayName: 'Login Page',
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  login: function(e) {
+	    e.preventDefault();
+	  },
+
+	  render: function() {
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
+	          React.DOM.div({className: "panel-heading"}, 
+	            React.DOM.div({className: "panel-title text-center"}, 
+	              "Register"
+	            )
+	          ), 
+
+	          React.DOM.div({className: "panel-body"}, 
+	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-knight"}), 
+	                React.DOM.input({className: "form-control", id: "fullname", name: "fullname", placeholder: "full name", type: "text"})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
+	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text"})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
+	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password"})
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.div({className: "col-sm-12 controls"}, 
+	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
+	                    onClick: this.login.bind(this)}, 
+	                    "Register"
 	                  )
 	                )
 	              )

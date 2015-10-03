@@ -70,10 +70,10 @@ var ReportPage = React.createClass({
                 </div>
               </div>
               <div className="col-sm-2">
-                <Select name="project" clearable={false} value='' options={projectOptions} />
+                <Select name="project" clearable={false} value='vib' options={projectOptions} />
               </div>
               <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='' options={timeRangeOptions} />
+                <Select name="estimation" clearable={false} value='4' options={timeRangeOptions} />
               </div>
             </li>
             <li className="row daily-item">
@@ -86,10 +86,10 @@ var ReportPage = React.createClass({
                 </div>
               </div>
               <div className="col-sm-2">
-                <Select name="project" clearable={false} value='' options={projectOptions} />
+                <Select name="project" clearable={false} value='vib' options={projectOptions} />
               </div>
               <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='' options={timeRangeOptions} />
+                <Select name="estimation" clearable={false} value='3.5' options={timeRangeOptions} />
               </div>
             </li>
             <li className="row daily-item">
@@ -97,6 +97,9 @@ var ReportPage = React.createClass({
                 <div className="pull-right">
                   <Rating />
                 </div>
+              </div>
+              <div className="col-sm-4">
+                <span className="pull-right">Total: 7.5 hours</span>
               </div>
             </li>
           </ul>

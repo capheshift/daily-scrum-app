@@ -6,18 +6,10 @@ Là dự án quản lý công việc hằng ngày, phát triển để đáp ứ
 [react-flux-router-boilerplate](https://github.com/apzentral/react-flux-router-boilerplate)
 A boilerplate for a full React, Flux and Router application development.
 
-[working demo](http://apzentral.github.io/react-flux-router-boilerplate)
-
 ### Based On
 
 - [https://github.com/kriasoft/react-starter-kit](https://github.com/kriasoft/react-starter-kit)
 - [https://github.com/alduro/generator-flux-webapp](https://github.com/alduro/generator-flux-webapp)
-
-### Architecture
-
-[Flux](facebook.github.io/flux/) for unidirectional data flow.
-
-<img src="https://github.com/facebook/flux/raw/master/docs/img/flux-diagram-white-background.png" style="width: 100%;" />
 
 ### Directory Layout
 
@@ -48,19 +40,15 @@ A boilerplate for a full React, Flux and Router application development.
 2. Then run this command `$ npm install`
 3. Run `$ gulp`
 
-### How to Build
+### Commands
 
 ```shell
 $ gulp build                    # `gulp build --watch`, or `gulp build --release`
 ```
 
-### How to Run
-
 ```shell
 $ gulp                          # or, `gulp --release`
 ```
-
-### Debug
 
 Simply add `--verbose` when running `gulp` command
 

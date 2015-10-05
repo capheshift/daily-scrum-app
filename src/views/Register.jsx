@@ -6,6 +6,8 @@
 var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var CommonMixins = require('./mixins/CommonMixins.jsx');
+var UserActions = require('../actions/UserActions');
+var UserStore = require('../stores/UserStore');
 
 var LoginPage = React.createClass({
   mixins: [CommonMixins],
@@ -25,7 +27,7 @@ var LoginPage = React.createClass({
 
   register: function(e) {
     e.preventDefault();
-    console.log('register', this.getModel());
+    UserActions.register(this.getModel());
   },
 
   render: function() {

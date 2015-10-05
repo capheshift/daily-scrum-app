@@ -4,7 +4,7 @@
 'use strict';
 
 var AppDispatcher = require('../AppDispatcher');
-var ActionTypes = require('../commons/ActionTypes');
+var ActionTypes = require('../commons/enum/ActionTypes');
 
 var AppActions = {
 

@@ -11,6 +11,7 @@ var EventEmitter = require('events').EventEmitter;
 var assign = require('react/lib/Object.assign');
 var Actions = require('../commons/enum/ActionTypes');
 var Events = require('../commons/enum/EventTypes');
+var ServiceApi = require('../commons/service-api');
 
 /**
  * Variables
@@ -22,6 +23,21 @@ var _name = 'UserStore';
  * Store Start
  */
 var UserStore = assign({}, EventEmitter.prototype, {
+  // listener events zone
+  addListenerOnRegisterSuccess: function(callback, context) {
+    this.on(Events.RegisterSuccess, callback, context);
+  },
+  rmvListenerOnRegisterSuccess: function(context) {
+    this.off(Events.RegisterSuccess, context);
+  },
+  addListenerOnRegisterFail: function(callback, context) {
+    this.on(Events.RegisterSuccess, callback, context);
+  },
+  rmvListenerOnRegisterFail: function(context) {
+    this.off(Events.RegisterSuccess, context);
+  },
+
+  // functions
   login: function(data) {
     console.log('login data', data);
   },
@@ -32,6 +48,14 @@ var UserStore = assign({}, EventEmitter.prototype, {
 
   register: function(data) {
     console.log('register data', data);
+
+    ServiceApi.register(data).then(
+    function(body) {
+      this.emit(Events.RegisterSuccess, data);
+    }.bind(this), 
+    function(err) {
+      this.emit(Events.RegisterFail, err);
+    }.bind(this));
   }
 });
 

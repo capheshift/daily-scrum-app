@@ -25,6 +25,22 @@ var LoginPage = React.createClass({
     };
   },
 
+  componentDidMount: function() {
+    UserStore.addListenerOnRegisterSuccess(this._onRegisterSuccess, this);
+    UserStore.addListenerOnRegisterFail(this._onRegisterFail, this);
+  },
+  componentWillUnmount: function() {
+    UserStore.rmvListenerOnRegisterSuccess(this);
+    UserStore.rmvListenerOnRegisterFail(this);
+  },
+
+  _onRegisterSuccess: function(data) {
+    console.log('_onRegisterSuccess', data);
+  },
+  _onRegisterFail: function(data) {
+    console.log('_onRegisterFail', data);
+  },
+
   register: function(e) {
     e.preventDefault();
     UserActions.register(this.getModel());

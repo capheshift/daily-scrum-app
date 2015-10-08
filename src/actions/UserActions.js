@@ -6,21 +6,28 @@
 var AppDispatcher = require('../AppDispatcher');
 var ActionTypes = require('../commons/enum/ActionTypes');
 
-var AppActions = {
+var Actions = {
 
-  loginUser: function(jwt) {
+  login: function(jwt) {
     AppDispatcher.dispatch({
       actionType: ActionTypes.Login,
       jwt: jwt
     });
   },
 
-  logoutUser: function() {
+  logout: function() {
     AppDispatcher.dispatch({
       actionType: ActionTypes.Logout
+    });
+  },
+
+  register: function(data) {
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.Register,
+      data: data
     });
   }
 
 };
 
-module.exports = AppActions;
+module.exports = Actions;

@@ -11,7 +11,7 @@ var React = require('react');
 var assign = require('react/lib/Object.assign');
 var {Router} = require('director');
 var AppDispatcher = require('./AppDispatcher');
-var ActionTypes = require('./commons/ActionTypes');
+var ActionTypes = require('./commons/enum/ActionTypes');
 var AppConfig = require('./config.js');
 
 // Export React so the dev tools can find it

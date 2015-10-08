@@ -9,7 +9,7 @@
 var AppDispatcher = require('./AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('react/lib/Object.assign');
-var Constants = require('../commons/ActionTypes');
+var Constants = require('../commons/enum/ActionTypes');
 
 /**
  * Variables

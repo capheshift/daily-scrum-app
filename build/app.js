@@ -47988,7 +47988,8 @@
 	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
 	                    onClick: this.login.bind(this)}, 
 	                    "Log in"
-	                  )
+	                  ), 
+	                  React.DOM.a({href: "#/register", className: "btn btn-link pull-right"}, "Register")
 	                )
 	              )
 	            )
@@ -48038,8 +48039,8 @@
 	    UserStore.addListenerOnRegisterFail(this._onRegisterFail, this);
 	  },
 	  componentWillUnmount: function() {
-	    UserStore.rmvListenerOnRegisterSuccess(this);
-	    UserStore.rmvListenerOnRegisterFail(this);
+	    UserStore.rmvListenerOnRegisterSuccess(this._onRegisterSuccess);
+	    UserStore.rmvListenerOnRegisterFail(this._onRegisterFail);
 	  },
 
 	  _onRegisterSuccess: function(data) {
@@ -48092,7 +48093,8 @@
 	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
 	                    onClick: this.register.bind(this)}, 
 	                    "Register"
-	                  )
+	                  ), 
+	                  React.DOM.a({href: "#/login", className: "btn btn-link pull-right"}, "Login")
 	                )
 	              )
 	            )
@@ -48201,13 +48203,13 @@
 	    this.on(Events.RegisterSuccess, callback, context);
 	  },
 	  rmvListenerOnRegisterSuccess: function(context) {
-	    this.off(Events.RegisterSuccess, context);
+	    this.removeListener(Events.RegisterSuccess, context);
 	  },
 	  addListenerOnRegisterFail: function(callback, context) {
 	    this.on(Events.RegisterSuccess, callback, context);
 	  },
 	  rmvListenerOnRegisterFail: function(context) {
-	    this.off(Events.RegisterSuccess, context);
+	    this.removeListener(Events.RegisterSuccess, context);
 	  },
 
 	  // functions

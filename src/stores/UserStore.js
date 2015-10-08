@@ -28,13 +28,13 @@ var UserStore = assign({}, EventEmitter.prototype, {
     this.on(Events.RegisterSuccess, callback, context);
   },
   rmvListenerOnRegisterSuccess: function(context) {
-    this.off(Events.RegisterSuccess, context);
+    this.removeListener(Events.RegisterSuccess, context);
   },
   addListenerOnRegisterFail: function(callback, context) {
     this.on(Events.RegisterSuccess, callback, context);
   },
   rmvListenerOnRegisterFail: function(context) {
-    this.off(Events.RegisterSuccess, context);
+    this.removeListener(Events.RegisterSuccess, context);
   },
 
   // functions

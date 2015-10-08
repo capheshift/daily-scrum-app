@@ -30,8 +30,8 @@ var LoginPage = React.createClass({
     UserStore.addListenerOnRegisterFail(this._onRegisterFail, this);
   },
   componentWillUnmount: function() {
-    UserStore.rmvListenerOnRegisterSuccess(this);
-    UserStore.rmvListenerOnRegisterFail(this);
+    UserStore.rmvListenerOnRegisterSuccess(this._onRegisterSuccess);
+    UserStore.rmvListenerOnRegisterFail(this._onRegisterFail);
   },
 
   _onRegisterSuccess: function(data) {
@@ -85,6 +85,7 @@ var LoginPage = React.createClass({
                     onClick={this.register.bind(this)}>
                     Register
                   </button>
+                  <a href="#/login" className="btn btn-link pull-right">Login</a>
                 </div>
               </div>
             </form>

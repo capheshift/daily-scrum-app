@@ -47820,8 +47820,8 @@
 	              React.DOM.div({className: "form-group"}, 
 	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
 	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: "nafoods", clearable: false, 
-	                    options: projectOptions, onChange: this.onSelectChanged})
+	                  Select({name: "form-field-name", value: "", clearable: false, 
+	                    options: userOptions, onChange: this.onSelectChanged})
 	                )
 	              ), 
 

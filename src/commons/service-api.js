@@ -14,7 +14,6 @@ apiList = [
 $.each(apiList, function(index, item) {
   result[item.name] = function(data) {
     return new Promise(function(resolve, reject) {
-      var path = '';
       var token = window.localStorage.getItem('token');
       var headers = {
         'Content-Type': 'application/json'
@@ -25,11 +24,14 @@ $.each(apiList, function(index, item) {
       }
 
       $.ajax({
-        url: config.apiPath + path,
+        url: config.apiPath + item.path,
         type: item.method,
+        method: item.method,
+        data: JSON.stringify(data),
         headers: headers,
         cache: false,
-        data: data,
+        crossDomain: true,
+        dataType: 'json',
         success: function(data) {
           resolve(data);
         },

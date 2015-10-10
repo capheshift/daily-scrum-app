@@ -43,7 +43,14 @@ var LoginPage = React.createClass({
 
   register: function(e) {
     e.preventDefault();
-    UserActions.register(this.getModel());
+    var m = this.getModel();
+    var model = {
+      userName: m.email,
+      email: m.email,
+      password: m.password,
+      fullName: m.fullname
+    };
+    UserActions.register(model);
   },
 
   render: function() {

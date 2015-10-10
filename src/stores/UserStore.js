@@ -31,10 +31,10 @@ var UserStore = assign({}, EventEmitter.prototype, {
     this.removeListener(Events.RegisterSuccess, context);
   },
   addListenerOnRegisterFail: function(callback, context) {
-    this.on(Events.RegisterSuccess, callback, context);
+    this.on(Events.RegisterFail, callback, context);
   },
   rmvListenerOnRegisterFail: function(context) {
-    this.removeListener(Events.RegisterSuccess, context);
+    this.removeListener(Events.RegisterFail, context);
   },
 
   // functions
@@ -51,8 +51,9 @@ var UserStore = assign({}, EventEmitter.prototype, {
 
     ServiceApi.register(data).then(
     function(body) {
-      this.emit(Events.RegisterSuccess, data);
-    }.bind(this), 
+      console.log('register', body);
+      this.emit(Events.RegisterSuccess, body);
+    }.bind(this),
     function(err) {
       this.emit(Events.RegisterFail, err);
     }.bind(this));

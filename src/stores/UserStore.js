@@ -36,10 +36,34 @@ var UserStore = assign({}, EventEmitter.prototype, {
   rmvListenerOnRegisterFail: function(context) {
     this.removeListener(Events.RegisterFail, context);
   },
+  // listener for login
+  addListenerOnLoginSuccess: function(callback, context) {
+    this.on(Events.LoginSuccess, callback, context);
+  },
+  rmvListenerOnLoginSuccess: function(context) {
+    this.removeListener(Events.LoginSuccess, context);
+  },
+  addListenerOnLoginFail: function(callback, context) {
+    this.on(Events.LoginFail, callback, context);
+  },
+  rmvListenerOnLoginFail: function(context) {
+    this.removeListener(Events.LoginFail, context);
+  },
 
   // functions
   login: function(data) {
     console.log('login data', data);
+    console.log('register data', data);
+
+    ServiceApi.login(data).then(
+    function(body) {
+      // set token into localstorage
+      // window.localStorage.setItem('token', body.data.token);
+      this.emit(Events.RegisterSuccess, body);
+    }.bind(this),
+    function(err) {
+      this.emit(Events.RegisterFail, err);
+    }.bind(this));
   },
 
   logout: function(data) {
@@ -52,6 +76,8 @@ var UserStore = assign({}, EventEmitter.prototype, {
     ServiceApi.register(data).then(
     function(body) {
       console.log('register', body);
+      // set token into localstorage
+      window.localStorage.setItem('token', body.data.token);
       this.emit(Events.RegisterSuccess, body);
     }.bind(this),
     function(err) {

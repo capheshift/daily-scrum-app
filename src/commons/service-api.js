@@ -7,7 +7,16 @@ var apiList, result = {};
 
 // define list of api
 apiList = [
-  { name: 'register', path: '/users/signup', method: 'POST'},
+  // users
+  { name: 'register', path: '/users/signup', method: 'POST' },
+  { name: 'login', path: '/users/login', method: 'POST' },
+  { name: 'logout', path: '/users/logout', method: 'POST' },
+  { name: 'getUserById', path: '/users/${userId}/detail', method: 'GET' },
+
+  // task
+  // project
+  { name: 'projectAll', path: '/projects/all', method: 'GET' },
+  // user-project
 ];
 
 // create functions with each api link
@@ -20,7 +29,7 @@ $.each(apiList, function(index, item) {
       };
 
       if (token) {
-        headers.Authorization = 'Token token=' + token;
+        headers.Authorization = 'Bearer ' + token;
       }
 
       $.ajax({
@@ -33,6 +42,7 @@ $.each(apiList, function(index, item) {
         crossDomain: true,
         dataType: 'json',
         success: function(data) {
+          console.log('API', item.path, data);
           resolve(data);
         },
         error: function(err) {

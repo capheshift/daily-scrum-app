@@ -9,6 +9,7 @@ var React = require('react'),
   Guid = require('guid'),
   lodash = require('lodash'),
   moment = require('moment');
+var ServiceApi = require('../commons/service-api');
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -54,6 +55,12 @@ var DailyPage = React.createClass({
       dateList: dateList,
       taskList: taskList
     };
+  },
+
+  componentDidMount: function() {
+    ServiceApi.projectAll().then(function(data) {
+      console.log('ServiceApi', data);
+    });
   },
 
   newTaskOnClicked: function(dateItem) {

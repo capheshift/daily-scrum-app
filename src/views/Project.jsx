@@ -108,8 +108,8 @@ var ProjectPage = React.createClass({
               <div className="form-group">
                 <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
                 <div className="col-sm-12">
-                  <Select name="form-field-name" value="nafoods" clearable={false}
-                    options={projectOptions} onChange={this.onSelectChanged} />
+                  <Select name="form-field-name" value="" clearable={false}
+                    options={userOptions} onChange={this.onSelectChanged} />
                 </div>
               </div>
 

@@ -8,10 +8,10 @@ var ActionTypes = require('../commons/enum/ActionTypes');
 
 var Actions = {
 
-  login: function(jwt) {
+  login: function(data) {
     AppDispatcher.dispatch({
       actionType: ActionTypes.Login,
-      jwt: jwt
+      data: data
     });
   },
 

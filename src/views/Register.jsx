@@ -7,6 +7,7 @@ var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var CommonMixins = require('./mixins/CommonMixins.jsx');
 var UserActions = require('../actions/UserActions');
+var NotificationActions = require('../actions/NotificationActions');
 var UserStore = require('../stores/UserStore');
 
 var LoginPage = React.createClass({
@@ -36,6 +37,8 @@ var LoginPage = React.createClass({
 
   _onRegisterSuccess: function(data) {
     console.log('_onRegisterSuccess', data);
+    NotificationActions.notification(data);
+    window.location.hash = 'login';
   },
   _onRegisterFail: function(data) {
     console.log('_onRegisterFail', data);
@@ -43,7 +46,14 @@ var LoginPage = React.createClass({
 
   register: function(e) {
     e.preventDefault();
-    UserActions.register(this.getModel());
+    var m = this.getModel();
+    var model = {
+      username: m.email,
+      email: m.email,
+      password: m.password,
+      fullName: m.fullname
+    };
+    UserActions.register(model);
   },
 
   render: function() {

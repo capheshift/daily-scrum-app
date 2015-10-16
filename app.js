@@ -97,19 +97,19 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/report': function() {
-	    var page = React.createFactory(__webpack_require__(268));
+	    var page = React.createFactory(__webpack_require__(279));
 	    render(router.getRoute(), page);
 	  },
 	  '/project': function() {
-	    var page = React.createFactory(__webpack_require__(270));
+	    var page = React.createFactory(__webpack_require__(281));
 	    render(router.getRoute(), page);
 	  },
 	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(271));
+	    var page = React.createFactory(__webpack_require__(282));
 	    render(router.getRoute(), page);
 	  },
 	  '/login': function() {
-	    var page = React.createFactory(__webpack_require__(272));
+	    var page = React.createFactory(__webpack_require__(283));
 	    render(router.getRoute(), page);
 	  },
 	  '/register': function() {
@@ -21659,7 +21659,7 @@
 	  Guid = __webpack_require__(178),
 	  lodash = __webpack_require__(179),
 	  moment = __webpack_require__(181);
-	var ServiceApi = __webpack_require__(277);
+	var ServiceApi = __webpack_require__(268);
 
 	var DailyPage = React.createClass({
 	  displayName: 'Daily',
@@ -47637,1075 +47637,10 @@
 /* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * @jsx React.DOM
-	 */
 	'use strict';
 
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = React.createFactory(__webpack_require__(269));
-	var Select = React.createFactory(__webpack_require__(172));
-
-	var ReportPage = React.createClass({
-	  displayName: 'Report',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  onSelectChanged: function() {
-	    console.log('onSelectChanged');
-	  },
-
-	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
-	    var timeRangeOptions = [
-	      { value: '0.5', label: '30 mins' },
-	      { value: '1', label: '1 hour' },
-	      { value: '1.5', label: '1 hours 30 mins' },
-	      { value: '2', label: '2 hours' },
-	      { value: '2.5', label: '2 hours 30 mins' },
-	      { value: '3', label: '3 hours' },
-	      { value: '3.5', label: '3 hours 30 mins' },
-	      { value: '4', label: '4 hours' },
-	      { value: '4.5', label: '4 hours 30 mins' },
-	      { value: '5', label: '5 hours' },
-	      { value: '5.5', label: '5 hours 30 mins' },
-	      { value: '6', label: '6 hours' },
-	      { value: '6.5', label: '6 hours 30 mins' },
-	      { value: '7', label: '7 hours' },
-	      { value: '7.5', label: '7 hours 30 mins' },
-	      { value: '8', label: '8 hours' },
-	    ];
-
-	    return (
-	      React.DOM.div(null, 
-	        React.DOM.div({className: "row"}, 
-	          React.DOM.div({className: "col-sm-5"}, 
-	            React.DOM.h4(null, "CHOOSE PROJECT"), 
-	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
-	              options: projectOptions, onChange: this.onSelectChanged})
-	          )
-	        ), 
-
-	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "PHẠM MINH TÂM"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-4"}, 
-	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
-	              )
-	            )
-	          )
-	        ), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Ai bảo say sưa là khổ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = ReportPage;
-
-
-/***/ },
-/* 269 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
-	(function webpackUniversalModuleDefinition(root, factory) {
-		if(true)
-			module.exports = factory(__webpack_require__(1));
-		else if(typeof define === 'function' && define.amd)
-			define(["react"], factory);
-		else if(typeof exports === 'object')
-			exports["ReactRating"] = factory(require("react"));
-		else
-			root["ReactRating"] = factory(root["React"]);
-	})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
-	return /******/ (function(modules) { // webpackBootstrap
-	/******/ 	// The module cache
-	/******/ 	var installedModules = {};
-
-	/******/ 	// The require function
-	/******/ 	function __webpack_require__(moduleId) {
-
-	/******/ 		// Check if module is in cache
-	/******/ 		if(installedModules[moduleId])
-	/******/ 			return installedModules[moduleId].exports;
-
-	/******/ 		// Create a new module (and put it into the cache)
-	/******/ 		var module = installedModules[moduleId] = {
-	/******/ 			exports: {},
-	/******/ 			id: moduleId,
-	/******/ 			loaded: false
-	/******/ 		};
-
-	/******/ 		// Execute the module function
-	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-	/******/ 		// Flag the module as loaded
-	/******/ 		module.loaded = true;
-
-	/******/ 		// Return the exports of the module
-	/******/ 		return module.exports;
-	/******/ 	}
-
-
-	/******/ 	// expose the modules object (__webpack_modules__)
-	/******/ 	__webpack_require__.m = modules;
-
-	/******/ 	// expose the module cache
-	/******/ 	__webpack_require__.c = installedModules;
-
-	/******/ 	// __webpack_public_path__
-	/******/ 	__webpack_require__.p = "/lib";
-
-	/******/ 	// Load entry module and return exports
-	/******/ 	return __webpack_require__(0);
-	/******/ })
-	/************************************************************************/
-	/******/ ([
-	/* 0 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		module.exports = __webpack_require__(1);
-
-	/***/ },
-	/* 1 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var React = __webpack_require__(2);
-		var Style = __webpack_require__(3);
-		var Symbol = __webpack_require__(5);
-
-		// Returns the index of the rate in the range (start, stop, step).
-		// Returns undefined index if the rate is outside the range.
-		// NOTE: A range.step of 0 produces an empty range and consequently returns an
-		// undefined index.
-		var indexOf = function indexOf(range, rate) {
-		  // Check the rate is in the proper range [start..stop] according to
-		  // the start, stop and step properties in props.
-		  var step = range.step;
-		  var start = step > 0 ? range.start : range.stop;
-		  var stop = step > 0 ? range.stop : range.start;
-		  if (step && start <= rate && rate <= stop) {
-		    // The index corresponds to the number of steps of size props.step
-		    // that fits between rate and start.
-		    return Math.max(Math.floor((rate - range.start) / step), 0);
-		  }
-		};
-
-		var Rating = React.createClass({
-		  displayName: 'Rating',
-
-		  // Define propTypes only in development.
-		  propTypes: "boolean" !== 'undefined' && (true) && {
-		    start: React.PropTypes.number,
-		    stop: React.PropTypes.number,
-		    step: React.PropTypes.number,
-		    initialRate: React.PropTypes.number,
-		    empty: React.PropTypes.oneOfType([
-		    // Array of class names and/or style objects.
-		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
-		    // Class names.
-		    React.PropTypes.string,
-		    // Style objects.
-		    React.PropTypes.object]),
-		    full: React.PropTypes.oneOfType([
-		    // Array of class names and/or style objects.
-		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
-		    // Class names.
-		    React.PropTypes.string,
-		    // Style objects.
-		    React.PropTypes.object]),
-		    readonly: React.PropTypes.bool,
-		    fractions: React.PropTypes.number,
-		    scale: React.PropTypes.number,
-		    onChange: React.PropTypes.func,
-		    onRate: React.PropTypes.func
-		  },
-		  getDefaultProps: function getDefaultProps() {
-		    return {
-		      start: 0,
-		      stop: 5,
-		      step: 1,
-		      empty: Style.empty,
-		      full: Style.full,
-		      fractions: 1,
-		      scale: 3,
-		      onChange: function onChange(rate) {},
-		      onRate: function onRate(rate) {}
-		    };
-		  },
-		  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-		    this.setState({
-		      index: indexOf(nextProps, nextProps.initialRate)
-		    });
-		  },
-		  getInitialState: function getInitialState() {
-		    return {
-		      index: this._rateToIndex(this.props.initialRate),
-		      indexOver: undefined
-		    };
-		  },
-		  handleMouseDown: function handleMouseDown(i, event) {
-		    var index = i + this._fractionalIndex(event);
-		    if (this.state.index !== index) {
-		      this.props.onChange(this._indexToRate(index));
-		      this.setState({
-		        index: index
-		      });
-		    }
-		    console.log(this._indexToRate(index));
-		  },
-		  handleMouseLeave: function handleMouseLeave(i) {
-		    this.props.onRate();
-		    this.setState({
-		      indexOver: undefined
-		    });
-		  },
-		  handleMouseMove: function handleMouseMove(i, event) {
-		    var index = i + this._fractionalIndex(event);
-		    if (this.state.indexOver !== index) {
-		      this.props.onRate(this._indexToRate(index));
-		      this.setState({
-		        indexOver: index
-		      });
-		    }
-		  },
-		  // Calculate the rate of an index according the the start and step.
-		  _indexToRate: function _indexToRate(index) {
-		    return this.props.start + Math.floor(index) * this.props.step + this.props.step * this._roundToFraction(index % 1);
-		  },
-		  // Calculate the corresponding index for a rate according to the provided
-		  // props or this.props.
-		  _rateToIndex: function _rateToIndex(rate) {
-		    return indexOf(this.props, rate);
-		  },
-		  _roundToFraction: function _roundToFraction(index) {
-		    // Get the closest top fraction.
-		    var fraction = Math.ceil(index % 1 * this.props.fractions) / this.props.fractions;
-		    // Truncate decimal trying to avoid float precission issues.
-		    var precision = Math.pow(10, this.props.scale);
-		    return Math.floor(index) + Math.floor(fraction * precision) / precision;
-		  },
-		  _fractionalIndex: function _fractionalIndex(event) {
-		    var x = event.clientX - event.currentTarget.getBoundingClientRect().left;
-		    return this._roundToFraction(x / event.currentTarget.offsetWidth);
-		  },
-		  render: function render() {
-		    var symbolNodes = [];
-		    var empty = [].concat(this.props.empty);
-		    var full = [].concat(this.props.full);
-		    // The symbol with the mouse over prevails over the selected one.
-		    var index = this.state.indexOver !== undefined ? this.state.indexOver : this.state.index;
-		    // The index of the last full symbol or NaN if index is undefined.
-		    var lastFullIndex = Math.floor(index);
-		    for (var i = 0; i < this._rateToIndex(this.props.stop); i++) {
-		      // Return the percentage of the decimal part of the last full index,
-		      // 100 percent for those below the last full index or 0 percent for those
-		      // indexes NaN or above the last full index.
-		      var percent = i - lastFullIndex === 0 ? index % 1 * 100 : i - lastFullIndex < 0 ? 100 : 0;
-		      symbolNodes.push(React.createElement(Symbol, {
-		        key: i,
-		        background: empty[i % empty.length],
-		        icon: full[i % full.length],
-		        percent: percent,
-		        onMouseDown: !this.props.readonly && this.handleMouseDown.bind(this, i),
-		        onMouseLeave: !this.props.readonly && this.handleMouseLeave.bind(this, i),
-		        onMouseMove: !this.props.readonly && this.handleMouseMove.bind(this, i)
-		      }));
-		    }
-		    return React.createElement(
-		      'span',
-		      null,
-		      symbolNodes
-		    );
-		  }
-		});
-
-		module.exports = Rating;
-
-	/***/ },
-	/* 2 */
-	/***/ function(module, exports) {
-
-		module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
-	/***/ },
-	/* 3 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var merge = __webpack_require__(4);
-
-		var style = {
-		  display: 'inline-block',
-		  borderRadius: '50%',
-		  border: '5px double white',
-		  width: 30,
-		  height: 30,
-		  cursor: 'pointer'
-		};
-
-		module.exports = {
-		  empty: merge(style, {
-		    backgroundColor: '#ccc'
-		  }),
-		  full: merge(style, {
-		    backgroundColor: 'black'
-		  })
-		};
-
-	/***/ },
-	/* 4 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		module.exports = function () {
-		  var res = {};
-		  for (var i = 0; i < arguments.length; i++) {
-		    var obj = arguments[i];
-		    for (var k in obj) {
-		      res[k] = obj[k];
-		    }
-		  }
-		  return res;
-		};
-
-	/***/ },
-	/* 5 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var React = __webpack_require__(2);
-
-		var PercentageSymbol = React.createClass({
-		  displayName: 'PercentageSymbol',
-
-		  // Define propTypes only in development. They will be void in production.
-		  propTypes: "boolean" !== 'undefined' && (true) && {
-		    icon: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
-		    background: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
-		    percent: React.PropTypes.number
-		  },
-		  render: function render() {
-		    var backgroundNode = typeof this.props.background === 'string' ? React.createElement('div', { className: this.props.background }) : React.createElement('div', { style: this.props.background });
-		    var iconNode = typeof this.props.icon === 'string' ? React.createElement('div', { className: this.props.icon }) : React.createElement('div', { style: this.props.icon });
-		    var iconContainerStyle = {
-		      display: 'inline-block',
-		      position: 'absolute',
-		      overflow: 'hidden',
-		      left: 0,
-		      width: this.props.percent !== undefined ? this.props.percent + '%' : 'auto'
-		    };
-		    var style = {
-		      display: 'inline-block',
-		      position: 'relative'
-		    };
-		    return React.createElement(
-		      'span',
-		      { style: style,
-		        onMouseDown: this.props.onMouseDown,
-		        onMouseOver: this.props.onMouseOver,
-		        onMouseLeave: this.props.onMouseLeave,
-		        onMouseMove: this.props.onMouseMove },
-		      backgroundNode,
-		      React.createElement(
-		        'div',
-		        { style: iconContainerStyle },
-		        iconNode
-		      )
-		    );
-		  }
-		});
-
-		module.exports = PercentageSymbol;
-
-	/***/ }
-	/******/ ])
-	});
-	;
-
-/***/ },
-/* 270 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Select = React.createFactory(__webpack_require__(172));
-
-	var ProjectPage = React.createClass({
-	  displayName: 'Project',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      model: {},
-	      projectList: [
-	        { name: 'VIB', leader: 'Tam Pham' },
-	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
-	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
-	      ]
-	    };
-	  },
-
-	  onCreateProjectClicked: function(e) {
-	    e.preventDefault();
-
-	    var pList = this.state.projectList;
-	    pList.push({
-	      name: this.state.model.name,
-	      leader: 'Ngan Nguyen'
-	    });
-
-	    this.setState({
-	      projectList: pList,
-	      model: { name: '' }
-	    });
-	  },
-
-	  onChange: function(e) {
-	    var model = this.state.model;
-	    model[e.target.name] = e.target.value;
-	    this.setState({model: model});
-	  },
-
-	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
-
-	    var userOptions = [
-	      { value: 'tampham', label: 'Tam Pham' },
-	      { value: 'tannguyen', label: 'Tan Nguyen' },
-	      { value: 'giangstrider', label: 'Giang Strider' },
-	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
-	    ];
-
-	    return (
-	      React.DOM.div({className: "row"}, 
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h4(null, "PROJECT")
-	        ), 
-
-	        React.DOM.div({className: "col-sm-8"}, 
-	          React.DOM.table({className: "table table-striped"}, 
-	            React.DOM.thead(null, 
-	              React.DOM.tr(null, 
-	                React.DOM.th(null, "#"), 
-	                React.DOM.th(null, "Project Name"), 
-	                React.DOM.th(null, "Leader"), 
-	                React.DOM.th(null)
-	              )
-	            ), 
-	            React.DOM.tbody(null, 
-	              this.state.projectList.map(function(item) {
-	                return (
-	                  React.DOM.tr(null, 
-	                    React.DOM.th({scope: "row"}, "1"), 
-	                    React.DOM.td(null, item.name), 
-	                    React.DOM.td(null, item.leader), 
-	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	                  )
-	                );
-	              })
-	            )
-	          )
-	        ), 
-
-	        React.DOM.div({className: "col-sm-4 "}, 
-	          React.DOM.form({className: "form-horizontal"}, 
-	            React.DOM.fieldset(null, 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
-	                    className: "form-control input-md", 
-	                    value: this.state.model.name, onChange: this.onChange})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: "", clearable: false, 
-	                    options: userOptions, onChange: this.onSelectChanged})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: "", 
-	                    multi: true, clearable: true, 
-	                    options: userOptions, onChange: this.onSelectChanged})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
-	                React.DOM.div({className: "col-md-12"}, 
-	                  React.DOM.button({id: "button1id", name: "button1id", 
-	                    className: "btn btn-success pull-right", 
-	                    onClick: this.onCreateProjectClicked}, "Create project")
-	                )
-	              )
-
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = ProjectPage;
-
-
-/***/ },
-/* 271 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-
-	var MemberPage = React.createClass({
-	  displayName: 'Member',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  render: function() {
-	    return (
-	      React.DOM.div({className: "row"}, 
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h4(null, "MEMBER")
-	        ), 
-
-	        React.DOM.div({className: "col-sm-6 member-list"}, 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Tam Pham"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Giang Strider"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = MemberPage;
-
-
-/***/ },
-/* 272 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(273);
-	var UserActions = __webpack_require__(274);
-	var NotificationActions = __webpack_require__(275);
-	var UserStore = __webpack_require__(276);
-
-	var LoginPage = React.createClass({
-	  mixins: [CommonMixins],
-
-	  displayName: 'Login Page',
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      model: {}
-	    };
-	  },
-
-	  componentDidMount: function() {
-	    UserStore.addListenerOnLoginSuccess(this._onLoginSuccess, this);
-	    UserStore.addListenerOnLoginFail(this._onLoginFail, this);
-	  },
-	  componentWillUnmount: function() {
-	    UserStore.rmvListenerOnLoginSuccess(this._onLoginSuccess);
-	    UserStore.rmvListenerOnLoginFail(this._onLoginFail);
-	  },
-
-	  _onLoginSuccess: function(data) {
-	    console.log('_onLoginSuccess', data);
-	    window.location.hash = 'daily';
-	  },
-	  _onLoginFail: function(data) {
-	    console.log('_onLoginFail', data);
-	  },
-
-	  login: function(e) {
-	    e.preventDefault();
-	    var m = this.getModel();
-	    var model = {
-	      username: m.email,
-	      password: m.password
-	    };
-	    console.log('model', model);
-	    UserActions.login(model);
-	  },
-
-	  render: function() {
-	    return (
-	      React.DOM.div(null, 
-	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
-	          React.DOM.div({className: "panel-heading"}, 
-	            React.DOM.div({className: "panel-title text-center"}, 
-	              "Login"
-	            )
-	          ), 
-
-	          React.DOM.div({className: "panel-body"}, 
-	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
-	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text", 
-	                  value: this.state.model.email, onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
-	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password", 
-	                  value: this.state.model.password, onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.div({className: "col-sm-12 controls"}, 
-	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
-	                    onClick: this.login}, 
-	                    "Log in"
-	                  ), 
-	                  React.DOM.a({href: "#/register", className: "btn btn-link pull-right"}, "Register")
-	                )
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = LoginPage;
-
-
-/***/ },
-/* 273 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = {
-	  onChange: function(e) {
-	    var model = this.state.model;
-	    model[e.target.name] = e.target.value;
-
-	    this.setState({
-	      model: model
-	    });
-	  },
-
-	  getModel: function() {
-	    return this.state.model;
-	  }
-	};
-
-
-/***/ },
-/* 274 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  login: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Login,
-	      data: data
-	    });
-	  },
-
-	  logout: function() {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Logout
-	    });
-	  },
-
-	  register: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Register,
-	      data: data
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 275 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  notification: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Notification,
-	      data: data
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 276 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * ToDo Store
-	 */
-	'use strict';
-
-	/**
-	 * Libraries
-	 */
-	var AppDispatcher = __webpack_require__(158);
-	var EventEmitter = __webpack_require__(170).EventEmitter;
-	var assign = __webpack_require__(13);
-	var Actions = __webpack_require__(162);
-	var Events = __webpack_require__(171);
-	var ServiceApi = __webpack_require__(277);
-
-	/**
-	 * Variables
-	 */
-	var DEBUG = false;
-	var _name = 'UserStore';
-
-	/**
-	 * Store Start
-	 */
-	var UserStore = assign({}, EventEmitter.prototype, {
-	  // listener events zone
-	  addListenerOnRegisterSuccess: function(callback, context) {
-	    this.on(Events.RegisterSuccess, callback, context);
-	  },
-	  rmvListenerOnRegisterSuccess: function(context) {
-	    this.removeListener(Events.RegisterSuccess, context);
-	  },
-	  addListenerOnRegisterFail: function(callback, context) {
-	    this.on(Events.RegisterFail, callback, context);
-	  },
-	  rmvListenerOnRegisterFail: function(context) {
-	    this.removeListener(Events.RegisterFail, context);
-	  },
-	  // listener for login
-	  addListenerOnLoginSuccess: function(callback, context) {
-	    this.on(Events.LoginSuccess, callback, context);
-	  },
-	  rmvListenerOnLoginSuccess: function(context) {
-	    this.removeListener(Events.LoginSuccess, context);
-	  },
-	  addListenerOnLoginFail: function(callback, context) {
-	    this.on(Events.LoginFail, callback, context);
-	  },
-	  rmvListenerOnLoginFail: function(context) {
-	    this.removeListener(Events.LoginFail, context);
-	  },
-
-	  // functions
-	  login: function(data) {
-	    console.log('login data', data);
-	    console.log('register data', data);
-
-	    ServiceApi.login(data).then(
-	    function(body) {
-	      // set token into localstorage
-	      // window.localStorage.setItem('token', body.data.token);
-	      this.emit(Events.RegisterSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.RegisterFail, err);
-	    }.bind(this));
-	  },
-
-	  logout: function(data) {
-	    console.log('logout data', data);
-	  },
-
-	  register: function(data) {
-	    console.log('register data', data);
-
-	    ServiceApi.register(data).then(
-	    function(body) {
-	      console.log('register', body);
-	      // set token into localstorage
-	      window.localStorage.setItem('token', body.data.token);
-	      this.emit(Events.RegisterSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.RegisterFail, err);
-	    }.bind(this));
-	  }
-	});
-
-	/**
-	 * Integrated with Dispatcher
-	 */
-	AppDispatcher.register(function(payload) {
-
-	  var action = payload.actionType;
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
-	    console.log('     Payload:');
-	    console.log(payload);
-	  }
-
-	  // Route Logic
-	  switch (action) {
-	    case Actions.Login:
-	      UserStore.login(payload.data);
-	      break;
-
-	    case Actions.Logout:
-	      UserStore.logout(payload.data);
-	      break;
-
-	    case Actions.Register:
-	      UserStore.register(payload.data);
-	      break;
-
-	    default:
-	      if (DEBUG) {
-	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
-	      }
-	      return true;
-	  }
-
-	  // If action was responded to, emit change event
-	  // UserStore.emitChange();
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':emitChange ---');
-	  }
-
-	  return true;
-	});
-
-	module.exports = UserStore;
-
-
-/***/ },
-/* 277 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var Promise = __webpack_require__(278);
-	var $ = __webpack_require__(287);
+	var Promise = __webpack_require__(269);
+	var $ = __webpack_require__(278);
 	var config = __webpack_require__(163);
 	var apiList, result = {};
 
@@ -48761,34 +47696,34 @@
 
 
 /***/ },
-/* 278 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(279)
+	module.exports = __webpack_require__(270)
 
 
 /***/ },
-/* 279 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(280);
-	__webpack_require__(282);
-	__webpack_require__(283);
-	__webpack_require__(284);
-	__webpack_require__(285);
+	module.exports = __webpack_require__(271);
+	__webpack_require__(273);
+	__webpack_require__(274);
+	__webpack_require__(275);
+	__webpack_require__(276);
 
 
 /***/ },
-/* 280 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(281);
+	var asap = __webpack_require__(272);
 
 	function noop() {}
 
@@ -48973,7 +47908,7 @@
 
 
 /***/ },
-/* 281 */
+/* 272 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -49200,12 +48135,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 282 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(280);
+	var Promise = __webpack_require__(271);
 
 	module.exports = Promise;
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -49219,12 +48154,12 @@
 
 
 /***/ },
-/* 283 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(280);
+	var Promise = __webpack_require__(271);
 
 	module.exports = Promise;
 	Promise.prototype['finally'] = function (f) {
@@ -49241,14 +48176,14 @@
 
 
 /***/ },
-/* 284 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains the ES6 extensions to the core Promises/A+ API
 
-	var Promise = __webpack_require__(280);
+	var Promise = __webpack_require__(271);
 
 	module.exports = Promise;
 
@@ -49354,7 +48289,7 @@
 
 
 /***/ },
-/* 285 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49362,8 +48297,8 @@
 	// This file contains then/promise specific extensions that are only useful
 	// for node.js interop
 
-	var Promise = __webpack_require__(280);
-	var asap = __webpack_require__(286);
+	var Promise = __webpack_require__(271);
+	var asap = __webpack_require__(277);
 
 	module.exports = Promise;
 
@@ -49431,13 +48366,13 @@
 
 
 /***/ },
-/* 286 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(281);
+	var rawAsap = __webpack_require__(272);
 	// RawTasks are recycled to reduce GC churn.
 	var freeTasks = [];
 	// We queue errors to ensure they are thrown in right order (FIFO).
@@ -49503,7 +48438,7 @@
 
 
 /***/ },
-/* 287 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -58719,6 +57654,1071 @@
 
 
 /***/ },
+/* 279 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Rating = React.createFactory(__webpack_require__(280));
+	var Select = React.createFactory(__webpack_require__(172));
+
+	var ReportPage = React.createClass({
+	  displayName: 'Report',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  onSelectChanged: function() {
+	    console.log('onSelectChanged');
+	  },
+
+	  render: function() {
+	    var projectOptions = [
+	      { value: 'vib', label: 'VIB' },
+	      { value: 'nafoods', label: 'Nafoods' },
+	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+	    var timeRangeOptions = [
+	      { value: '0.5', label: '30 mins' },
+	      { value: '1', label: '1 hour' },
+	      { value: '1.5', label: '1 hours 30 mins' },
+	      { value: '2', label: '2 hours' },
+	      { value: '2.5', label: '2 hours 30 mins' },
+	      { value: '3', label: '3 hours' },
+	      { value: '3.5', label: '3 hours 30 mins' },
+	      { value: '4', label: '4 hours' },
+	      { value: '4.5', label: '4 hours 30 mins' },
+	      { value: '5', label: '5 hours' },
+	      { value: '5.5', label: '5 hours 30 mins' },
+	      { value: '6', label: '6 hours' },
+	      { value: '6.5', label: '6 hours 30 mins' },
+	      { value: '7', label: '7 hours' },
+	      { value: '7.5', label: '7 hours 30 mins' },
+	      { value: '8', label: '8 hours' },
+	    ];
+
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "row"}, 
+	          React.DOM.div({className: "col-sm-5"}, 
+	            React.DOM.h4(null, "CHOOSE PROJECT"), 
+	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
+	              options: projectOptions, onChange: this.onSelectChanged})
+	          )
+	        ), 
+
+	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
+	        React.DOM.div({className: "day-block"}, 
+	          React.DOM.p(null, "PHẠM MINH TÂM"), 
+	          React.DOM.ul({className: "daily-list"}, 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-4"}, 
+	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
+	              )
+	            )
+	          )
+	        ), 
+	        React.DOM.div({className: "day-block"}, 
+	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
+	          React.DOM.ul({className: "daily-list"}, 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Ai bảo say sưa là khổ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ReportPage;
+
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
+	(function webpackUniversalModuleDefinition(root, factory) {
+		if(true)
+			module.exports = factory(__webpack_require__(1));
+		else if(typeof define === 'function' && define.amd)
+			define(["react"], factory);
+		else if(typeof exports === 'object')
+			exports["ReactRating"] = factory(require("react"));
+		else
+			root["ReactRating"] = factory(root["React"]);
+	})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+	return /******/ (function(modules) { // webpackBootstrap
+	/******/ 	// The module cache
+	/******/ 	var installedModules = {};
+
+	/******/ 	// The require function
+	/******/ 	function __webpack_require__(moduleId) {
+
+	/******/ 		// Check if module is in cache
+	/******/ 		if(installedModules[moduleId])
+	/******/ 			return installedModules[moduleId].exports;
+
+	/******/ 		// Create a new module (and put it into the cache)
+	/******/ 		var module = installedModules[moduleId] = {
+	/******/ 			exports: {},
+	/******/ 			id: moduleId,
+	/******/ 			loaded: false
+	/******/ 		};
+
+	/******/ 		// Execute the module function
+	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+	/******/ 		// Flag the module as loaded
+	/******/ 		module.loaded = true;
+
+	/******/ 		// Return the exports of the module
+	/******/ 		return module.exports;
+	/******/ 	}
+
+
+	/******/ 	// expose the modules object (__webpack_modules__)
+	/******/ 	__webpack_require__.m = modules;
+
+	/******/ 	// expose the module cache
+	/******/ 	__webpack_require__.c = installedModules;
+
+	/******/ 	// __webpack_public_path__
+	/******/ 	__webpack_require__.p = "/lib";
+
+	/******/ 	// Load entry module and return exports
+	/******/ 	return __webpack_require__(0);
+	/******/ })
+	/************************************************************************/
+	/******/ ([
+	/* 0 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(1);
+
+	/***/ },
+	/* 1 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var React = __webpack_require__(2);
+		var Style = __webpack_require__(3);
+		var Symbol = __webpack_require__(5);
+
+		// Returns the index of the rate in the range (start, stop, step).
+		// Returns undefined index if the rate is outside the range.
+		// NOTE: A range.step of 0 produces an empty range and consequently returns an
+		// undefined index.
+		var indexOf = function indexOf(range, rate) {
+		  // Check the rate is in the proper range [start..stop] according to
+		  // the start, stop and step properties in props.
+		  var step = range.step;
+		  var start = step > 0 ? range.start : range.stop;
+		  var stop = step > 0 ? range.stop : range.start;
+		  if (step && start <= rate && rate <= stop) {
+		    // The index corresponds to the number of steps of size props.step
+		    // that fits between rate and start.
+		    return Math.max(Math.floor((rate - range.start) / step), 0);
+		  }
+		};
+
+		var Rating = React.createClass({
+		  displayName: 'Rating',
+
+		  // Define propTypes only in development.
+		  propTypes: "boolean" !== 'undefined' && (true) && {
+		    start: React.PropTypes.number,
+		    stop: React.PropTypes.number,
+		    step: React.PropTypes.number,
+		    initialRate: React.PropTypes.number,
+		    empty: React.PropTypes.oneOfType([
+		    // Array of class names and/or style objects.
+		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
+		    // Class names.
+		    React.PropTypes.string,
+		    // Style objects.
+		    React.PropTypes.object]),
+		    full: React.PropTypes.oneOfType([
+		    // Array of class names and/or style objects.
+		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
+		    // Class names.
+		    React.PropTypes.string,
+		    // Style objects.
+		    React.PropTypes.object]),
+		    readonly: React.PropTypes.bool,
+		    fractions: React.PropTypes.number,
+		    scale: React.PropTypes.number,
+		    onChange: React.PropTypes.func,
+		    onRate: React.PropTypes.func
+		  },
+		  getDefaultProps: function getDefaultProps() {
+		    return {
+		      start: 0,
+		      stop: 5,
+		      step: 1,
+		      empty: Style.empty,
+		      full: Style.full,
+		      fractions: 1,
+		      scale: 3,
+		      onChange: function onChange(rate) {},
+		      onRate: function onRate(rate) {}
+		    };
+		  },
+		  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		    this.setState({
+		      index: indexOf(nextProps, nextProps.initialRate)
+		    });
+		  },
+		  getInitialState: function getInitialState() {
+		    return {
+		      index: this._rateToIndex(this.props.initialRate),
+		      indexOver: undefined
+		    };
+		  },
+		  handleMouseDown: function handleMouseDown(i, event) {
+		    var index = i + this._fractionalIndex(event);
+		    if (this.state.index !== index) {
+		      this.props.onChange(this._indexToRate(index));
+		      this.setState({
+		        index: index
+		      });
+		    }
+		    console.log(this._indexToRate(index));
+		  },
+		  handleMouseLeave: function handleMouseLeave(i) {
+		    this.props.onRate();
+		    this.setState({
+		      indexOver: undefined
+		    });
+		  },
+		  handleMouseMove: function handleMouseMove(i, event) {
+		    var index = i + this._fractionalIndex(event);
+		    if (this.state.indexOver !== index) {
+		      this.props.onRate(this._indexToRate(index));
+		      this.setState({
+		        indexOver: index
+		      });
+		    }
+		  },
+		  // Calculate the rate of an index according the the start and step.
+		  _indexToRate: function _indexToRate(index) {
+		    return this.props.start + Math.floor(index) * this.props.step + this.props.step * this._roundToFraction(index % 1);
+		  },
+		  // Calculate the corresponding index for a rate according to the provided
+		  // props or this.props.
+		  _rateToIndex: function _rateToIndex(rate) {
+		    return indexOf(this.props, rate);
+		  },
+		  _roundToFraction: function _roundToFraction(index) {
+		    // Get the closest top fraction.
+		    var fraction = Math.ceil(index % 1 * this.props.fractions) / this.props.fractions;
+		    // Truncate decimal trying to avoid float precission issues.
+		    var precision = Math.pow(10, this.props.scale);
+		    return Math.floor(index) + Math.floor(fraction * precision) / precision;
+		  },
+		  _fractionalIndex: function _fractionalIndex(event) {
+		    var x = event.clientX - event.currentTarget.getBoundingClientRect().left;
+		    return this._roundToFraction(x / event.currentTarget.offsetWidth);
+		  },
+		  render: function render() {
+		    var symbolNodes = [];
+		    var empty = [].concat(this.props.empty);
+		    var full = [].concat(this.props.full);
+		    // The symbol with the mouse over prevails over the selected one.
+		    var index = this.state.indexOver !== undefined ? this.state.indexOver : this.state.index;
+		    // The index of the last full symbol or NaN if index is undefined.
+		    var lastFullIndex = Math.floor(index);
+		    for (var i = 0; i < this._rateToIndex(this.props.stop); i++) {
+		      // Return the percentage of the decimal part of the last full index,
+		      // 100 percent for those below the last full index or 0 percent for those
+		      // indexes NaN or above the last full index.
+		      var percent = i - lastFullIndex === 0 ? index % 1 * 100 : i - lastFullIndex < 0 ? 100 : 0;
+		      symbolNodes.push(React.createElement(Symbol, {
+		        key: i,
+		        background: empty[i % empty.length],
+		        icon: full[i % full.length],
+		        percent: percent,
+		        onMouseDown: !this.props.readonly && this.handleMouseDown.bind(this, i),
+		        onMouseLeave: !this.props.readonly && this.handleMouseLeave.bind(this, i),
+		        onMouseMove: !this.props.readonly && this.handleMouseMove.bind(this, i)
+		      }));
+		    }
+		    return React.createElement(
+		      'span',
+		      null,
+		      symbolNodes
+		    );
+		  }
+		});
+
+		module.exports = Rating;
+
+	/***/ },
+	/* 2 */
+	/***/ function(module, exports) {
+
+		module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+	/***/ },
+	/* 3 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var merge = __webpack_require__(4);
+
+		var style = {
+		  display: 'inline-block',
+		  borderRadius: '50%',
+		  border: '5px double white',
+		  width: 30,
+		  height: 30,
+		  cursor: 'pointer'
+		};
+
+		module.exports = {
+		  empty: merge(style, {
+		    backgroundColor: '#ccc'
+		  }),
+		  full: merge(style, {
+		    backgroundColor: 'black'
+		  })
+		};
+
+	/***/ },
+	/* 4 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function () {
+		  var res = {};
+		  for (var i = 0; i < arguments.length; i++) {
+		    var obj = arguments[i];
+		    for (var k in obj) {
+		      res[k] = obj[k];
+		    }
+		  }
+		  return res;
+		};
+
+	/***/ },
+	/* 5 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var React = __webpack_require__(2);
+
+		var PercentageSymbol = React.createClass({
+		  displayName: 'PercentageSymbol',
+
+		  // Define propTypes only in development. They will be void in production.
+		  propTypes: "boolean" !== 'undefined' && (true) && {
+		    icon: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
+		    background: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
+		    percent: React.PropTypes.number
+		  },
+		  render: function render() {
+		    var backgroundNode = typeof this.props.background === 'string' ? React.createElement('div', { className: this.props.background }) : React.createElement('div', { style: this.props.background });
+		    var iconNode = typeof this.props.icon === 'string' ? React.createElement('div', { className: this.props.icon }) : React.createElement('div', { style: this.props.icon });
+		    var iconContainerStyle = {
+		      display: 'inline-block',
+		      position: 'absolute',
+		      overflow: 'hidden',
+		      left: 0,
+		      width: this.props.percent !== undefined ? this.props.percent + '%' : 'auto'
+		    };
+		    var style = {
+		      display: 'inline-block',
+		      position: 'relative'
+		    };
+		    return React.createElement(
+		      'span',
+		      { style: style,
+		        onMouseDown: this.props.onMouseDown,
+		        onMouseOver: this.props.onMouseOver,
+		        onMouseLeave: this.props.onMouseLeave,
+		        onMouseMove: this.props.onMouseMove },
+		      backgroundNode,
+		      React.createElement(
+		        'div',
+		        { style: iconContainerStyle },
+		        iconNode
+		      )
+		    );
+		  }
+		});
+
+		module.exports = PercentageSymbol;
+
+	/***/ }
+	/******/ ])
+	});
+	;
+
+/***/ },
+/* 281 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Select = React.createFactory(__webpack_require__(172));
+
+	var ProjectPage = React.createClass({
+	  displayName: 'Project',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      model: {},
+	      projectList: [
+	        { name: 'VIB', leader: 'Tam Pham' },
+	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
+	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
+	      ]
+	    };
+	  },
+
+	  onCreateProjectClicked: function(e) {
+	    e.preventDefault();
+
+	    var pList = this.state.projectList;
+	    pList.push({
+	      name: this.state.model.name,
+	      leader: 'Ngan Nguyen'
+	    });
+
+	    this.setState({
+	      projectList: pList,
+	      model: { name: '' }
+	    });
+	  },
+
+	  onChange: function(e) {
+	    var model = this.state.model;
+	    model[e.target.name] = e.target.value;
+	    this.setState({model: model});
+	  },
+
+	  render: function() {
+	    var projectOptions = [
+	      { value: 'vib', label: 'VIB' },
+	      { value: 'nafoods', label: 'Nafoods' },
+	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+
+	    var userOptions = [
+	      { value: 'tampham', label: 'Tam Pham' },
+	      { value: 'tannguyen', label: 'Tan Nguyen' },
+	      { value: 'giangstrider', label: 'Giang Strider' },
+	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
+	    ];
+
+	    return (
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "PROJECT")
+	        ), 
+
+	        React.DOM.div({className: "col-sm-8"}, 
+	          React.DOM.table({className: "table table-striped"}, 
+	            React.DOM.thead(null, 
+	              React.DOM.tr(null, 
+	                React.DOM.th(null, "#"), 
+	                React.DOM.th(null, "Project Name"), 
+	                React.DOM.th(null, "Leader"), 
+	                React.DOM.th(null)
+	              )
+	            ), 
+	            React.DOM.tbody(null, 
+	              this.state.projectList.map(function(item) {
+	                return (
+	                  React.DOM.tr(null, 
+	                    React.DOM.th({scope: "row"}, "1"), 
+	                    React.DOM.td(null, item.name), 
+	                    React.DOM.td(null, item.leader), 
+	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	                  )
+	                );
+	              })
+	            )
+	          )
+	        ), 
+
+	        React.DOM.div({className: "col-sm-4 "}, 
+	          React.DOM.form({className: "form-horizontal"}, 
+	            React.DOM.fieldset(null, 
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
+	                    className: "form-control input-md", 
+	                    value: this.state.model.name, onChange: this.onChange})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  Select({name: "form-field-name", value: "", clearable: false, 
+	                    options: userOptions, onChange: this.onSelectChanged})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  Select({name: "form-field-name", value: "", 
+	                    multi: true, clearable: true, 
+	                    options: userOptions, onChange: this.onSelectChanged})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
+	                React.DOM.div({className: "col-md-12"}, 
+	                  React.DOM.button({id: "button1id", name: "button1id", 
+	                    className: "btn btn-success pull-right", 
+	                    onClick: this.onCreateProjectClicked}, "Create project")
+	                )
+	              )
+
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ProjectPage;
+
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+
+	var MemberPage = React.createClass({
+	  displayName: 'Member',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  render: function() {
+	    return (
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "MEMBER")
+	        ), 
+
+	        React.DOM.div({className: "col-sm-6 member-list"}, 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Tam Pham"), 
+	              React.DOM.h5(null, "Javascript Developer")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn"), 
+	              React.DOM.h5(null, "Javascript Developer")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn"), 
+	              React.DOM.h5(null, "Javascript Developer")
+	            )
+	          ), 
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, "Giang Strider"), 
+	              React.DOM.h5(null, "Javascript Developer")
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = MemberPage;
+
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var CommonMixins = __webpack_require__(284);
+	var UserActions = __webpack_require__(285);
+	var NotificationActions = __webpack_require__(286);
+	var UserStore = __webpack_require__(287);
+
+	var LoginPage = React.createClass({
+	  mixins: [CommonMixins],
+
+	  displayName: 'Login Page',
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      model: {}
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    UserStore.addListenerOnLoginSuccess(this._onLoginSuccess, this);
+	    UserStore.addListenerOnLoginFail(this._onLoginFail, this);
+	  },
+	  componentWillUnmount: function() {
+	    UserStore.rmvListenerOnLoginSuccess(this._onLoginSuccess);
+	    UserStore.rmvListenerOnLoginFail(this._onLoginFail);
+	  },
+
+	  _onLoginSuccess: function(data) {
+	    console.log('_onLoginSuccess', data);
+	    window.location.hash = 'daily';
+	  },
+	  _onLoginFail: function(data) {
+	    console.log('_onLoginFail', data);
+	  },
+
+	  login: function(e) {
+	    e.preventDefault();
+	    var m = this.getModel();
+	    var model = {
+	      username: m.email,
+	      password: m.password
+	    };
+	    console.log('model', model);
+	    UserActions.login(model);
+	  },
+
+	  render: function() {
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
+	          React.DOM.div({className: "panel-heading"}, 
+	            React.DOM.div({className: "panel-title text-center"}, 
+	              "Login"
+	            )
+	          ), 
+
+	          React.DOM.div({className: "panel-body"}, 
+	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
+	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text", 
+	                  value: this.state.model.email, onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
+	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password", 
+	                  value: this.state.model.password, onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.div({className: "col-sm-12 controls"}, 
+	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
+	                    onClick: this.login}, 
+	                    "Log in"
+	                  ), 
+	                  React.DOM.a({href: "#/register", className: "btn btn-link pull-right"}, "Register")
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = LoginPage;
+
+
+/***/ },
+/* 284 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = {
+	  onChange: function(e) {
+	    var model = this.state.model;
+	    model[e.target.name] = e.target.value;
+
+	    this.setState({
+	      model: model
+	    });
+	  },
+
+	  getModel: function() {
+	    return this.state.model;
+	  }
+	};
+
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  login: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Login,
+	      data: data
+	    });
+	  },
+
+	  logout: function() {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Logout
+	    });
+	  },
+
+	  register: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Register,
+	      data: data
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 286 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  notification: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Notification,
+	      data: data
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 287 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var ServiceApi = __webpack_require__(268);
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'UserStore';
+
+	/**
+	 * Store Start
+	 */
+	var UserStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnRegisterSuccess: function(callback, context) {
+	    this.on(Events.RegisterSuccess, callback, context);
+	  },
+	  rmvListenerOnRegisterSuccess: function(context) {
+	    this.removeListener(Events.RegisterSuccess, context);
+	  },
+	  addListenerOnRegisterFail: function(callback, context) {
+	    this.on(Events.RegisterFail, callback, context);
+	  },
+	  rmvListenerOnRegisterFail: function(context) {
+	    this.removeListener(Events.RegisterFail, context);
+	  },
+	  // listener for login
+	  addListenerOnLoginSuccess: function(callback, context) {
+	    this.on(Events.LoginSuccess, callback, context);
+	  },
+	  rmvListenerOnLoginSuccess: function(context) {
+	    this.removeListener(Events.LoginSuccess, context);
+	  },
+	  addListenerOnLoginFail: function(callback, context) {
+	    this.on(Events.LoginFail, callback, context);
+	  },
+	  rmvListenerOnLoginFail: function(context) {
+	    this.removeListener(Events.LoginFail, context);
+	  },
+
+	  // functions
+	  login: function(data) {
+	    console.log('login data', data);
+	    console.log('register data', data);
+
+	    ServiceApi.login(data).then(
+	    function(body) {
+	      // set token into localstorage
+	      // window.localStorage.setItem('token', body.data.token);
+	      this.emit(Events.RegisterSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.RegisterFail, err);
+	    }.bind(this));
+	  },
+
+	  logout: function(data) {
+	    console.log('logout data', data);
+	  },
+
+	  register: function(data) {
+	    console.log('register data', data);
+
+	    ServiceApi.register(data).then(
+	    function(body) {
+	      console.log('register', body);
+	      // set token into localstorage
+	      window.localStorage.setItem('token', body.data.token);
+	      this.emit(Events.RegisterSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.RegisterFail, err);
+	    }.bind(this));
+	  }
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.Login:
+	      UserStore.login(payload.data);
+	      break;
+
+	    case Actions.Logout:
+	      UserStore.logout(payload.data);
+	      break;
+
+	    case Actions.Register:
+	      UserStore.register(payload.data);
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // UserStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = UserStore;
+
+
+/***/ },
 /* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -58729,10 +58729,10 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(273);
-	var UserActions = __webpack_require__(274);
-	var NotificationActions = __webpack_require__(275);
-	var UserStore = __webpack_require__(276);
+	var CommonMixins = __webpack_require__(284);
+	var UserActions = __webpack_require__(285);
+	var NotificationActions = __webpack_require__(286);
+	var UserStore = __webpack_require__(287);
 
 	var LoginPage = React.createClass({
 	  mixins: [CommonMixins],

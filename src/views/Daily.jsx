@@ -9,7 +9,7 @@ var React = require('react'),
   Guid = require('guid'),
   lodash = require('lodash'),
   moment = require('moment');
-var ServiceApi = require('../commons/service-api');
+var ProjectApis = require('../commons/service-api').ProjectApis;
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -58,8 +58,8 @@ var DailyPage = React.createClass({
   },
 
   componentDidMount: function() {
-    ServiceApi.projectAll().then(function(data) {
-      console.log('ServiceApi', data);
+    ProjectApis.all().then(function(data) {
+      console.log('ProjectApis', data);
     });
   },
 

@@ -11,7 +11,7 @@ var EventEmitter = require('events').EventEmitter;
 var assign = require('react/lib/Object.assign');
 var Actions = require('../commons/enum/ActionTypes');
 var Events = require('../commons/enum/EventTypes');
-var ServiceApi = require('../commons/service-api');
+var UserApis = require('../commons/service-api').UserApis;
 
 /**
  * Variables
@@ -55,14 +55,14 @@ var UserStore = assign({}, EventEmitter.prototype, {
     console.log('login data', data);
     console.log('register data', data);
 
-    ServiceApi.login(data).then(
+    UserApis.login(data).then(
     function(body) {
       // set token into localstorage
-      // window.localStorage.setItem('token', body.data.token);
-      this.emit(Events.RegisterSuccess, body);
+      window.localStorage.setItem('token', body.data.token);
+      this.emit(Events.LoginSuccess, body);
     }.bind(this),
     function(err) {
-      this.emit(Events.RegisterFail, err);
+      this.emit(Events.LoginFail, err);
     }.bind(this));
   },
 
@@ -73,7 +73,7 @@ var UserStore = assign({}, EventEmitter.prototype, {
   register: function(data) {
     console.log('register data', data);
 
-    ServiceApi.register(data).then(
+    UserApis.register(data).then(
     function(body) {
       console.log('register', body);
       // set token into localstorage

@@ -21653,13 +21653,12 @@
 	 */
 	'use strict';
 
-	var React = __webpack_require__(1),
-	  DefaultLayout = React.createFactory(__webpack_require__(165)),
-	  Select = React.createFactory(__webpack_require__(172)),
-	  Guid = __webpack_require__(178),
-	  lodash = __webpack_require__(179),
-	  moment = __webpack_require__(181);
-	var ProjectApis = __webpack_require__(268).ProjectApis;
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Select = React.createFactory(__webpack_require__(172));
+	var Guid = __webpack_require__(178);
+	var lodash = __webpack_require__(179);
+	var moment = __webpack_require__(181);
 
 	var DailyPage = React.createClass({
 	  displayName: 'Daily',
@@ -21708,9 +21707,6 @@
 	  },
 
 	  componentDidMount: function() {
-	    ProjectApis.all().then(function(data) {
-	      console.log('ProjectApis', data);
-	    });
 	  },
 
 	  newTaskOnClicked: function(dateItem) {

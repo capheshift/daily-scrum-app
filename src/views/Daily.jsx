@@ -3,13 +3,12 @@
  */
 'use strict';
 
-var React = require('react'),
-  DefaultLayout = React.createFactory(require('./layouts/Default')),
-  Select = React.createFactory(require('react-select')),
-  Guid = require('guid'),
-  lodash = require('lodash'),
-  moment = require('moment');
-var ProjectApis = require('../commons/service-api').ProjectApis;
+var React = require('react');
+var DefaultLayout = React.createFactory(require('./layouts/Default'));
+var Select = React.createFactory(require('react-select'));
+var Guid = require('guid');
+var lodash = require('lodash');
+var moment = require('moment');
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -58,9 +57,6 @@ var DailyPage = React.createClass({
   },
 
   componentDidMount: function() {
-    ProjectApis.all().then(function(data) {
-      console.log('ProjectApis', data);
-    });
   },
 
   newTaskOnClicked: function(dateItem) {

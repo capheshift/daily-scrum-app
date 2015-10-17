@@ -6,6 +6,9 @@
 var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var Select = React.createFactory(require('react-select'));
+var ProjectApis = require('../commons/service-api').ProjectApis;
+var ProjectActions = require('../actions/ProjectActions');
+var ProjectStore = require('../stores/ProjectStore');
 
 var ProjectPage = React.createClass({
   displayName: 'Project',
@@ -20,21 +23,35 @@ var ProjectPage = React.createClass({
     return {
       model: {},
       projectList: [
-        { name: 'VIB', leader: 'Tam Pham' },
-        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
-        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
+        ProjectApis.all()
       ]
     };
+  },
+
+  componentDidMount: function() {
+    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
+    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
+  },
+  componentWillUnmount: function() {
+    ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
+    ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
+  },
+
+  _onCreateSuccess: function(data) {
+    console.log('_onCreateSuccess', data);
+    window.location.hash = 'project';
+  },
+
+  _onCreateFail: function(data) {
+    console.log('_onCreateFail', data);
   },
 
   onCreateProjectClicked: function(e) {
     e.preventDefault();
 
     var pList = this.state.projectList;
-    pList.push({
-      name: this.state.model.name,
-      leader: 'Ngan Nguyen'
-    });
+
+    ProjectActions.create(this.state.model);
 
     this.setState({
       projectList: pList,
@@ -45,6 +62,18 @@ var ProjectPage = React.createClass({
   onChange: function(e) {
     var model = this.state.model;
     model[e.target.name] = e.target.value;
+    this.setState({model: model});
+  },
+
+  onSelectChangedMaster: function(data) {
+    var model = this.state.model;
+    model.leader = data;
+    this.setState({model: model});
+  },
+
+    onSelectChangedMember: function(data) {
+    var model = this.state.model;
+    model.members = data;
     this.setState({model: model});
   },
 
@@ -108,17 +137,17 @@ var ProjectPage = React.createClass({
               <div className="form-group">
                 <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
                 <div className="col-sm-12">
-                  <Select name="form-field-name" value="" clearable={false}
-                    options={userOptions} onChange={this.onSelectChanged} />
+                  <Select name="form-field-name" value={this.state.model.leader} clearable={false}
+                    options={userOptions} onChange={this.onSelectChangedMaster} />
                 </div>
               </div>
 
               <div className="form-group">
                 <label className="col-sm-12 control-label" for="textinput">Team Members</label>
                 <div className="col-sm-12">
-                  <Select name="form-field-name" value=""
+                  <Select name="form-field-name" value={this.state.model.members}
                     multi={true} clearable={true}
-                    options={userOptions} onChange={this.onSelectChanged} />
+                    options={userOptions} onChange={this.onSelectChangedMember} />
                 </div>
               </div>
 

@@ -97,23 +97,23 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/report': function() {
-	    var page = React.createFactory(__webpack_require__(279));
+	    var page = React.createFactory(__webpack_require__(268));
 	    render(router.getRoute(), page);
 	  },
 	  '/project': function() {
-	    var page = React.createFactory(__webpack_require__(281));
+	    var page = React.createFactory(__webpack_require__(270));
 	    render(router.getRoute(), page);
 	  },
 	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(282));
+	    var page = React.createFactory(__webpack_require__(284));
 	    render(router.getRoute(), page);
 	  },
 	  '/login': function() {
-	    var page = React.createFactory(__webpack_require__(283));
+	    var page = React.createFactory(__webpack_require__(285));
 	    render(router.getRoute(), page);
 	  },
 	  '/register': function() {
-	    var page = React.createFactory(__webpack_require__(288));
+	    var page = React.createFactory(__webpack_require__(290));
 	    render(router.getRoute(), page);
 	  },
 	});
@@ -331,7 +331,9 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            currentQueue[queueIndex].run();
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -383,7 +385,6 @@
 	    throw new Error('process.binding is not supported');
 	};
 
-	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -21286,15 +21287,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(160)
+	module.exports.Dispatcher = __webpack_require__(160);
 
 
 /***/ },
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/*
-	 * Copyright (c) 2014, Facebook, Inc.
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright (c) 2014-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
 	 * This source code is licensed under the BSD-style license found in the
@@ -21302,14 +21303,18 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule Dispatcher
-	 * @typechecks
+	 * 
+	 * @preventMunge
 	 */
 
-	"use strict";
+	'use strict';
+
+	exports.__esModule = true;
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	var invariant = __webpack_require__(161);
 
-	var _lastID = 1;
 	var _prefix = 'ID_';
 
 	/**
@@ -21359,7 +21364,7 @@
 	 *
 	 * This payload is digested by both stores:
 	 *
-	 *    CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+	 *   CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
 	 *     if (payload.actionType === 'country-update') {
 	 *       CountryStore.country = payload.selectedCountry;
 	 *     }
@@ -21387,14 +21392,10 @@
 	 *     flightDispatcher.register(function(payload) {
 	 *       switch (payload.actionType) {
 	 *         case 'country-update':
+	 *         case 'city-update':
 	 *           flightDispatcher.waitFor([CityStore.dispatchToken]);
 	 *           FlightPriceStore.price =
 	 *             getFlightPriceStore(CountryStore.country, CityStore.city);
-	 *           break;
-	 *
-	 *         case 'city-update':
-	 *           FlightPriceStore.price =
-	 *             FlightPriceStore(CountryStore.country, CityStore.city);
 	 *           break;
 	 *     }
 	 *   });
@@ -21404,131 +21405,109 @@
 	 * `FlightPriceStore`.
 	 */
 
+	var Dispatcher = (function () {
 	  function Dispatcher() {
-	    this.$Dispatcher_callbacks = {};
-	    this.$Dispatcher_isPending = {};
-	    this.$Dispatcher_isHandled = {};
-	    this.$Dispatcher_isDispatching = false;
-	    this.$Dispatcher_pendingPayload = null;
+	    _classCallCheck(this, Dispatcher);
+
+	    this._callbacks = {};
+	    this._isDispatching = false;
+	    this._isHandled = {};
+	    this._isPending = {};
+	    this._lastID = 1;
 	  }
 
 	  /**
 	   * Registers a callback to be invoked with every dispatched payload. Returns
 	   * a token that can be used with `waitFor()`.
-	   *
-	   * @param {function} callback
-	   * @return {string}
 	   */
-	  Dispatcher.prototype.register=function(callback) {
-	    var id = _prefix + _lastID++;
-	    this.$Dispatcher_callbacks[id] = callback;
+
+	  Dispatcher.prototype.register = function register(callback) {
+	    var id = _prefix + this._lastID++;
+	    this._callbacks[id] = callback;
 	    return id;
 	  };
 
 	  /**
 	   * Removes a callback based on its token.
-	   *
-	   * @param {string} id
 	   */
-	  Dispatcher.prototype.unregister=function(id) {
-	    invariant(
-	      this.$Dispatcher_callbacks[id],
-	      'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
-	      id
-	    );
-	    delete this.$Dispatcher_callbacks[id];
+
+	  Dispatcher.prototype.unregister = function unregister(id) {
+	    !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.unregister(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	    delete this._callbacks[id];
 	  };
 
 	  /**
 	   * Waits for the callbacks specified to be invoked before continuing execution
 	   * of the current callback. This method should only be used by a callback in
 	   * response to a dispatched payload.
-	   *
-	   * @param {array<string>} ids
 	   */
-	  Dispatcher.prototype.waitFor=function(ids) {
-	    invariant(
-	      this.$Dispatcher_isDispatching,
-	      'Dispatcher.waitFor(...): Must be invoked while dispatching.'
-	    );
+
+	  Dispatcher.prototype.waitFor = function waitFor(ids) {
+	    !this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Must be invoked while dispatching.') : invariant(false) : undefined;
 	    for (var ii = 0; ii < ids.length; ii++) {
 	      var id = ids[ii];
-	      if (this.$Dispatcher_isPending[id]) {
-	        invariant(
-	          this.$Dispatcher_isHandled[id],
-	          'Dispatcher.waitFor(...): Circular dependency detected while ' +
-	          'waiting for `%s`.',
-	          id
-	        );
+	      if (this._isPending[id]) {
+	        !this._isHandled[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Circular dependency detected while ' + 'waiting for `%s`.', id) : invariant(false) : undefined;
 	        continue;
 	      }
-	      invariant(
-	        this.$Dispatcher_callbacks[id],
-	        'Dispatcher.waitFor(...): `%s` does not map to a registered callback.',
-	        id
-	      );
-	      this.$Dispatcher_invokeCallback(id);
+	      !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	      this._invokeCallback(id);
 	    }
 	  };
 
 	  /**
 	   * Dispatches a payload to all registered callbacks.
-	   *
-	   * @param {object} payload
 	   */
-	  Dispatcher.prototype.dispatch=function(payload) {
-	    invariant(
-	      !this.$Dispatcher_isDispatching,
-	      'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.'
-	    );
-	    this.$Dispatcher_startDispatching(payload);
+
+	  Dispatcher.prototype.dispatch = function dispatch(payload) {
+	    !!this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.') : invariant(false) : undefined;
+	    this._startDispatching(payload);
 	    try {
-	      for (var id in this.$Dispatcher_callbacks) {
-	        if (this.$Dispatcher_isPending[id]) {
+	      for (var id in this._callbacks) {
+	        if (this._isPending[id]) {
 	          continue;
 	        }
-	        this.$Dispatcher_invokeCallback(id);
+	        this._invokeCallback(id);
 	      }
 	    } finally {
-	      this.$Dispatcher_stopDispatching();
+	      this._stopDispatching();
 	    }
 	  };
 
 	  /**
 	   * Is this Dispatcher currently dispatching.
-	   *
-	   * @return {boolean}
 	   */
-	  Dispatcher.prototype.isDispatching=function() {
-	    return this.$Dispatcher_isDispatching;
+
+	  Dispatcher.prototype.isDispatching = function isDispatching() {
+	    return this._isDispatching;
 	  };
 
 	  /**
 	   * Call the callback stored with the given id. Also do some internal
 	   * bookkeeping.
 	   *
-	   * @param {string} id
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_invokeCallback=function(id) {
-	    this.$Dispatcher_isPending[id] = true;
-	    this.$Dispatcher_callbacks[id](this.$Dispatcher_pendingPayload);
-	    this.$Dispatcher_isHandled[id] = true;
+
+	  Dispatcher.prototype._invokeCallback = function _invokeCallback(id) {
+	    this._isPending[id] = true;
+	    this._callbacks[id](this._pendingPayload);
+	    this._isHandled[id] = true;
 	  };
 
 	  /**
 	   * Set up bookkeeping needed when dispatching.
 	   *
-	   * @param {object} payload
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_startDispatching=function(payload) {
-	    for (var id in this.$Dispatcher_callbacks) {
-	      this.$Dispatcher_isPending[id] = false;
-	      this.$Dispatcher_isHandled[id] = false;
+
+	  Dispatcher.prototype._startDispatching = function _startDispatching(payload) {
+	    for (var id in this._callbacks) {
+	      this._isPending[id] = false;
+	      this._isHandled[id] = false;
 	    }
-	    this.$Dispatcher_pendingPayload = payload;
-	    this.$Dispatcher_isDispatching = true;
+	    this._pendingPayload = payload;
+	    this._isDispatching = true;
 	  };
 
 	  /**
@@ -21536,21 +21515,24 @@
 	   *
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_stopDispatching=function() {
-	    this.$Dispatcher_pendingPayload = null;
-	    this.$Dispatcher_isDispatching = false;
+
+	  Dispatcher.prototype._stopDispatching = function _stopDispatching() {
+	    delete this._pendingPayload;
+	    this._isDispatching = false;
 	  };
 
+	  return Dispatcher;
+	})();
 
 	module.exports = Dispatcher;
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
 /* 161 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Copyright (c) 2014, Facebook, Inc.
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
 	 * This source code is licensed under the BSD-style license found in the
@@ -21573,8 +21555,8 @@
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var invariant = function(condition, format, a, b, c, d, e, f) {
-	  if (false) {
+	var invariant = function (condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
 	    }
@@ -21583,17 +21565,13 @@
 	  if (!condition) {
 	    var error;
 	    if (format === undefined) {
-	      error = new Error(
-	        'Minified exception occurred; use the non-minified dev environment ' +
-	        'for the full error message and additional helpful warnings.'
-	      );
+	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
-	      error = new Error(
-	        'Invariant Violation: ' +
-	        format.replace(/%s/g, function() { return args[argIndex++]; })
-	      );
+	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+	        return args[argIndex++];
+	      }));
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
@@ -21602,7 +21580,7 @@
 	};
 
 	module.exports = invariant;
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
 /* 162 */
@@ -22272,18 +22250,11 @@
 	        break;
 	      // slower
 	      default:
-	        len = arguments.length;
-	        args = new Array(len - 1);
-	        for (i = 1; i < len; i++)
-	          args[i - 1] = arguments[i];
+	        args = Array.prototype.slice.call(arguments, 1);
 	        handler.apply(this, args);
 	    }
 	  } else if (isObject(handler)) {
-	    len = arguments.length;
-	    args = new Array(len - 1);
-	    for (i = 1; i < len; i++)
-	      args[i - 1] = arguments[i];
-
+	    args = Array.prototype.slice.call(arguments, 1);
 	    listeners = handler.slice();
 	    len = listeners.length;
 	    for (i = 0; i < len; i++)
@@ -22321,7 +22292,6 @@
 
 	  // Check for listener leak
 	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    var m;
 	    if (!isUndefined(this._maxListeners)) {
 	      m = this._maxListeners;
 	    } else {
@@ -22443,7 +22413,7 @@
 
 	  if (isFunction(listeners)) {
 	    this.removeListener(type, listeners);
-	  } else {
+	  } else if (listeners) {
 	    // LIFO order
 	    while (listeners.length)
 	      this.removeListener(type, listeners[listeners.length - 1]);
@@ -22464,15 +22434,20 @@
 	  return ret;
 	};
 
+	EventEmitter.prototype.listenerCount = function(type) {
+	  if (this._events) {
+	    var evlistener = this._events[type];
+
+	    if (isFunction(evlistener))
+	      return 1;
+	    else if (evlistener)
+	      return evlistener.length;
+	  }
+	  return 0;
+	};
+
 	EventEmitter.listenerCount = function(emitter, type) {
-	  var ret;
-	  if (!emitter._events || !emitter._events[type])
-	    ret = 0;
-	  else if (isFunction(emitter._events[type]))
-	    ret = 1;
-	  else
-	    ret = emitter._events[type].length;
-	  return ret;
+	  return emitter.listenerCount(type);
 	};
 
 	function isFunction(arg) {
@@ -22551,22 +22526,25 @@
 			clearable: React.PropTypes.bool, // should it be possible to reset value
 			delimiter: React.PropTypes.string, // delimiter to use to join multiple values
 			disabled: React.PropTypes.bool, // whether the Select is disabled or not
-			filterOption: React.PropTypes.func, // method to filter a single option: function(option, filterString)
-			filterOptions: React.PropTypes.func, // method to filter the options array: function([options], filterString, [values])
+			filterOption: React.PropTypes.func, // method to filter a single option  (option, filterString)
+			filterOptions: React.PropTypes.func, // method to filter the options array: function ([options], filterString, [values])
 			ignoreCase: React.PropTypes.bool, // whether to perform case-insensitive filtering
 			inputProps: React.PropTypes.object, // custom attributes for the Input (in the Select-control) e.g: {'data-foo': 'bar'}
+			isLoading: React.PropTypes.bool, // whether the Select is loading externally or not (such as options being loaded)
+			labelKey: React.PropTypes.string, // path of the label value in option objects
 			matchPos: React.PropTypes.string, // (any|start) match the start or entire string when filtering
 			matchProp: React.PropTypes.string, // (any|label|value) which option property to filter on
 			multi: React.PropTypes.bool, // multi-value input
 			name: React.PropTypes.string, // field name, for hidden <input /> tag
 			newOptionCreator: React.PropTypes.func, // factory to create new options when allowCreate set
 			noResultsText: React.PropTypes.string, // placeholder displayed when there are no matching search results
-			onBlur: React.PropTypes.func, // onBlur handler: function(event) {}
-			onChange: React.PropTypes.func, // onChange handler: function(newValue) {}
-			onFocus: React.PropTypes.func, // onFocus handler: function(event) {}
+			onBlur: React.PropTypes.func, // onBlur handler: function (event) {}
+			onChange: React.PropTypes.func, // onChange handler: function (newValue) {}
+			onFocus: React.PropTypes.func, // onFocus handler: function (event) {}
+			onInputChange: React.PropTypes.func, // onInputChange handler: function (inputValue) {}
 			onOptionLabelClick: React.PropTypes.func, // onCLick handler for value labels: function (value, event) {}
 			optionComponent: React.PropTypes.func, // option component to render in dropdown
-			optionRenderer: React.PropTypes.func, // optionRenderer: function(option) {}
+			optionRenderer: React.PropTypes.func, // optionRenderer: function (option) {}
 			options: React.PropTypes.array, // array of options
 			placeholder: React.PropTypes.string, // field placeholder, displayed when there's no value
 			searchable: React.PropTypes.bool, // whether to enable searching feature or not
@@ -22575,7 +22553,8 @@
 			singleValueComponent: React.PropTypes.func, // single value component when multiple is set to false
 			value: React.PropTypes.any, // initial field value
 			valueComponent: React.PropTypes.func, // value component to render in multiple mode
-			valueRenderer: React.PropTypes.func // valueRenderer: function(option) {}
+			valueKey: React.PropTypes.string, // path of the label value in option objects
+			valueRenderer: React.PropTypes.func // valueRenderer: function (option) {}
 		},
 
 		getDefaultProps: function getDefaultProps() {
@@ -22594,12 +22573,15 @@
 				disabled: false,
 				ignoreCase: true,
 				inputProps: {},
+				isLoading: false,
+				labelKey: 'label',
 				matchPos: 'any',
 				matchProp: 'any',
 				name: undefined,
 				newOptionCreator: undefined,
 				noResultsText: 'No results found',
 				onChange: undefined,
+				onInputChange: undefined,
 				onOptionLabelClick: undefined,
 				optionComponent: Option,
 				options: undefined,
@@ -22609,7 +22591,8 @@
 				searchPromptText: 'Type to search',
 				singleValueComponent: SingleValue,
 				value: undefined,
-				valueComponent: Value
+				valueComponent: Value,
+				valueKey: 'value'
 			};
 		},
 
@@ -22655,16 +22638,16 @@
 			};
 			this._bindCloseMenuIfClickedOutside = function () {
 				if (!document.addEventListener && document.attachEvent) {
-					document.attachEvent('onclick', this._closeMenuIfClickedOutside);
+					document.attachEvent('onclick', _this._closeMenuIfClickedOutside);
 				} else {
-					document.addEventListener('click', this._closeMenuIfClickedOutside);
+					document.addEventListener('click', _this._closeMenuIfClickedOutside);
 				}
 			};
 			this._unbindCloseMenuIfClickedOutside = function () {
 				if (!document.removeEventListener && document.detachEvent) {
-					document.detachEvent('onclick', this._closeMenuIfClickedOutside);
+					document.detachEvent('onclick', _this._closeMenuIfClickedOutside);
 				} else {
-					document.removeEventListener('click', this._closeMenuIfClickedOutside);
+					document.removeEventListener('click', _this._closeMenuIfClickedOutside);
 				}
 			};
 			this.setState(this.getStateFromValue(this.props.value));
@@ -22712,7 +22695,9 @@
 
 			if (!this.props.disabled && this._focusAfterUpdate) {
 				clearTimeout(this._blurTimeout);
+				clearTimeout(this._focusTimeout);
 				this._focusTimeout = setTimeout(function () {
+					if (!_this3.isMounted()) return;
 					_this3.getInputNode().focus();
 					_this3._focusAfterUpdate = false;
 				}, 50);
@@ -22746,6 +22731,8 @@
 		},
 
 		getStateFromValue: function getStateFromValue(value, options, placeholder) {
+			var _this4 = this;
+
 			if (!options) {
 				options = this.state.options;
 			}
@@ -22763,11 +22750,11 @@
 			var valueForState = null;
 			if (!this.props.multi && values.length) {
 				focusedOption = values[0];
-				valueForState = values[0].value;
+				valueForState = values[0][this.props.valueKey];
 			} else {
 				focusedOption = this.getFirstFocusableOption(filteredOptions);
 				valueForState = values.map(function (v) {
-					return v.value;
+					return v[_this4.props.valueKey];
 				}).join(this.props.delimiter);
 			}
 
@@ -22776,7 +22763,7 @@
 				values: values,
 				inputValue: '',
 				filteredOptions: filteredOptions,
-				placeholder: !this.props.multi && values.length ? values[0].label : placeholder,
+				placeholder: !this.props.multi && values.length ? values[0][this.props.labelKey] : placeholder,
 				focusedOption: focusedOption
 			};
 		},
@@ -22791,9 +22778,11 @@
 		},
 
 		initValuesArray: function initValuesArray(values, options) {
+			var _this5 = this;
+
 			if (!Array.isArray(values)) {
 				if (typeof values === 'string') {
-					values = values === '' ? [] : values.split(this.props.delimiter);
+					values = values === '' ? [] : this.props.multi ? values.split(this.props.delimiter) : [values];
 				} else {
 					values = values !== undefined && values !== null ? [values] : [];
 				}
@@ -22801,7 +22790,7 @@
 			return values.map(function (val) {
 				if (typeof val === 'string' || typeof val === 'number') {
 					for (var key in options) {
-						if (options.hasOwnProperty(key) && options[key] && (options[key].value === val || typeof options[key].value === 'number' && options[key].value.toString() === val)) {
+						if (options.hasOwnProperty(key) && options[key] && (options[key][_this5.props.valueKey] === val || typeof options[key][_this5.props.valueKey] === 'number' && options[key][_this5.props.valueKey].toString() === val)) {
 							return options[key];
 						}
 					}
@@ -22898,6 +22887,16 @@
 			}
 		},
 
+		handleMouseDownOnMenu: function handleMouseDownOnMenu(event) {
+			// if the event was triggered by a mousedown and not the primary
+			// button, or if the component is disabled, ignore it.
+			if (this.props.disabled || event.type === 'mousedown' && event.button !== 0) {
+				return;
+			}
+			event.stopPropagation();
+			event.preventDefault();
+		},
+
 		handleMouseDownOnArrow: function handleMouseDownOnArrow(event) {
 			// if the event was triggered by a mousedown and not the primary
 			// button, or if the component is disabled, ignore it.
@@ -22916,15 +22915,17 @@
 		},
 
 		handleInputFocus: function handleInputFocus(event) {
+			var _this6 = this;
+
 			var newIsOpen = this.state.isOpen || this._openAfterFocus;
 			this.setState({
 				isFocused: true,
 				isOpen: newIsOpen
 			}, function () {
 				if (newIsOpen) {
-					this._bindCloseMenuIfClickedOutside();
+					_this6._bindCloseMenuIfClickedOutside();
 				} else {
-					this._unbindCloseMenuIfClickedOutside();
+					_this6._unbindCloseMenuIfClickedOutside();
 				}
 			});
 			this._openAfterFocus = false;
@@ -22934,11 +22935,11 @@
 		},
 
 		handleInputBlur: function handleInputBlur(event) {
-			var _this4 = this;
+			var _this7 = this;
 
 			this._blurTimeout = setTimeout(function () {
-				if (_this4._focusAfterUpdate) return;
-				_this4.setState({
+				if (_this7._focusAfterUpdate || !_this7.isMounted()) return;
+				_this7.setState({
 					isFocused: false,
 					isOpen: false
 				});
@@ -22954,6 +22955,7 @@
 				case 8:
 					// backspace
 					if (!this.state.inputValue && this.props.backspaceRemoves) {
+						event.preventDefault();
 						this.popValue();
 					}
 					return;
@@ -22967,7 +22969,6 @@
 				case 13:
 					// enter
 					if (!this.state.isOpen) return;
-
 					this.selectFocusedOption();
 					break;
 				case 27:
@@ -23018,6 +23019,10 @@
 			// the latest value before setState() has completed.
 			this._optionsFilterString = event.target.value;
 
+			if (this.props.onInputChange) {
+				this.props.onInputChange(event.target.value);
+			}
+
 			if (this.props.asyncOptions) {
 				this.setState({
 					isLoading: true,
@@ -23039,16 +23044,19 @@
 		},
 
 		autoloadAsyncOptions: function autoloadAsyncOptions() {
-			var _this5 = this;
+			var _this8 = this;
 
-			this.loadAsyncOptions(this.props.value || '', {}, function () {
-				// update with fetched but don't focus
-				_this5.setValue(_this5.props.value, false);
+			this.setState({
+				isLoading: true
+			});
+			this.loadAsyncOptions(this.props.value || '', { isLoading: false }, function () {
+				// update with new options but don't focus
+				_this8.setValue(_this8.props.value, false);
 			});
 		},
 
 		loadAsyncOptions: function loadAsyncOptions(input, state, callback) {
-			var _this6 = this;
+			var _this9 = this;
 
 			var thisRequestId = this._currentRequestId = requestId++;
 			if (this.props.cacheAsyncResults) {
@@ -23076,25 +23084,27 @@
 
 			this.props.asyncOptions(input, function (err, data) {
 				if (err) throw err;
-				if (_this6.props.cacheAsyncResults) {
-					_this6._optionsCache[input] = data;
+				if (_this9.props.cacheAsyncResults) {
+					_this9._optionsCache[input] = data;
 				}
-				if (thisRequestId !== _this6._currentRequestId) {
+				if (thisRequestId !== _this9._currentRequestId) {
 					return;
 				}
-				var filteredOptions = _this6.filterOptions(data.options);
+				var filteredOptions = _this9.filterOptions(data.options);
 				var newState = {
 					options: data.options,
 					filteredOptions: filteredOptions,
-					focusedOption: _this6._getNewFocusedOption(filteredOptions)
+					focusedOption: _this9._getNewFocusedOption(filteredOptions)
 				};
 				for (var key in state) {
 					if (state.hasOwnProperty(key)) {
 						newState[key] = state[key];
 					}
 				}
-				_this6.setState(newState);
-				if (callback) callback.call(_this6, newState);
+				_this9.setState(newState);
+				if (callback) {
+					callback.call(_this9, newState);
+				}
 			});
 		},
 
@@ -23107,10 +23117,10 @@
 				return this.props.filterOptions.call(this, options, filterValue, exclude);
 			} else {
 				var filterOption = function filterOption(op) {
-					if (this.props.multi && exclude.indexOf(op.value) > -1) return false;
+					if (this.props.multi && exclude.indexOf(op[this.props.valueKey]) > -1) return false;
 					if (this.props.filterOption) return this.props.filterOption.call(this, op, filterValue);
-					var valueTest = String(op.value),
-					    labelTest = String(op.label);
+					var valueTest = String(op[this.props.valueKey]);
+					var labelTest = String(op[this.props.labelKey]);
 					if (this.props.ignoreCase) {
 						valueTest = valueTest.toLowerCase();
 						labelTest = labelTest.toLowerCase();
@@ -23193,9 +23203,12 @@
 		},
 
 		buildMenu: function buildMenu() {
-			var focusedValue = this.state.focusedOption ? this.state.focusedOption.value : null;
-			var renderLabel = this.props.optionRenderer || function (op) {
-				return op.label;
+			var _this10 = this;
+
+			var focusedValue = this.state.focusedOption ? this.state.focusedOption[this.props.valueKey] : null;
+			var renderLabel = this.props.optionRenderer;
+			if (!renderLabel) renderLabel = function (op) {
+				return op[_this10.props.labelKey];
 			};
 			if (this.state.filteredOptions.length > 0) {
 				focusedValue = focusedValue == null ? this.state.filteredOptions[0] : focusedValue;
@@ -23214,8 +23227,8 @@
 			}
 			var ops = Object.keys(options).map(function (key) {
 				var op = options[key];
-				var isSelected = this.state.value === op.value;
-				var isFocused = focusedValue === op.value;
+				var isSelected = this.state.value === op[this.props.valueKey];
+				var isFocused = focusedValue === op[this.props.valueKey];
 				var optionClass = classes({
 					'Select-option': true,
 					'is-selected': isSelected,
@@ -23227,7 +23240,7 @@
 				var mouseLeave = this.unfocusOption.bind(this, op);
 				var mouseDown = this.selectValue.bind(this, op);
 				var optionResult = React.createElement(this.props.optionComponent, {
-					key: 'option-' + op.value,
+					key: 'option-' + op[this.props.valueKey],
 					className: optionClass,
 					renderFunc: renderLabel,
 					mouseEnter: mouseEnter,
@@ -23245,7 +23258,7 @@
 				return ops;
 			} else {
 				var noResultsText, promptClass;
-				if (this.state.isLoading) {
+				if (this.isLoading()) {
 					promptClass = 'Select-searching';
 					noResultsText = this.props.searchingText;
 				} else if (this.state.inputValue || !this.props.asyncOptions) {
@@ -23270,13 +23283,17 @@
 			}
 		},
 
+		isLoading: function isLoading() {
+			return this.props.isLoading || this.state.isLoading;
+		},
+
 		render: function render() {
 			var selectClass = classes('Select', this.props.className, {
 				'is-multi': this.props.multi,
 				'is-searchable': this.props.searchable,
 				'is-open': this.state.isOpen,
 				'is-focused': this.state.isFocused,
-				'is-loading': this.state.isLoading,
+				'is-loading': this.isLoading(),
 				'is-disabled': this.props.disabled,
 				'has-value': this.state.value
 			});
@@ -23316,8 +23333,8 @@
 				}
 			}
 
-			var loading = this.state.isLoading ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
-			var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
+			var loading = this.isLoading() ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
+			var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onTouchEnd: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
 
 			var menu;
 			var menuProps;
@@ -23325,7 +23342,7 @@
 				menuProps = {
 					ref: 'menu',
 					className: 'Select-menu',
-					onMouseDown: this.handleMouseDown
+					onMouseDown: this.handleMouseDownOnMenu
 				};
 				menu = React.createElement(
 					'div',
@@ -23512,12 +23529,14 @@
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
+	/* global define */
 
 	(function () {
 		'use strict';
 
-		function classNames () {
+		var hasOwn = {}.hasOwnProperty;
 
+		function classNames () {
 			var classes = '';
 
 			for (var i = 0; i < arguments.length; i++) {
@@ -23526,15 +23545,13 @@
 
 				var argType = typeof arg;
 
-				if ('string' === argType || 'number' === argType) {
+				if (argType === 'string' || argType === 'number') {
 					classes += ' ' + arg;
-
 				} else if (Array.isArray(arg)) {
 					classes += ' ' + classNames.apply(null, arg);
-
-				} else if ('object' === argType) {
+				} else if (argType === 'object') {
 					for (var key in arg) {
-						if (arg.hasOwnProperty(key) && arg[key]) {
+						if (hasOwn.call(arg, key) && arg[key]) {
 							classes += ' ' + key;
 						}
 					}
@@ -23546,15 +23563,14 @@
 
 		if (typeof module !== 'undefined' && module.exports) {
 			module.exports = classNames;
-		} else if (true){
-			// AMD. Register as an anonymous module.
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
 			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 				return classNames;
 			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 			window.classNames = classNames;
 		}
-
 	}());
 
 
@@ -23609,7 +23625,6 @@
 			}
 
 			if (this.props.optionLabelClick) {
-
 				label = React.createElement(
 					'a',
 					{ className: classes('Select-item-label__a', this.props.option.className),
@@ -23664,7 +23679,6 @@
 			value: React.PropTypes.object // selected option
 		},
 		render: function render() {
-
 			var classNames = classes('Select-placeholder', this.props.value && this.props.value.className);
 			return React.createElement(
 				'div',
@@ -47633,10 +47647,692 @@
 /* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @jsx React.DOM
+	 */
 	'use strict';
 
-	var Promise = __webpack_require__(269);
-	var $ = __webpack_require__(278);
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Rating = React.createFactory(__webpack_require__(269));
+	var Select = React.createFactory(__webpack_require__(172));
+
+	var ReportPage = React.createClass({
+	  displayName: 'Report',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  onSelectChanged: function() {
+	    console.log('onSelectChanged');
+	  },
+
+	  render: function() {
+	    var projectOptions = [
+	      { value: 'vib', label: 'VIB' },
+	      { value: 'nafoods', label: 'Nafoods' },
+	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+	    var timeRangeOptions = [
+	      { value: '0.5', label: '30 mins' },
+	      { value: '1', label: '1 hour' },
+	      { value: '1.5', label: '1 hours 30 mins' },
+	      { value: '2', label: '2 hours' },
+	      { value: '2.5', label: '2 hours 30 mins' },
+	      { value: '3', label: '3 hours' },
+	      { value: '3.5', label: '3 hours 30 mins' },
+	      { value: '4', label: '4 hours' },
+	      { value: '4.5', label: '4 hours 30 mins' },
+	      { value: '5', label: '5 hours' },
+	      { value: '5.5', label: '5 hours 30 mins' },
+	      { value: '6', label: '6 hours' },
+	      { value: '6.5', label: '6 hours 30 mins' },
+	      { value: '7', label: '7 hours' },
+	      { value: '7.5', label: '7 hours 30 mins' },
+	      { value: '8', label: '8 hours' },
+	    ];
+
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "row"}, 
+	          React.DOM.div({className: "col-sm-5"}, 
+	            React.DOM.h4(null, "CHOOSE PROJECT"), 
+	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
+	              options: projectOptions, onChange: this.onSelectChanged})
+	          )
+	        ), 
+
+	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
+	        React.DOM.div({className: "day-block"}, 
+	          React.DOM.p(null, "PHẠM MINH TÂM"), 
+	          React.DOM.ul({className: "daily-list"}, 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-4"}, 
+	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
+	              )
+	            )
+	          )
+	        ), 
+	        React.DOM.div({className: "day-block"}, 
+	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
+	          React.DOM.ul({className: "daily-list"}, 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "input-group"}, 
+	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
+	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
+	                    value: "Ai bảo say sưa là khổ"})
+	                )
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "project", clearable: false, value: "", options: projectOptions})
+	              ), 
+	              React.DOM.div({className: "col-sm-2"}, 
+	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
+	              )
+	            ), 
+	            React.DOM.li({className: "row daily-item"}, 
+	              React.DOM.div({className: "col-sm-5"}, 
+	                React.DOM.div({className: "pull-right"}, 
+	                  Rating(null)
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ReportPage;
+
+
+/***/ },
+/* 269 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
+	(function webpackUniversalModuleDefinition(root, factory) {
+		if(true)
+			module.exports = factory(__webpack_require__(1));
+		else if(typeof define === 'function' && define.amd)
+			define(["react"], factory);
+		else if(typeof exports === 'object')
+			exports["ReactRating"] = factory(require("react"));
+		else
+			root["ReactRating"] = factory(root["React"]);
+	})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+	return /******/ (function(modules) { // webpackBootstrap
+	/******/ 	// The module cache
+	/******/ 	var installedModules = {};
+
+	/******/ 	// The require function
+	/******/ 	function __webpack_require__(moduleId) {
+
+	/******/ 		// Check if module is in cache
+	/******/ 		if(installedModules[moduleId])
+	/******/ 			return installedModules[moduleId].exports;
+
+	/******/ 		// Create a new module (and put it into the cache)
+	/******/ 		var module = installedModules[moduleId] = {
+	/******/ 			exports: {},
+	/******/ 			id: moduleId,
+	/******/ 			loaded: false
+	/******/ 		};
+
+	/******/ 		// Execute the module function
+	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+	/******/ 		// Flag the module as loaded
+	/******/ 		module.loaded = true;
+
+	/******/ 		// Return the exports of the module
+	/******/ 		return module.exports;
+	/******/ 	}
+
+
+	/******/ 	// expose the modules object (__webpack_modules__)
+	/******/ 	__webpack_require__.m = modules;
+
+	/******/ 	// expose the module cache
+	/******/ 	__webpack_require__.c = installedModules;
+
+	/******/ 	// __webpack_public_path__
+	/******/ 	__webpack_require__.p = "/lib";
+
+	/******/ 	// Load entry module and return exports
+	/******/ 	return __webpack_require__(0);
+	/******/ })
+	/************************************************************************/
+	/******/ ([
+	/* 0 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(1);
+
+	/***/ },
+	/* 1 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var React = __webpack_require__(2);
+		var Style = __webpack_require__(3);
+		var Symbol = __webpack_require__(5);
+
+		// Returns the index of the rate in the range (start, stop, step).
+		// Returns undefined index if the rate is outside the range.
+		// NOTE: A range.step of 0 produces an empty range and consequently returns an
+		// undefined index.
+		var indexOf = function indexOf(range, rate) {
+		  // Check the rate is in the proper range [start..stop] according to
+		  // the start, stop and step properties in props.
+		  var step = range.step;
+		  var start = step > 0 ? range.start : range.stop;
+		  var stop = step > 0 ? range.stop : range.start;
+		  if (step && start <= rate && rate <= stop) {
+		    // The index corresponds to the number of steps of size props.step
+		    // that fits between rate and start.
+		    return Math.max(Math.floor((rate - range.start) / step), 0);
+		  }
+		};
+
+		var Rating = React.createClass({
+		  displayName: 'Rating',
+
+		  // Define propTypes only in development.
+		  propTypes: "boolean" !== 'undefined' && (true) && {
+		    start: React.PropTypes.number,
+		    stop: React.PropTypes.number,
+		    step: React.PropTypes.number,
+		    initialRate: React.PropTypes.number,
+		    empty: React.PropTypes.oneOfType([
+		    // Array of class names and/or style objects.
+		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
+		    // Class names.
+		    React.PropTypes.string,
+		    // Style objects.
+		    React.PropTypes.object]),
+		    full: React.PropTypes.oneOfType([
+		    // Array of class names and/or style objects.
+		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
+		    // Class names.
+		    React.PropTypes.string,
+		    // Style objects.
+		    React.PropTypes.object]),
+		    readonly: React.PropTypes.bool,
+		    fractions: React.PropTypes.number,
+		    scale: React.PropTypes.number,
+		    onChange: React.PropTypes.func,
+		    onRate: React.PropTypes.func
+		  },
+		  getDefaultProps: function getDefaultProps() {
+		    return {
+		      start: 0,
+		      stop: 5,
+		      step: 1,
+		      empty: Style.empty,
+		      full: Style.full,
+		      fractions: 1,
+		      scale: 3,
+		      onChange: function onChange(rate) {},
+		      onRate: function onRate(rate) {}
+		    };
+		  },
+		  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+		    this.setState({
+		      index: indexOf(nextProps, nextProps.initialRate)
+		    });
+		  },
+		  getInitialState: function getInitialState() {
+		    return {
+		      index: this._rateToIndex(this.props.initialRate),
+		      indexOver: undefined
+		    };
+		  },
+		  handleMouseDown: function handleMouseDown(i, event) {
+		    var index = i + this._fractionalIndex(event);
+		    if (this.state.index !== index) {
+		      this.props.onChange(this._indexToRate(index));
+		      this.setState({
+		        index: index
+		      });
+		    }
+		    console.log(this._indexToRate(index));
+		  },
+		  handleMouseLeave: function handleMouseLeave(i) {
+		    this.props.onRate();
+		    this.setState({
+		      indexOver: undefined
+		    });
+		  },
+		  handleMouseMove: function handleMouseMove(i, event) {
+		    var index = i + this._fractionalIndex(event);
+		    if (this.state.indexOver !== index) {
+		      this.props.onRate(this._indexToRate(index));
+		      this.setState({
+		        indexOver: index
+		      });
+		    }
+		  },
+		  // Calculate the rate of an index according the the start and step.
+		  _indexToRate: function _indexToRate(index) {
+		    return this.props.start + Math.floor(index) * this.props.step + this.props.step * this._roundToFraction(index % 1);
+		  },
+		  // Calculate the corresponding index for a rate according to the provided
+		  // props or this.props.
+		  _rateToIndex: function _rateToIndex(rate) {
+		    return indexOf(this.props, rate);
+		  },
+		  _roundToFraction: function _roundToFraction(index) {
+		    // Get the closest top fraction.
+		    var fraction = Math.ceil(index % 1 * this.props.fractions) / this.props.fractions;
+		    // Truncate decimal trying to avoid float precission issues.
+		    var precision = Math.pow(10, this.props.scale);
+		    return Math.floor(index) + Math.floor(fraction * precision) / precision;
+		  },
+		  _fractionalIndex: function _fractionalIndex(event) {
+		    var x = event.clientX - event.currentTarget.getBoundingClientRect().left;
+		    return this._roundToFraction(x / event.currentTarget.offsetWidth);
+		  },
+		  render: function render() {
+		    var symbolNodes = [];
+		    var empty = [].concat(this.props.empty);
+		    var full = [].concat(this.props.full);
+		    // The symbol with the mouse over prevails over the selected one.
+		    var index = this.state.indexOver !== undefined ? this.state.indexOver : this.state.index;
+		    // The index of the last full symbol or NaN if index is undefined.
+		    var lastFullIndex = Math.floor(index);
+		    for (var i = 0; i < this._rateToIndex(this.props.stop); i++) {
+		      // Return the percentage of the decimal part of the last full index,
+		      // 100 percent for those below the last full index or 0 percent for those
+		      // indexes NaN or above the last full index.
+		      var percent = i - lastFullIndex === 0 ? index % 1 * 100 : i - lastFullIndex < 0 ? 100 : 0;
+		      symbolNodes.push(React.createElement(Symbol, {
+		        key: i,
+		        background: empty[i % empty.length],
+		        icon: full[i % full.length],
+		        percent: percent,
+		        onMouseDown: !this.props.readonly && this.handleMouseDown.bind(this, i),
+		        onMouseLeave: !this.props.readonly && this.handleMouseLeave.bind(this, i),
+		        onMouseMove: !this.props.readonly && this.handleMouseMove.bind(this, i)
+		      }));
+		    }
+		    return React.createElement(
+		      'span',
+		      null,
+		      symbolNodes
+		    );
+		  }
+		});
+
+		module.exports = Rating;
+
+	/***/ },
+	/* 2 */
+	/***/ function(module, exports) {
+
+		module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+	/***/ },
+	/* 3 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var merge = __webpack_require__(4);
+
+		var style = {
+		  display: 'inline-block',
+		  borderRadius: '50%',
+		  border: '5px double white',
+		  width: 30,
+		  height: 30,
+		  cursor: 'pointer'
+		};
+
+		module.exports = {
+		  empty: merge(style, {
+		    backgroundColor: '#ccc'
+		  }),
+		  full: merge(style, {
+		    backgroundColor: 'black'
+		  })
+		};
+
+	/***/ },
+	/* 4 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function () {
+		  var res = {};
+		  for (var i = 0; i < arguments.length; i++) {
+		    var obj = arguments[i];
+		    for (var k in obj) {
+		      res[k] = obj[k];
+		    }
+		  }
+		  return res;
+		};
+
+	/***/ },
+	/* 5 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var React = __webpack_require__(2);
+
+		var PercentageSymbol = React.createClass({
+		  displayName: 'PercentageSymbol',
+
+		  // Define propTypes only in development. They will be void in production.
+		  propTypes: "boolean" !== 'undefined' && (true) && {
+		    icon: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
+		    background: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
+		    percent: React.PropTypes.number
+		  },
+		  render: function render() {
+		    var backgroundNode = typeof this.props.background === 'string' ? React.createElement('div', { className: this.props.background }) : React.createElement('div', { style: this.props.background });
+		    var iconNode = typeof this.props.icon === 'string' ? React.createElement('div', { className: this.props.icon }) : React.createElement('div', { style: this.props.icon });
+		    var iconContainerStyle = {
+		      display: 'inline-block',
+		      position: 'absolute',
+		      overflow: 'hidden',
+		      left: 0,
+		      width: this.props.percent !== undefined ? this.props.percent + '%' : 'auto'
+		    };
+		    var style = {
+		      display: 'inline-block',
+		      position: 'relative'
+		    };
+		    return React.createElement(
+		      'span',
+		      { style: style,
+		        onMouseDown: this.props.onMouseDown,
+		        onMouseOver: this.props.onMouseOver,
+		        onMouseLeave: this.props.onMouseLeave,
+		        onMouseMove: this.props.onMouseMove },
+		      backgroundNode,
+		      React.createElement(
+		        'div',
+		        { style: iconContainerStyle },
+		        iconNode
+		      )
+		    );
+		  }
+		});
+
+		module.exports = PercentageSymbol;
+
+	/***/ }
+	/******/ ])
+	});
+	;
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var Select = React.createFactory(__webpack_require__(172));
+	var ProjectApis = __webpack_require__(271).ProjectApis;
+	var ProjectActions = __webpack_require__(282);
+	var ProjectStore = __webpack_require__(283);
+
+	var ProjectPage = React.createClass({
+	  displayName: 'Project',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      model: {},
+	      projectList: [
+	        ProjectApis.all()
+	      ]
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
+	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
+	  },
+	  componentWillUnmount: function() {
+	    ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
+	    ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
+	  },
+
+	  _onCreateSuccess: function(data) {
+	    console.log('_onCreateSuccess', data);
+	    window.location.hash = 'project';
+	  },
+
+	  _onCreateFail: function(data) {
+	    console.log('_onCreateFail', data);
+	  },
+
+	  onCreateProjectClicked: function(e) {
+	    e.preventDefault();
+
+	    var pList = this.state.projectList;
+
+	    ProjectActions.create(this.state.model);
+
+	    this.setState({
+	      projectList: pList,
+	      model: { name: '' }
+	    });
+	  },
+
+	  onChange: function(e) {
+	    var model = this.state.model;
+	    model[e.target.name] = e.target.value;
+	    this.setState({model: model});
+	  },
+
+	  onSelectChangedMaster: function(data) {
+	    var model = this.state.model;
+	    model.leader = data;
+	    this.setState({model: model});
+	  },
+
+	    onSelectChangedMember: function(data) {
+	    var model = this.state.model;
+	    model.members = data;
+	    this.setState({model: model});
+	  },
+
+	  render: function() {
+	    var projectOptions = [
+	      { value: 'vib', label: 'VIB' },
+	      { value: 'nafoods', label: 'Nafoods' },
+	      { value: 'daily-scrum', label: 'Daily Scrum' }
+	    ];
+
+	    var userOptions = [
+	      { value: 'tampham', label: 'Tam Pham' },
+	      { value: 'tannguyen', label: 'Tan Nguyen' },
+	      { value: 'giangstrider', label: 'Giang Strider' },
+	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
+	    ];
+
+	    return (
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "PROJECT")
+	        ), 
+
+	        React.DOM.div({className: "col-sm-8"}, 
+	          React.DOM.table({className: "table table-striped"}, 
+	            React.DOM.thead(null, 
+	              React.DOM.tr(null, 
+	                React.DOM.th(null, "#"), 
+	                React.DOM.th(null, "Project Name"), 
+	                React.DOM.th(null, "Leader"), 
+	                React.DOM.th(null)
+	              )
+	            ), 
+	            React.DOM.tbody(null, 
+	              this.state.projectList.map(function(item) {
+	                return (
+	                  React.DOM.tr(null, 
+	                    React.DOM.th({scope: "row"}, "1"), 
+	                    React.DOM.td(null, item.name), 
+	                    React.DOM.td(null, item.leader), 
+	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	                  )
+	                );
+	              })
+	            )
+	          )
+	        ), 
+
+	        React.DOM.div({className: "col-sm-4 "}, 
+	          React.DOM.form({className: "form-horizontal"}, 
+	            React.DOM.fieldset(null, 
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
+	                    className: "form-control input-md", 
+	                    value: this.state.model.name, onChange: this.onChange})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  Select({name: "form-field-name", value: this.state.model.leader, clearable: false, 
+	                    options: userOptions, onChange: this.onSelectChangedMaster})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
+	                React.DOM.div({className: "col-sm-12"}, 
+	                  Select({name: "form-field-name", value: this.state.model.members, 
+	                    multi: true, clearable: true, 
+	                    options: userOptions, onChange: this.onSelectChangedMember})
+	                )
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
+	                React.DOM.div({className: "col-md-12"}, 
+	                  React.DOM.button({id: "button1id", name: "button1id", 
+	                    className: "btn btn-success pull-right", 
+	                    onClick: this.onCreateProjectClicked}, "Create project")
+	                )
+	              )
+
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ProjectPage;
+
+
+/***/ },
+/* 271 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Promise = __webpack_require__(272);
+	var $ = __webpack_require__(281);
 	var config = __webpack_require__(163);
 	var apiList, result = {};
 
@@ -47713,34 +48409,34 @@
 
 
 /***/ },
-/* 269 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(270)
+	module.exports = __webpack_require__(273)
 
 
 /***/ },
-/* 270 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(271);
-	__webpack_require__(273);
-	__webpack_require__(274);
-	__webpack_require__(275);
+	module.exports = __webpack_require__(274);
 	__webpack_require__(276);
+	__webpack_require__(277);
+	__webpack_require__(278);
+	__webpack_require__(279);
 
 
 /***/ },
-/* 271 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(272);
+	var asap = __webpack_require__(275);
 
 	function noop() {}
 
@@ -47925,7 +48621,7 @@
 
 
 /***/ },
-/* 272 */
+/* 275 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -48152,12 +48848,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 273 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(271);
+	var Promise = __webpack_require__(274);
 
 	module.exports = Promise;
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -48171,12 +48867,12 @@
 
 
 /***/ },
-/* 274 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(271);
+	var Promise = __webpack_require__(274);
 
 	module.exports = Promise;
 	Promise.prototype['finally'] = function (f) {
@@ -48193,14 +48889,14 @@
 
 
 /***/ },
-/* 275 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains the ES6 extensions to the core Promises/A+ API
 
-	var Promise = __webpack_require__(271);
+	var Promise = __webpack_require__(274);
 
 	module.exports = Promise;
 
@@ -48306,7 +49002,7 @@
 
 
 /***/ },
-/* 276 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48314,8 +49010,8 @@
 	// This file contains then/promise specific extensions that are only useful
 	// for node.js interop
 
-	var Promise = __webpack_require__(271);
-	var asap = __webpack_require__(277);
+	var Promise = __webpack_require__(274);
+	var asap = __webpack_require__(280);
 
 	module.exports = Promise;
 
@@ -48383,13 +49079,13 @@
 
 
 /***/ },
-/* 277 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(272);
+	var rawAsap = __webpack_require__(275);
 	// RawTasks are recycled to reduce GC churn.
 	var freeTasks = [];
 	// We queue errors to ensure they are thrown in right order (FIFO).
@@ -48455,7 +49151,7 @@
 
 
 /***/ },
-/* 278 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -57671,660 +58367,130 @@
 
 
 /***/ },
-/* 279 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = React.createFactory(__webpack_require__(280));
-	var Select = React.createFactory(__webpack_require__(172));
-
-	var ReportPage = React.createClass({
-	  displayName: 'Report',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  onSelectChanged: function() {
-	    console.log('onSelectChanged');
-	  },
-
-	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
-	    var timeRangeOptions = [
-	      { value: '0.5', label: '30 mins' },
-	      { value: '1', label: '1 hour' },
-	      { value: '1.5', label: '1 hours 30 mins' },
-	      { value: '2', label: '2 hours' },
-	      { value: '2.5', label: '2 hours 30 mins' },
-	      { value: '3', label: '3 hours' },
-	      { value: '3.5', label: '3 hours 30 mins' },
-	      { value: '4', label: '4 hours' },
-	      { value: '4.5', label: '4 hours 30 mins' },
-	      { value: '5', label: '5 hours' },
-	      { value: '5.5', label: '5 hours 30 mins' },
-	      { value: '6', label: '6 hours' },
-	      { value: '6.5', label: '6 hours 30 mins' },
-	      { value: '7', label: '7 hours' },
-	      { value: '7.5', label: '7 hours 30 mins' },
-	      { value: '8', label: '8 hours' },
-	    ];
-
-	    return (
-	      React.DOM.div(null, 
-	        React.DOM.div({className: "row"}, 
-	          React.DOM.div({className: "col-sm-5"}, 
-	            React.DOM.h4(null, "CHOOSE PROJECT"), 
-	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
-	              options: projectOptions, onChange: this.onSelectChanged})
-	          )
-	        ), 
-
-	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "PHẠM MINH TÂM"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-4"}, 
-	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
-	              )
-	            )
-	          )
-	        ), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Ai bảo say sưa là khổ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = ReportPage;
-
-
-/***/ },
-/* 280 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
-	(function webpackUniversalModuleDefinition(root, factory) {
-		if(true)
-			module.exports = factory(__webpack_require__(1));
-		else if(typeof define === 'function' && define.amd)
-			define(["react"], factory);
-		else if(typeof exports === 'object')
-			exports["ReactRating"] = factory(require("react"));
-		else
-			root["ReactRating"] = factory(root["React"]);
-	})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
-	return /******/ (function(modules) { // webpackBootstrap
-	/******/ 	// The module cache
-	/******/ 	var installedModules = {};
-
-	/******/ 	// The require function
-	/******/ 	function __webpack_require__(moduleId) {
-
-	/******/ 		// Check if module is in cache
-	/******/ 		if(installedModules[moduleId])
-	/******/ 			return installedModules[moduleId].exports;
-
-	/******/ 		// Create a new module (and put it into the cache)
-	/******/ 		var module = installedModules[moduleId] = {
-	/******/ 			exports: {},
-	/******/ 			id: moduleId,
-	/******/ 			loaded: false
-	/******/ 		};
-
-	/******/ 		// Execute the module function
-	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
-	/******/ 		// Flag the module as loaded
-	/******/ 		module.loaded = true;
-
-	/******/ 		// Return the exports of the module
-	/******/ 		return module.exports;
-	/******/ 	}
-
-
-	/******/ 	// expose the modules object (__webpack_modules__)
-	/******/ 	__webpack_require__.m = modules;
-
-	/******/ 	// expose the module cache
-	/******/ 	__webpack_require__.c = installedModules;
-
-	/******/ 	// __webpack_public_path__
-	/******/ 	__webpack_require__.p = "/lib";
-
-	/******/ 	// Load entry module and return exports
-	/******/ 	return __webpack_require__(0);
-	/******/ })
-	/************************************************************************/
-	/******/ ([
-	/* 0 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		module.exports = __webpack_require__(1);
-
-	/***/ },
-	/* 1 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var React = __webpack_require__(2);
-		var Style = __webpack_require__(3);
-		var Symbol = __webpack_require__(5);
-
-		// Returns the index of the rate in the range (start, stop, step).
-		// Returns undefined index if the rate is outside the range.
-		// NOTE: A range.step of 0 produces an empty range and consequently returns an
-		// undefined index.
-		var indexOf = function indexOf(range, rate) {
-		  // Check the rate is in the proper range [start..stop] according to
-		  // the start, stop and step properties in props.
-		  var step = range.step;
-		  var start = step > 0 ? range.start : range.stop;
-		  var stop = step > 0 ? range.stop : range.start;
-		  if (step && start <= rate && rate <= stop) {
-		    // The index corresponds to the number of steps of size props.step
-		    // that fits between rate and start.
-		    return Math.max(Math.floor((rate - range.start) / step), 0);
-		  }
-		};
-
-		var Rating = React.createClass({
-		  displayName: 'Rating',
-
-		  // Define propTypes only in development.
-		  propTypes: "boolean" !== 'undefined' && (true) && {
-		    start: React.PropTypes.number,
-		    stop: React.PropTypes.number,
-		    step: React.PropTypes.number,
-		    initialRate: React.PropTypes.number,
-		    empty: React.PropTypes.oneOfType([
-		    // Array of class names and/or style objects.
-		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
-		    // Class names.
-		    React.PropTypes.string,
-		    // Style objects.
-		    React.PropTypes.object]),
-		    full: React.PropTypes.oneOfType([
-		    // Array of class names and/or style objects.
-		    React.PropTypes.arrayOf(React.PropTypes.oneOfType[(React.PropTypes.string, React.PropTypes.object)]),
-		    // Class names.
-		    React.PropTypes.string,
-		    // Style objects.
-		    React.PropTypes.object]),
-		    readonly: React.PropTypes.bool,
-		    fractions: React.PropTypes.number,
-		    scale: React.PropTypes.number,
-		    onChange: React.PropTypes.func,
-		    onRate: React.PropTypes.func
-		  },
-		  getDefaultProps: function getDefaultProps() {
-		    return {
-		      start: 0,
-		      stop: 5,
-		      step: 1,
-		      empty: Style.empty,
-		      full: Style.full,
-		      fractions: 1,
-		      scale: 3,
-		      onChange: function onChange(rate) {},
-		      onRate: function onRate(rate) {}
-		    };
-		  },
-		  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-		    this.setState({
-		      index: indexOf(nextProps, nextProps.initialRate)
-		    });
-		  },
-		  getInitialState: function getInitialState() {
-		    return {
-		      index: this._rateToIndex(this.props.initialRate),
-		      indexOver: undefined
-		    };
-		  },
-		  handleMouseDown: function handleMouseDown(i, event) {
-		    var index = i + this._fractionalIndex(event);
-		    if (this.state.index !== index) {
-		      this.props.onChange(this._indexToRate(index));
-		      this.setState({
-		        index: index
-		      });
-		    }
-		    console.log(this._indexToRate(index));
-		  },
-		  handleMouseLeave: function handleMouseLeave(i) {
-		    this.props.onRate();
-		    this.setState({
-		      indexOver: undefined
-		    });
-		  },
-		  handleMouseMove: function handleMouseMove(i, event) {
-		    var index = i + this._fractionalIndex(event);
-		    if (this.state.indexOver !== index) {
-		      this.props.onRate(this._indexToRate(index));
-		      this.setState({
-		        indexOver: index
-		      });
-		    }
-		  },
-		  // Calculate the rate of an index according the the start and step.
-		  _indexToRate: function _indexToRate(index) {
-		    return this.props.start + Math.floor(index) * this.props.step + this.props.step * this._roundToFraction(index % 1);
-		  },
-		  // Calculate the corresponding index for a rate according to the provided
-		  // props or this.props.
-		  _rateToIndex: function _rateToIndex(rate) {
-		    return indexOf(this.props, rate);
-		  },
-		  _roundToFraction: function _roundToFraction(index) {
-		    // Get the closest top fraction.
-		    var fraction = Math.ceil(index % 1 * this.props.fractions) / this.props.fractions;
-		    // Truncate decimal trying to avoid float precission issues.
-		    var precision = Math.pow(10, this.props.scale);
-		    return Math.floor(index) + Math.floor(fraction * precision) / precision;
-		  },
-		  _fractionalIndex: function _fractionalIndex(event) {
-		    var x = event.clientX - event.currentTarget.getBoundingClientRect().left;
-		    return this._roundToFraction(x / event.currentTarget.offsetWidth);
-		  },
-		  render: function render() {
-		    var symbolNodes = [];
-		    var empty = [].concat(this.props.empty);
-		    var full = [].concat(this.props.full);
-		    // The symbol with the mouse over prevails over the selected one.
-		    var index = this.state.indexOver !== undefined ? this.state.indexOver : this.state.index;
-		    // The index of the last full symbol or NaN if index is undefined.
-		    var lastFullIndex = Math.floor(index);
-		    for (var i = 0; i < this._rateToIndex(this.props.stop); i++) {
-		      // Return the percentage of the decimal part of the last full index,
-		      // 100 percent for those below the last full index or 0 percent for those
-		      // indexes NaN or above the last full index.
-		      var percent = i - lastFullIndex === 0 ? index % 1 * 100 : i - lastFullIndex < 0 ? 100 : 0;
-		      symbolNodes.push(React.createElement(Symbol, {
-		        key: i,
-		        background: empty[i % empty.length],
-		        icon: full[i % full.length],
-		        percent: percent,
-		        onMouseDown: !this.props.readonly && this.handleMouseDown.bind(this, i),
-		        onMouseLeave: !this.props.readonly && this.handleMouseLeave.bind(this, i),
-		        onMouseMove: !this.props.readonly && this.handleMouseMove.bind(this, i)
-		      }));
-		    }
-		    return React.createElement(
-		      'span',
-		      null,
-		      symbolNodes
-		    );
-		  }
-		});
-
-		module.exports = Rating;
-
-	/***/ },
-	/* 2 */
-	/***/ function(module, exports) {
-
-		module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
-
-	/***/ },
-	/* 3 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var merge = __webpack_require__(4);
-
-		var style = {
-		  display: 'inline-block',
-		  borderRadius: '50%',
-		  border: '5px double white',
-		  width: 30,
-		  height: 30,
-		  cursor: 'pointer'
-		};
-
-		module.exports = {
-		  empty: merge(style, {
-		    backgroundColor: '#ccc'
-		  }),
-		  full: merge(style, {
-		    backgroundColor: 'black'
-		  })
-		};
-
-	/***/ },
-	/* 4 */
-	/***/ function(module, exports) {
-
-		'use strict';
-
-		module.exports = function () {
-		  var res = {};
-		  for (var i = 0; i < arguments.length; i++) {
-		    var obj = arguments[i];
-		    for (var k in obj) {
-		      res[k] = obj[k];
-		    }
-		  }
-		  return res;
-		};
-
-	/***/ },
-	/* 5 */
-	/***/ function(module, exports, __webpack_require__) {
-
-		'use strict';
-
-		var React = __webpack_require__(2);
-
-		var PercentageSymbol = React.createClass({
-		  displayName: 'PercentageSymbol',
-
-		  // Define propTypes only in development. They will be void in production.
-		  propTypes: "boolean" !== 'undefined' && (true) && {
-		    icon: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
-		    background: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]),
-		    percent: React.PropTypes.number
-		  },
-		  render: function render() {
-		    var backgroundNode = typeof this.props.background === 'string' ? React.createElement('div', { className: this.props.background }) : React.createElement('div', { style: this.props.background });
-		    var iconNode = typeof this.props.icon === 'string' ? React.createElement('div', { className: this.props.icon }) : React.createElement('div', { style: this.props.icon });
-		    var iconContainerStyle = {
-		      display: 'inline-block',
-		      position: 'absolute',
-		      overflow: 'hidden',
-		      left: 0,
-		      width: this.props.percent !== undefined ? this.props.percent + '%' : 'auto'
-		    };
-		    var style = {
-		      display: 'inline-block',
-		      position: 'relative'
-		    };
-		    return React.createElement(
-		      'span',
-		      { style: style,
-		        onMouseDown: this.props.onMouseDown,
-		        onMouseOver: this.props.onMouseOver,
-		        onMouseLeave: this.props.onMouseLeave,
-		        onMouseMove: this.props.onMouseMove },
-		      backgroundNode,
-		      React.createElement(
-		        'div',
-		        { style: iconContainerStyle },
-		        iconNode
-		      )
-		    );
-		  }
-		});
-
-		module.exports = PercentageSymbol;
-
-	/***/ }
-	/******/ ])
-	});
-	;
-
-/***/ },
-/* 281 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Select = React.createFactory(__webpack_require__(172));
-
-	var ProjectPage = React.createClass({
-	  displayName: 'Project',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      model: {},
-	      projectList: [
-	        { name: 'VIB', leader: 'Tam Pham' },
-	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
-	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
-	      ]
-	    };
-	  },
-
-	  onCreateProjectClicked: function(e) {
-	    e.preventDefault();
-
-	    var pList = this.state.projectList;
-	    pList.push({
-	      name: this.state.model.name,
-	      leader: 'Ngan Nguyen'
-	    });
-
-	    this.setState({
-	      projectList: pList,
-	      model: { name: '' }
-	    });
-	  },
-
-	  onChange: function(e) {
-	    var model = this.state.model;
-	    model[e.target.name] = e.target.value;
-	    this.setState({model: model});
-	  },
-
-	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
-
-	    var userOptions = [
-	      { value: 'tampham', label: 'Tam Pham' },
-	      { value: 'tannguyen', label: 'Tan Nguyen' },
-	      { value: 'giangstrider', label: 'Giang Strider' },
-	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
-	    ];
-
-	    return (
-	      React.DOM.div({className: "row"}, 
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h4(null, "PROJECT")
-	        ), 
-
-	        React.DOM.div({className: "col-sm-8"}, 
-	          React.DOM.table({className: "table table-striped"}, 
-	            React.DOM.thead(null, 
-	              React.DOM.tr(null, 
-	                React.DOM.th(null, "#"), 
-	                React.DOM.th(null, "Project Name"), 
-	                React.DOM.th(null, "Leader"), 
-	                React.DOM.th(null)
-	              )
-	            ), 
-	            React.DOM.tbody(null, 
-	              this.state.projectList.map(function(item) {
-	                return (
-	                  React.DOM.tr(null, 
-	                    React.DOM.th({scope: "row"}, "1"), 
-	                    React.DOM.td(null, item.name), 
-	                    React.DOM.td(null, item.leader), 
-	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
-	                  )
-	                );
-	              })
-	            )
-	          )
-	        ), 
-
-	        React.DOM.div({className: "col-sm-4 "}, 
-	          React.DOM.form({className: "form-horizontal"}, 
-	            React.DOM.fieldset(null, 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
-	                    className: "form-control input-md", 
-	                    value: this.state.model.name, onChange: this.onChange})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: "", clearable: false, 
-	                    options: userOptions, onChange: this.onSelectChanged})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: "", 
-	                    multi: true, clearable: true, 
-	                    options: userOptions, onChange: this.onSelectChanged})
-	                )
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
-	                React.DOM.div({className: "col-md-12"}, 
-	                  React.DOM.button({id: "button1id", name: "button1id", 
-	                    className: "btn btn-success pull-right", 
-	                    onClick: this.onCreateProjectClicked}, "Create project")
-	                )
-	              )
-
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = ProjectPage;
-
-
-/***/ },
 /* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  create: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Create,
+	      data: data
+	    });
+	  },
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var ProjectApis = __webpack_require__(271).ProjectApis;
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'ProjectStore';
+
+	/**
+	 * Store Start
+	 */
+	var ProjectStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnCreateSuccess: function(callback, context) {
+	    this.on(Events.CreateSuccess, callback, context);
+	  },
+	  rmvListenerOnCreateSuccess: function(context) {
+	    this.removeListener(Events.CreateSuccess, context);
+	  },
+	  addListenerOnCreateFail: function(callback, context) {
+	    this.on(Events.CreateFail, callback, context);
+	  },
+	  rmvListenerOnCreateFail: function(context) {
+	    this.removeListener(Events.CreateFail, context);
+	  },
+
+	  // functions
+	  create: function(data) {
+
+	    ProjectApis.create(data).then(
+	    function(body) {
+	      // set token into localstorage
+	      window.localStorage.setItem('token', body.data.token);
+	      this.emit(Events.CreateSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.CreateFail, err);
+	    }.bind(this));
+	  }
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.Create:
+	      ProjectStore.create(payload.data);
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // UserStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = ProjectStore;
+
+
+/***/ },
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58406,7 +58572,7 @@
 
 
 /***/ },
-/* 283 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58416,10 +58582,10 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(284);
-	var UserActions = __webpack_require__(285);
-	var NotificationActions = __webpack_require__(286);
-	var UserStore = __webpack_require__(287);
+	var CommonMixins = __webpack_require__(286);
+	var UserActions = __webpack_require__(287);
+	var NotificationActions = __webpack_require__(288);
+	var UserStore = __webpack_require__(289);
 
 	var LoginPage = React.createClass({
 	  mixins: [CommonMixins],
@@ -58510,7 +58676,7 @@
 
 
 /***/ },
-/* 284 */
+/* 286 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58532,7 +58698,7 @@
 
 
 /***/ },
-/* 285 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58571,7 +58737,7 @@
 
 
 /***/ },
-/* 286 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58597,7 +58763,7 @@
 
 
 /***/ },
-/* 287 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58613,7 +58779,7 @@
 	var assign = __webpack_require__(13);
 	var Actions = __webpack_require__(162);
 	var Events = __webpack_require__(171);
-	var UserApis = __webpack_require__(268).UserApis;
+	var UserApis = __webpack_require__(271).UserApis;
 
 	/**
 	 * Variables
@@ -58736,7 +58902,7 @@
 
 
 /***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58746,10 +58912,10 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(284);
-	var UserActions = __webpack_require__(285);
-	var NotificationActions = __webpack_require__(286);
-	var UserStore = __webpack_require__(287);
+	var CommonMixins = __webpack_require__(286);
+	var UserActions = __webpack_require__(287);
+	var NotificationActions = __webpack_require__(288);
+	var UserStore = __webpack_require__(289);
 
 	var LoginPage = React.createClass({
 	  mixins: [CommonMixins],

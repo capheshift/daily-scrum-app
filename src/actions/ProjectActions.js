@@ -10,7 +10,7 @@ var Actions = {
 
   create: function(data) {
     AppDispatcher.dispatch({
-      actionType: ActionTypes.Create,
+      actionType: ActionTypes.CreateProject,
       data: data
     });
   },

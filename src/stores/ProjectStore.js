@@ -25,16 +25,16 @@ var _name = 'ProjectStore';
 var ProjectStore = assign({}, EventEmitter.prototype, {
   // listener events zone
   addListenerOnCreateSuccess: function(callback, context) {
-    this.on(Events.CreateSuccess, callback, context);
+    this.on(Events.CreateProjectSuccess, callback, context);
   },
   rmvListenerOnCreateSuccess: function(context) {
-    this.removeListener(Events.CreateSuccess, context);
+    this.removeListener(Events.CreateProjectSuccess, context);
   },
   addListenerOnCreateFail: function(callback, context) {
-    this.on(Events.CreateFail, callback, context);
+    this.on(Events.CreateProjectFail, callback, context);
   },
   rmvListenerOnCreateFail: function(context) {
-    this.removeListener(Events.CreateFail, context);
+    this.removeListener(Events.CreateProjectFail, context);
   },
 
   // functions
@@ -44,10 +44,10 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
     function(body) {
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
-      this.emit(Events.CreateSuccess, body);
+      this.emit(Events.CreateProjectSuccess, body);
     }.bind(this),
     function(err) {
-      this.emit(Events.CreateFail, err);
+      this.emit(Events.CreateProjectFail, err);
     }.bind(this));
   }
 });
@@ -67,7 +67,7 @@ AppDispatcher.register(function(payload) {
 
   // Route Logic
   switch (action) {
-    case Actions.Create:
+    case Actions.CreateProject:
       ProjectStore.create(payload.data);
       break;
 

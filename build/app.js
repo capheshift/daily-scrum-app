@@ -21597,6 +21597,7 @@
 	module.exports = keyMirror({
 	  Login: null,
 	  Register: null,
+	  CreateProject: null,
 
 	  SET_CURRENT_ROUTE: null
 	});
@@ -22485,6 +22486,9 @@
 
 	  RegisterSuccess: null,
 	  RegisterFail: null,
+
+	  CreateProjectSuccess: null,
+	  CreateProjectFail: null
 	});
 
 
@@ -48161,6 +48165,7 @@
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
 	var Select = React.createFactory(__webpack_require__(172));
 	var ProjectApis = __webpack_require__(271).ProjectApis;
+	var UserApis = __webpack_require__(271).UserApis;
 	var ProjectActions = __webpack_require__(282);
 	var ProjectStore = __webpack_require__(283);
 
@@ -48174,10 +48179,12 @@
 	  },
 
 	  getInitialState: function() {
-	    return {
+	      return {
 	      model: {},
 	      projectList: [
-	        ProjectApis.all()
+	        { name: 'VIB', leader: 'Tam Pham' },
+	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
+	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
 	      ]
 	    };
 	  },
@@ -58382,7 +58389,7 @@
 
 	  create: function(data) {
 	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Create,
+	      actionType: ActionTypes.CreateProject,
 	      data: data
 	    });
 	  },
@@ -58423,16 +58430,16 @@
 	var ProjectStore = assign({}, EventEmitter.prototype, {
 	  // listener events zone
 	  addListenerOnCreateSuccess: function(callback, context) {
-	    this.on(Events.CreateSuccess, callback, context);
+	    this.on(Events.CreateProjectSuccess, callback, context);
 	  },
 	  rmvListenerOnCreateSuccess: function(context) {
-	    this.removeListener(Events.CreateSuccess, context);
+	    this.removeListener(Events.CreateProjectSuccess, context);
 	  },
 	  addListenerOnCreateFail: function(callback, context) {
-	    this.on(Events.CreateFail, callback, context);
+	    this.on(Events.CreateProjectFail, callback, context);
 	  },
 	  rmvListenerOnCreateFail: function(context) {
-	    this.removeListener(Events.CreateFail, context);
+	    this.removeListener(Events.CreateProjectFail, context);
 	  },
 
 	  // functions
@@ -58442,10 +58449,10 @@
 	    function(body) {
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
-	      this.emit(Events.CreateSuccess, body);
+	      this.emit(Events.CreateProjectSuccess, body);
 	    }.bind(this),
 	    function(err) {
-	      this.emit(Events.CreateFail, err);
+	      this.emit(Events.CreateProjectFail, err);
 	    }.bind(this));
 	  }
 	});
@@ -58465,7 +58472,7 @@
 
 	  // Route Logic
 	  switch (action) {
-	    case Actions.Create:
+	    case Actions.CreateProject:
 	      ProjectStore.create(payload.data);
 	      break;
 

@@ -7,6 +7,7 @@ var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var Select = React.createFactory(require('react-select'));
 var ProjectApis = require('../commons/service-api').ProjectApis;
+var UserApis = require('../commons/service-api').UserApis;
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
 
@@ -20,10 +21,12 @@ var ProjectPage = React.createClass({
   },
 
   getInitialState: function() {
-    return {
+      return {
       model: {},
       projectList: [
-        ProjectApis.all()
+        { name: 'VIB', leader: 'Tam Pham' },
+        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
+        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
       ]
     };
   },

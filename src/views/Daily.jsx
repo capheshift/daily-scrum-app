@@ -9,6 +9,8 @@ var Select = React.createFactory(require('react-select'));
 var Guid = require('guid');
 var lodash = require('lodash');
 var moment = require('moment');
+var UserApis = require('../commons/service-api').UserApis;
+var TaskApis = require('../commons/service-api').TaskApis;
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -57,6 +59,24 @@ var DailyPage = React.createClass({
   },
 
   componentDidMount: function() {
+    var findData = {
+      q: {email: 'tampham47@live.com'},
+      l: {}
+    };
+
+    // test request data
+    UserApis.all().then(function(data) {
+      console.log('UserApis.all', data);
+    });
+    UserApis.getById(null, {_id: '5621d55a6d7edd0300e0417b'}).then(function(data) {
+      console.log('UserApis.detail', data);
+    });
+    UserApis.find(null, findData).then(function(data) {
+      console.log('UserApis.find', data);
+    });
+    TaskApis.update({}, {_id: '5621d55a6d7edd0300e0417b'}).then(function(data) {
+      console.log('TaskApis.find', data);
+    });
   },
 
   newTaskOnClicked: function(dateItem) {

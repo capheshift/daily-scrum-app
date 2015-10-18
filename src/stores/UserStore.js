@@ -49,6 +49,19 @@ var UserStore = assign({}, EventEmitter.prototype, {
   rmvListenerOnLoginFail: function(context) {
     this.removeListener(Events.LoginFail, context);
   },
+  // listener for login
+  addListenerOnLogoutSuccess: function(callback, context) {
+    this.on(Events.LogoutSuccess, callback, context);
+  },
+  rmvListenerOnLogoutSuccess: function(context) {
+    this.removeListener(Events.LogoutSuccess, context);
+  },
+  addListenerOnLogoutFail: function(callback, context) {
+    this.on(Events.LogoutFail, callback, context);
+  },
+  rmvListenerOnLogoutFail: function(context) {
+    this.removeListener(Events.LogoutFail, context);
+  },
   // listener for getAllUsers
   addListenerOnGetAllUsersSuccess: function(callback, context) {
     this.on(Events.GetAllUsersSuccess, callback, context);
@@ -72,6 +85,7 @@ var UserStore = assign({}, EventEmitter.prototype, {
     function(body) {
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
+      window.localStorage.setItem('fullName', body.data.fullName);
       this.emit(Events.LoginSuccess, body);
     }.bind(this),
     function(err) {
@@ -81,6 +95,8 @@ var UserStore = assign({}, EventEmitter.prototype, {
 
   logout: function(data) {
     console.log('logout data', data);
+    window.localStorage.clear();
+    this.emit(Events.LogoutSuccess);
   },
 
   register: function(data) {
@@ -91,6 +107,7 @@ var UserStore = assign({}, EventEmitter.prototype, {
       console.log('register', body);
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
+      window.localStorage.setItem('fullName', body.data.fullName);
       this.emit(Events.RegisterSuccess, body);
     }.bind(this),
     function(err) {

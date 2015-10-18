@@ -7,8 +7,11 @@
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
-  LoginSuccesss: null,
+  LoginSuccess: null,
   LoginFail: null,
+
+  LogoutSuccess: null,
+  LogoutFail: null,
 
   RegisterSuccess: null,
   RegisterFail: null,

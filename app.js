@@ -58548,7 +58548,7 @@
 
 	  componentDidMount: function() {
 	    ProjectActions.all();
-	    UserActions.getAll();
+	    UserActions.getAllUsers();
 
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -58556,8 +58556,8 @@
 	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
 	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
 
-	    UserStore.addListenerOnGetAllSuccess(this._onGetAllUserSuccess, this);
-	    UserStore.addListenerOnGetAllFail(this._onGetAllUserFail, this);
+	    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
+	    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
 	  },
 
 	  componentWillUnmount: function() {
@@ -58567,8 +58567,8 @@
 	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
 	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
 
-	    UserStore.rmvListenerOnGetAllSuccess(this._onGetAllUserSuccess);
-	    UserStore.rmvListenerOnGetAllFail(this._onGetAllUserFail);
+	    UserStore.rmvListenerOnGetAllUserSuccess(this._onGetAllUserSuccess);
+	    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
 	  },
 
 	  _onCreateSuccess: function(data) {
@@ -58589,25 +58589,26 @@
 	  },
 
 	  _onGetAllUserSuccess: function(data) {
-	    console.log(data);
+	    console.log('_onGetAllUserSuccess', data);
 	    this.setState({userOptions: data.data});
-	    passValueUser();
+	    this.passValueUser(data.data);
 	  },
 
 	  _onGetAllUserFail: function(data) {
 	    console.log('data fail', data);
 	  },
 
-	  passValueUser: function(){
-	    var list = this.state.userOptions.map(function(item){
+	  passValueUser: function(data){
+	    var list = data.map(function(item){
 	      return {
-	        label: item.name,
+	        label: item.fullName,
 	        value: item._id
 	      };
-	  });
+	    });
+	    console.log('passValueUser', list);
 
-	  this.setState({userOptionsType: list});
-	},
+	    this.setState({userOptionsType: list});
+	  },
 
 	  onCreateProjectClicked: function(e) {
 	    e.preventDefault();

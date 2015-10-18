@@ -11,7 +11,7 @@ var EventEmitter = require('events').EventEmitter;
 var assign = require('react/lib/Object.assign');
 var Actions = require('../commons/enum/ActionTypes');
 var Events = require('../commons/enum/EventTypes');
-var UserApis = require('../commons/service-api').UserApis;
+var TaskApis = require('../commons/service-api').TaskApis;
 
 /**
  * Variables
@@ -52,9 +52,23 @@ var TaskStore = assign({}, EventEmitter.prototype, {
   },
 
   newTask: function(data) {
+    TaskApis.create(data).then(
+    function(body) {
+      this.emit(Event.NewTaskSuccess, body);
+    },
+    function(err) {
+      this.emit(Event.NewTaskFail, err);
+    });
   },
 
   updateTask: function(data) {
+    TaskApis.update(data, {}).then(
+    function(body) {
+      this.emit(Event.UpdateTaskSuccess, body);
+    },
+    function(err) {
+      this.emit(Event.UpdateTaskFail, err);
+    });
   }
 
 });

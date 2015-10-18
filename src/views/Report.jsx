@@ -8,6 +8,9 @@ var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var Rating = React.createFactory(require('react-rating'));
 var Select = React.createFactory(require('react-select'));
 
+var ProjectActions = require('../actions/ProjectActions');
+var ProjectStore = require('../stores/ProjectStore');
+
 var ReportPage = React.createClass({
   displayName: 'Report',
 
@@ -17,18 +20,45 @@ var ReportPage = React.createClass({
     };
   },
 
-  // getIni
+  getInitialState: function() {
+    return {
+      projectList: []
+    };
+  },
+
+  componentDidMount: function() {
+    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
+    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
+
+    ProjectActions.all();
+  },
+
+  componentWillUnmount: function() {
+    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
+    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+  },
+
+  _onGetAllProjectSuccess: function(body) {
+    var pList = body.data.map(function(item) {
+      return {
+        value: item._id,
+        label: item.name
+      };
+    });
+    this.setState({
+      projectList: pList
+    });
+  },
+
+  _onGetAllProjectFail: function() {
+  },
 
   onSelectChanged: function() {
     console.log('onSelectChanged');
   },
 
   render: function() {
-    var projectOptions = [
-      { value: 'vib', label: 'VIB' },
-      { value: 'nafoods', label: 'Nafoods' },
-      { value: 'daily-scrum', label: 'Daily Scrum' }
-    ];
+    var projectOptions = this.state.projectList;
     var timeRangeOptions = [
       { value: '0.5', label: '30 mins' },
       { value: '1', label: '1 hour' },

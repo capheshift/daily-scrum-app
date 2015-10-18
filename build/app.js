@@ -21666,6 +21666,10 @@
 	var Guid = __webpack_require__(193);
 	var lodash = __webpack_require__(174);
 	var moment = __webpack_require__(194);
+
+	var ProjectActions = __webpack_require__(284);
+	var ProjectStore = __webpack_require__(285);
+
 	var UserApis = __webpack_require__(172).UserApis;
 	var TaskApis = __webpack_require__(172).TaskApis;
 
@@ -21711,18 +21715,40 @@
 
 	    return {
 	      dateList: dateList,
-	      taskList: taskList
+	      taskList: taskList,
+	      projectList: []
 	    };
 	  },
 
 	  componentDidMount: function() {
+	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
+	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
+
+	    ProjectActions.all();
 	  },
 
 	  componentWillUnmount: function() {
+	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
+	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+	  },
+
+	  _onGetAllProjectSuccess: function(body) {
+	    var pList = body.data.map(function(item) {
+	      return {
+	        value: item._id,
+	        label: item.name
+	      };
+	    });
+	    this.setState({
+	      projectList: pList
+	    });
+	  },
+
+	  _onGetAllProjectFail: function() {
 	  },
 
 	  newTaskOnClicked: function(dateItem) {
-	    console.log('newTaskOnClicked', dateItem);
+	    console.log('newTaskOnClicked', dateItem, this.state.taskList);
 	    var newDateList, newTaskList;
 
 	    newTaskList = this.state.taskList.concat([{
@@ -21822,11 +21848,7 @@
 	  },
 
 	  renderTaskList: function(dateItem) {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
+	    var projectOptions = this.state.projectList;
 	    var timeRangeOptions = [
 	      { value: '0.5', label: '30 mins' },
 	      { value: '1', label: '1 hour' },
@@ -58016,6 +58038,9 @@
 	var Rating = React.createFactory(__webpack_require__(282));
 	var Select = React.createFactory(__webpack_require__(187));
 
+	var ProjectActions = __webpack_require__(284);
+	var ProjectStore = __webpack_require__(285);
+
 	var ReportPage = React.createClass({
 	  displayName: 'Report',
 
@@ -58025,18 +58050,45 @@
 	    };
 	  },
 
-	  // getIni
+	  getInitialState: function() {
+	    return {
+	      projectList: []
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
+	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
+
+	    ProjectActions.all();
+	  },
+
+	  componentWillUnmount: function() {
+	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
+	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+	  },
+
+	  _onGetAllProjectSuccess: function(body) {
+	    var pList = body.data.map(function(item) {
+	      return {
+	        value: item._id,
+	        label: item.name
+	      };
+	    });
+	    this.setState({
+	      projectList: pList
+	    });
+	  },
+
+	  _onGetAllProjectFail: function() {
+	  },
 
 	  onSelectChanged: function() {
 	    console.log('onSelectChanged');
 	  },
 
 	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
+	    var projectOptions = this.state.projectList;
 	    var timeRangeOptions = [
 	      { value: '0.5', label: '30 mins' },
 	      { value: '1', label: '1 hour' },

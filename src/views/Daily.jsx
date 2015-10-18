@@ -9,6 +9,10 @@ var Select = React.createFactory(require('react-select'));
 var Guid = require('guid');
 var lodash = require('lodash');
 var moment = require('moment');
+
+var ProjectActions = require('../actions/ProjectActions');
+var ProjectStore = require('../stores/ProjectStore');
+
 var UserApis = require('../commons/service-api').UserApis;
 var TaskApis = require('../commons/service-api').TaskApis;
 
@@ -54,18 +58,40 @@ var DailyPage = React.createClass({
 
     return {
       dateList: dateList,
-      taskList: taskList
+      taskList: taskList,
+      projectList: []
     };
   },
 
   componentDidMount: function() {
+    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
+    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
+
+    ProjectActions.all();
   },
 
   componentWillUnmount: function() {
+    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
+    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+  },
+
+  _onGetAllProjectSuccess: function(body) {
+    var pList = body.data.map(function(item) {
+      return {
+        value: item._id,
+        label: item.name
+      };
+    });
+    this.setState({
+      projectList: pList
+    });
+  },
+
+  _onGetAllProjectFail: function() {
   },
 
   newTaskOnClicked: function(dateItem) {
-    console.log('newTaskOnClicked', dateItem);
+    console.log('newTaskOnClicked', dateItem, this.state.taskList);
     var newDateList, newTaskList;
 
     newTaskList = this.state.taskList.concat([{
@@ -165,11 +191,7 @@ var DailyPage = React.createClass({
   },
 
   renderTaskList: function(dateItem) {
-    var projectOptions = [
-      { value: 'vib', label: 'VIB' },
-      { value: 'nafoods', label: 'Nafoods' },
-      { value: 'daily-scrum', label: 'Daily Scrum' }
-    ];
+    var projectOptions = this.state.projectList;
     var timeRangeOptions = [
       { value: '0.5', label: '30 mins' },
       { value: '1', label: '1 hour' },

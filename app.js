@@ -21598,6 +21598,7 @@
 	  Login: null,
 	  Register: null,
 	  CreateProject: null,
+	  All: null,
 
 	  SET_CURRENT_ROUTE: null
 	});
@@ -22488,7 +22489,10 @@
 	  RegisterFail: null,
 
 	  CreateProjectSuccess: null,
-	  CreateProjectFail: null
+	  CreateProjectFail: null,
+
+	  GetAllProjectSuccess: null,
+	  GetAllProjectFail: null
 	});
 
 
@@ -48181,30 +48185,45 @@
 	  getInitialState: function() {
 	      return {
 	      model: {},
-	      projectList: [
-	        { name: 'VIB', leader: 'Tam Pham' },
-	        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
-	        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
-	      ]
+	      projectList: []
 	    };
 	  },
 
 	  componentDidMount: function() {
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
+	    ProjectActions.all();
+	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
+	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
 	  },
 	  componentWillUnmount: function() {
 	    ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
 	    ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
+	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
+	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
+	  },
+
+	  componentWillMount: function() {
+
 	  },
 
 	  _onCreateSuccess: function(data) {
 	    console.log('_onCreateSuccess', data);
+	    this.setState({projectList: data});
 	    window.location.hash = 'project';
 	  },
 
 	  _onCreateFail: function(data) {
 	    console.log('_onCreateFail', data);
+	  },
+
+	  _onGetAllSuccess: function(data) {
+	    console.log('_onGetAllSuccess', data);
+	    window.location.hash = 'project';
+	  },
+
+	  _onGetAllFail: function(data) {
+	    console.log('_onGetAllFail', data);
 	  },
 
 	  onCreateProjectClicked: function(e) {
@@ -58394,6 +58413,12 @@
 	    });
 	  },
 
+	  all: function(){
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.All
+	    });
+	  }
+
 	};
 
 	module.exports = Actions;
@@ -58442,17 +58467,39 @@
 	    this.removeListener(Events.CreateProjectFail, context);
 	  },
 
+	  addListenerGetAllProjectSuccess: function(callback, context) {
+	    this.on(Events.GetAllProjectSuccess, callback, context);
+	  },
+	  rmvListenerGetAllProjectSuccess: function(context) {
+	    this.removeListener(Events.GetAllProjectSuccess, context);
+	  },
+	  addListenerGetAllProjectFail: function(callback, context) {
+	    this.on(Events.GetAllProjectFail, callback, context);
+	  },
+	  rmvListenerGetAllProjectFail: function(context) {
+	    this.removeListener(Events.GetAllProjectFail, context);
+	  },
+
 	  // functions
 	  create: function(data) {
 
 	    ProjectApis.create(data).then(
 	    function(body) {
-	      // set token into localstorage
-	      window.localStorage.setItem('token', body.data.token);
 	      this.emit(Events.CreateProjectSuccess, body);
 	    }.bind(this),
 	    function(err) {
 	      this.emit(Events.CreateProjectFail, err);
+	    }.bind(this));
+	  },
+
+	  all: function() {
+
+	    ProjectApis.all().then(
+	    function(body) {
+	      this.emit(Events.GetAllProjectSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.GetAllProjectFail, err);
 	    }.bind(this));
 	  }
 	});
@@ -58474,6 +58521,10 @@
 	  switch (action) {
 	    case Actions.CreateProject:
 	      ProjectStore.create(payload.data);
+	      break;
+
+	    case Actions.All:
+	      ProjectStore.all(payload.data);
 	      break;
 
 	    default:

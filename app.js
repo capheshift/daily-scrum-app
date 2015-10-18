@@ -105,11 +105,11 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(284));
+	    var page = React.createFactory(__webpack_require__(285));
 	    render(router.getRoute(), page);
 	  },
 	  '/login': function() {
-	    var page = React.createFactory(__webpack_require__(285));
+	    var page = React.createFactory(__webpack_require__(286));
 	    render(router.getRoute(), page);
 	  },
 	  '/register': function() {
@@ -48172,6 +48172,7 @@
 	var UserApis = __webpack_require__(271).UserApis;
 	var ProjectActions = __webpack_require__(282);
 	var ProjectStore = __webpack_require__(283);
+	var UserActions = __webpack_require__(284);
 
 	var ProjectPage = React.createClass({
 	  displayName: 'Project',
@@ -48185,7 +48186,8 @@
 	  getInitialState: function() {
 	      return {
 	      model: {},
-	      projectList: []
+	      projectList: [],
+	      userOptions: []
 	    };
 	  },
 
@@ -48198,6 +48200,7 @@
 	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
 	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
 	  },
+
 	  componentWillUnmount: function() {
 	    ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
 	    ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
@@ -48232,6 +48235,11 @@
 
 	    ProjectActions.create(this.state.model);
 
+	    pList.push({
+	      name: this.state.model.name
+	      //leader: "Giang"
+	    });
+
 	    this.setState({
 	      projectList: pList,
 	      model: { name: '' }
@@ -48242,11 +48250,12 @@
 	    var model = this.state.model;
 	    model[e.target.name] = e.target.value;
 	    this.setState({model: model});
+	    console.log(model);
 	  },
 
-	  onSelectChangedMaster: function(data) {
+	  onSelectChangedMaster: function(e) {
 	    var model = this.state.model;
-	    model.leader = data;
+	    model._scrumMaster = e;
 	    this.setState({model: model});
 	  },
 
@@ -48257,17 +48266,12 @@
 	  },
 
 	  render: function() {
-	    var projectOptions = [
-	      { value: 'vib', label: 'VIB' },
-	      { value: 'nafoods', label: 'Nafoods' },
-	      { value: 'daily-scrum', label: 'Daily Scrum' }
-	    ];
 
-	    var userOptions = [
-	      { value: 'tampham', label: 'Tam Pham' },
-	      { value: 'tannguyen', label: 'Tan Nguyen' },
-	      { value: 'giangstrider', label: 'Giang Strider' },
-	      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
+	    var userOptionsType = [
+	      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
+	      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
+	      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
+	      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
 	    ];
 
 	    return (
@@ -48287,12 +48291,13 @@
 	              )
 	            ), 
 	            React.DOM.tbody(null, 
-	              this.state.projectList.map(function(item) {
+	              this.state.projectList.map(function(item, index) {
+
 	                return (
 	                  React.DOM.tr(null, 
-	                    React.DOM.th({scope: "row"}, "1"), 
+	                    React.DOM.th({scope: "row"}, index + 1), 
 	                    React.DOM.td(null, item.name), 
-	                    React.DOM.td(null, item.leader), 
+	                    React.DOM.td(null, item._id), 
 	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
 	                  )
 	                );
@@ -48316,8 +48321,8 @@
 	              React.DOM.div({className: "form-group"}, 
 	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
 	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: this.state.model.leader, clearable: false, 
-	                    options: userOptions, onChange: this.onSelectChangedMaster})
+	                  Select({name: "form-field-name", value: this.state.model._scrumMaster, clearable: false, 
+	                    options: userOptionsType, onChange: this.onSelectChangedMaster})
 	                )
 	              ), 
 
@@ -48326,7 +48331,7 @@
 	                React.DOM.div({className: "col-sm-12"}, 
 	                  Select({name: "form-field-name", value: this.state.model.members, 
 	                    multi: true, clearable: true, 
-	                    options: userOptions, onChange: this.onSelectChangedMember})
+	                    options: userOptionsType, onChange: this.onSelectChangedMember})
 	                )
 	              ), 
 
@@ -58545,9 +58550,47 @@
 
 	module.exports = ProjectStore;
 
-
 /***/ },
 /* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  login: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Login,
+	      data: data
+	    });
+	  },
+
+	  logout: function() {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Logout
+	    });
+	  },
+
+	  register: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Register,
+	      data: data
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58629,7 +58672,7 @@
 
 
 /***/ },
-/* 285 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58639,8 +58682,8 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(286);
-	var UserActions = __webpack_require__(287);
+	var CommonMixins = __webpack_require__(287);
+	var UserActions = __webpack_require__(284);
 	var NotificationActions = __webpack_require__(288);
 	var UserStore = __webpack_require__(289);
 
@@ -58733,7 +58776,7 @@
 
 
 /***/ },
-/* 286 */
+/* 287 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -58752,45 +58795,6 @@
 	    return this.state.model;
 	  }
 	};
-
-
-/***/ },
-/* 287 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  login: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Login,
-	      data: data
-	    });
-	  },
-
-	  logout: function() {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Logout
-	    });
-	  },
-
-	  register: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Register,
-	      data: data
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
 
 
 /***/ },
@@ -58969,8 +58973,8 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(286);
-	var UserActions = __webpack_require__(287);
+	var CommonMixins = __webpack_require__(287);
+	var UserActions = __webpack_require__(284);
 	var NotificationActions = __webpack_require__(288);
 	var UserStore = __webpack_require__(289);
 

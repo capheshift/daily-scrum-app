@@ -58567,7 +58567,7 @@
 	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
 	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
 
-	    UserStore.rmvListenerOnGetAllUserSuccess(this._onGetAllUserSuccess);
+	    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
 	    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
 	  },
 

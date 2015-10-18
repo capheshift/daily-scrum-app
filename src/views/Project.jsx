@@ -38,7 +38,7 @@ var ProjectPage = React.createClass({
 
   componentDidMount: function() {
     ProjectActions.all();
-    UserActions.getAll();
+    UserActions.getAllUsers();
 
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -46,8 +46,8 @@ var ProjectPage = React.createClass({
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
 
-    UserStore.addListenerOnGetAllSuccess(this._onGetAllUserSuccess, this);
-    UserStore.addListenerOnGetAllFail(this._onGetAllUserFail, this);
+    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
+    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
   },
 
   componentWillUnmount: function() {
@@ -57,8 +57,8 @@ var ProjectPage = React.createClass({
     ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
     ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
 
-    UserStore.rmvListenerOnGetAllSuccess(this._onGetAllUserSuccess);
-    UserStore.rmvListenerOnGetAllFail(this._onGetAllUserFail);
+    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
+    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
   },
 
   _onCreateSuccess: function(data) {
@@ -70,9 +70,15 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllSuccess: function(data) {
-    console.log(data);
-    this.setState({projectList: data.data});
-    window.location.hash = 'project';
+    console.log('_onGetAllSuccess', data);
+    var pList = data.data;
+    pList.forEach(function(item) {
+      if (!item._scrumMaster) {
+        item._scrumMaster = {};
+      }
+    });
+    this.setState({projectList: pList});
+    // window.location.hash = 'project';
   },
 
   _onGetAllFail: function(data) {
@@ -80,8 +86,9 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllUserSuccess: function(data) {
+    console.log('_onGetAllUserSuccess', data);
     this.setState({userOptions: data.data});
-    passValueUser(data.data);
+    this.passValueUser(data.data);
   },
 
   _onGetAllUserFail: function(data) {
@@ -91,22 +98,19 @@ var ProjectPage = React.createClass({
   passValueUser: function(data){
     var list = data.map(function(item){
       return {
-        label: item.name,
+        label: item.fullName,
         value: item._id
       };
-  });
-
-  this.setState({userOptionsType: list});
-  console.log("kiem tra : ",this.state.userOptionsType);
-},
+    });
+    console.log('passValueUser', list);
+    this.setState({userOptionsType: list});
+  },
 
   onCreateProjectClicked: function(e) {
     e.preventDefault();
 
     var pList = this.state.projectList;
-
     ProjectActions.create(this.state.model);
-
     pList.push({
       name: this.state.model.name
       //leader: "Giang"
@@ -161,7 +165,7 @@ var ProjectPage = React.createClass({
                   <tr>
                     <th scope="row">{index + 1}</th>
                     <td>{item.name}</td>
-                    <td>{item._scrumMaster}</td>
+                    <td>{item._scrumMaster.fullName}</td>
                     <td><a href="">Detail</a></td>
                   </tr>
                 );

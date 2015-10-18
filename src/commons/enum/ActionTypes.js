@@ -9,7 +9,7 @@ var keyMirror = require('react/lib/keyMirror');
 module.exports = keyMirror({
   Login: null,
   Register: null,
-  GetAll: null,
+  GetAllUsers: null,
 
   SET_CURRENT_ROUTE: null
 });

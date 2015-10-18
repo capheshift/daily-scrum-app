@@ -49,18 +49,18 @@ var UserStore = assign({}, EventEmitter.prototype, {
   rmvListenerOnLoginFail: function(context) {
     this.removeListener(Events.LoginFail, context);
   },
-  // listener for getAll
-  addListenerOnGetAllSuccess: function(callback, context) {
-    this.on(Events.GetAllSuccess, callback, context);
+  // listener for getAllUsers
+  addListenerOnGetAllUsersSuccess: function(callback, context) {
+    this.on(Events.GetAllUsersSuccess, callback, context);
   },
-  rmvListenerOnGetAllSuccess: function(context) {
-    this.removeListener(Events.GetAllSuccess, context);
+  rmvListenerOnGetAllUsersSuccess: function(context) {
+    this.removeListener(Events.GetAllUsersSuccess, context);
   },
-  addListenerOnGetAllFail: function(callback, context) {
-    this.on(Events.GetAllFail, callback, context);
+  addListenerOnGetAllUsersFail: function(callback, context) {
+    this.on(Events.GetAllUsersFail, callback, context);
   },
-  rmvListenerOnGetAllFail: function(context) {
-    this.removeListener(Events.GetAllFail, context);
+  rmvListenerOnGetAllUsersFail: function(context) {
+    this.removeListener(Events.GetAllUsersFail, context);
   },
 
   // functions
@@ -98,11 +98,11 @@ var UserStore = assign({}, EventEmitter.prototype, {
     }.bind(this));
   },
 
-  getAll: function() {
+  getAllUsers: function() {
     UserApis.all().then(function(data) {
-      this.emit(Events.GetAllSuccess, data);
+      this.emit(Events.GetAllUsersSuccess, data);
     }.bind(this), function(err) {
-      this.emit(Events.GetAllFail, err);
+      this.emit(Events.GetAllUsersFail, err);
     }.bind(this));
   }
 });
@@ -134,8 +134,8 @@ AppDispatcher.register(function(payload) {
       UserStore.register(payload.data);
       break;
 
-    case Actions.GetAll:
-      UserStore.getAll();
+    case Actions.GetAllUsers:
+      UserStore.getAllUsers();
       break;
 
     default:

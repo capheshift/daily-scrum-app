@@ -15,6 +15,12 @@ var Actions = {
     });
   },
 
+  all: function(){
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.All
+    });
+  }
+
 };
 
 module.exports = Actions;

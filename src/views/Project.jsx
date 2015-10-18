@@ -23,30 +23,45 @@ var ProjectPage = React.createClass({
   getInitialState: function() {
       return {
       model: {},
-      projectList: [
-        { name: 'VIB', leader: 'Tam Pham' },
-        { name: 'Nafoods', leader: 'Nguyễn Văn Sơn' },
-        { name: 'Daily Scrum', leader: 'Tân Nguyễn' }
-      ]
+      projectList: []
     };
   },
 
   componentDidMount: function() {
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
+    ProjectActions.all();
+    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
+    ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
   },
   componentWillUnmount: function() {
     ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
     ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
+    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
+    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
+  },
+
+  componentWillMount: function() {
+
   },
 
   _onCreateSuccess: function(data) {
     console.log('_onCreateSuccess', data);
+    this.setState({projectList: data});
     window.location.hash = 'project';
   },
 
   _onCreateFail: function(data) {
     console.log('_onCreateFail', data);
+  },
+
+  _onGetAllSuccess: function(data) {
+    console.log('_onGetAllSuccess', data);
+    window.location.hash = 'project';
+  },
+
+  _onGetAllFail: function(data) {
+    console.log('_onGetAllFail', data);
   },
 
   onCreateProjectClicked: function(e) {

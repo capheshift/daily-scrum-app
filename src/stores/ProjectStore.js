@@ -37,17 +37,39 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
     this.removeListener(Events.CreateProjectFail, context);
   },
 
+  addListenerGetAllProjectSuccess: function(callback, context) {
+    this.on(Events.GetAllProjectSuccess, callback, context);
+  },
+  rmvListenerGetAllProjectSuccess: function(context) {
+    this.removeListener(Events.GetAllProjectSuccess, context);
+  },
+  addListenerGetAllProjectFail: function(callback, context) {
+    this.on(Events.GetAllProjectFail, callback, context);
+  },
+  rmvListenerGetAllProjectFail: function(context) {
+    this.removeListener(Events.GetAllProjectFail, context);
+  },
+
   // functions
   create: function(data) {
 
     ProjectApis.create(data).then(
     function(body) {
-      // set token into localstorage
-      window.localStorage.setItem('token', body.data.token);
       this.emit(Events.CreateProjectSuccess, body);
     }.bind(this),
     function(err) {
       this.emit(Events.CreateProjectFail, err);
+    }.bind(this));
+  },
+
+  all: function() {
+
+    ProjectApis.all().then(
+    function(body) {
+      this.emit(Events.GetAllProjectSuccess, body);
+    }.bind(this),
+    function(err) {
+      this.emit(Events.GetAllProjectFail, err);
     }.bind(this));
   }
 });
@@ -69,6 +91,10 @@ AppDispatcher.register(function(payload) {
   switch (action) {
     case Actions.CreateProject:
       ProjectStore.create(payload.data);
+      break;
+
+    case Actions.All:
+      ProjectStore.all(payload.data);
       break;
 
     default:

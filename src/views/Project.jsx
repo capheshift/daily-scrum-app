@@ -28,26 +28,24 @@ var ProjectPage = React.createClass({
   },
 
   componentDidMount: function() {
+    ProjectActions.all();
+
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
-    ProjectActions.all();
+
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
   },
   componentWillUnmount: function() {
     ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
     ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
+
     ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
     ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
   },
 
-  componentWillMount: function() {
-
-  },
-
   _onCreateSuccess: function(data) {
     console.log('_onCreateSuccess', data);
-    this.setState({projectList: data});
     window.location.hash = 'project';
   },
 
@@ -57,6 +55,7 @@ var ProjectPage = React.createClass({
 
   _onGetAllSuccess: function(data) {
     console.log('_onGetAllSuccess', data);
+    this.setState({projectList: data.data});
     window.location.hash = 'project';
   },
 

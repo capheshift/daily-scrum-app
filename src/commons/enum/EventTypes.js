@@ -17,5 +17,10 @@ module.exports = keyMirror({
   RegisterFail: null,
 
   GetAllUsersSuccess: null,
-  GetAllUsersFail: null
+  GetAllUsersFail: null,
+
+  NewTaskSuccess: null,
+  NewTaskFail: null,
+  UpdateTaskSuccess: null,
+  UpdateTaskFail: null
 });

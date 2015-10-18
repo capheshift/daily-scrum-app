@@ -24,24 +24,24 @@ var MemberPage = React.createClass({
   },
 
   componentWillMount: function() {
-    UserActions.getAll();
+    UserActions.getAllUsers();
   },
 
   componentDidMount: function() {
-    UserStore.addListenerOnGetAllSuccess(this.onGetAllSuccess, this);
-    UserStore.addListenerOnGetAllFail(this.onGetAllFail, this);
+    UserStore.addListenerOnGetAllUsersSuccess(this.onGetAllUsersSuccess, this);
+    UserStore.addListenerOnGetAllUsersFail(this.onGetAllUsersFail, this);
   },
 
   componentWillUnmount: function() {
-    UserStore.rmvListenerOnGetAllSuccess(this.onGetAllSuccess);
-    UserStore.rmvListenerOnGetAllFail(this.onGetAllFail);
+    UserStore.rmvListenerOnGetAllUsersSuccess(this.onGetAllUsersSuccess);
+    UserStore.rmvListenerOnGetAllUsersFail(this.onGetAllUsersFail);
   },
 
-  onGetAllSuccess: function(response) {
+  onGetAllUsersSuccess: function(response) {
     this.setState({members: response.data});
   },
 
-  onGetAllFail: function(data) {
+  onGetAllUsersFail: function(data) {
     console.log('data fail', data);
   },
 

@@ -9,6 +9,8 @@ var Select = React.createFactory(require('react-select'));
 var Guid = require('guid');
 var lodash = require('lodash');
 var moment = require('moment');
+var UserApis = require('../commons/service-api').UserApis;
+var TaskApis = require('../commons/service-api').TaskApis;
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -57,6 +59,9 @@ var DailyPage = React.createClass({
   },
 
   componentDidMount: function() {
+  },
+
+  componentWillUnmount: function() {
   },
 
   newTaskOnClicked: function(dateItem) {

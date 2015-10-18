@@ -28,9 +28,9 @@ var Actions = {
     });
   },
 
-  getAll: function() {
+  getAllUsers: function() {
     AppDispatcher.dispatch({
-      actionType: ActionTypes.GetAll
+      actionType: ActionTypes.GetAllUsers
     });
   }
 

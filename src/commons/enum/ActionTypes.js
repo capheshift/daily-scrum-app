@@ -12,6 +12,10 @@ module.exports = keyMirror({
   CreateProject: null,
   All: null,
   GetAll: null,
+  GetAllUsers: null,
 
-  SET_CURRENT_ROUTE: null
+  SET_CURRENT_ROUTE: null,
+
+  TASK_NEW: null,
+  TASK_UPDATE: null
 });

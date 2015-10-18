@@ -105,15 +105,15 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(285));
+	    var page = React.createFactory(__webpack_require__(271));
 	    render(router.getRoute(), page);
 	  },
 	  '/login': function() {
-	    var page = React.createFactory(__webpack_require__(286));
+	    var page = React.createFactory(__webpack_require__(285));
 	    render(router.getRoute(), page);
 	  },
 	  '/register': function() {
-	    var page = React.createFactory(__webpack_require__(290));
+	    var page = React.createFactory(__webpack_require__(288));
 	    render(router.getRoute(), page);
 	  },
 	});
@@ -21599,6 +21599,7 @@
 	  Register: null,
 	  CreateProject: null,
 	  All: null,
+	  GetAll: null,
 
 	  SET_CURRENT_ROUTE: null
 	});
@@ -22492,7 +22493,10 @@
 	  CreateProjectFail: null,
 
 	  GetAllProjectSuccess: null,
-	  GetAllProjectFail: null
+	  GetAllProjectFail: null,
+
+	  GetAllSuccess: null,
+	  GetAllFail: null
 	});
 
 
@@ -47674,6 +47678,8 @@
 	    };
 	  },
 
+	  // getIni
+
 	  onSelectChanged: function() {
 	    console.log('onSelectChanged');
 	  },
@@ -48168,11 +48174,12 @@
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
 	var Select = React.createFactory(__webpack_require__(172));
-	var ProjectApis = __webpack_require__(271).ProjectApis;
-	var UserApis = __webpack_require__(271).UserApis;
-	var ProjectActions = __webpack_require__(282);
-	var ProjectStore = __webpack_require__(283);
-	var UserActions = __webpack_require__(284);
+	var ProjectApis = __webpack_require__(274).ProjectApis;
+	var UserApis = __webpack_require__(274).UserApis;
+	var ProjectActions = __webpack_require__(289);
+	var ProjectStore = __webpack_require__(290);
+	var UserActions = __webpack_require__(272);
+	var UserStore = __webpack_require__(273);
 
 	var ProjectPage = React.createClass({
 	  displayName: 'Project',
@@ -48187,18 +48194,23 @@
 	      return {
 	      model: {},
 	      projectList: [],
-	      userOptions: []
+	      userOptions: [],
+	      userOptionsType:[]
 	    };
 	  },
 
 	  componentDidMount: function() {
 	    ProjectActions.all();
+	    UserActions.getAll();
 
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
 
 	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
 	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
+
+	    UserStore.addListenerOnGetAllSuccess(this._onGetAllUserSuccess, this);
+	    UserStore.addListenerOnGetAllFail(this._onGetAllUserFail, this);
 	  },
 
 	  componentWillUnmount: function() {
@@ -48207,10 +48219,12 @@
 
 	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
 	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
+
+	    UserStore.rmvListenerOnGetAllSuccess(this._onGetAllUserSuccess);
+	    UserStore.rmvListenerOnGetAllFail(this._onGetAllUserFail);
 	  },
 
 	  _onCreateSuccess: function(data) {
-	    console.log('_onCreateSuccess', data);
 	    window.location.hash = 'project';
 	  },
 
@@ -48219,7 +48233,6 @@
 	  },
 
 	  _onGetAllSuccess: function(data) {
-	    console.log('_onGetAllSuccess', data);
 	    this.setState({projectList: data.data});
 	    window.location.hash = 'project';
 	  },
@@ -48227,6 +48240,27 @@
 	  _onGetAllFail: function(data) {
 	    console.log('_onGetAllFail', data);
 	  },
+
+	  _onGetAllUserSuccess: function(data) {
+	    console.log(data);
+	    this.setState({userOptions: data.data});
+	    passValueUser();
+	  },
+
+	  _onGetAllUserFail: function(data) {
+	    console.log('data fail', data);
+	  },
+
+	  passValueUser: function(){
+	    var list = this.state.userOptions.map(function(item){
+	      return {
+	        label: item.name,
+	        value: item._id
+	      };
+	  });
+
+	  this.setState({userOptionsType: list});
+	},
 
 	  onCreateProjectClicked: function(e) {
 	    e.preventDefault();
@@ -48259,7 +48293,7 @@
 	    this.setState({model: model});
 	  },
 
-	    onSelectChangedMember: function(data) {
+	  onSelectChangedMember: function(data) {
 	    var model = this.state.model;
 	    model.members = data;
 	    this.setState({model: model});
@@ -48267,12 +48301,12 @@
 
 	  render: function() {
 
-	    var userOptionsType = [
+	    /*var userOptionsType = [
 	      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
 	      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
 	      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
 	      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
-	    ];
+	    ];*/
 
 	    return (
 	      React.DOM.div({className: "row"}, 
@@ -48292,7 +48326,6 @@
 	            ), 
 	            React.DOM.tbody(null, 
 	              this.state.projectList.map(function(item, index) {
-
 	                return (
 	                  React.DOM.tr(null, 
 	                    React.DOM.th({scope: "row"}, index + 1), 
@@ -48322,7 +48355,7 @@
 	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
 	                React.DOM.div({className: "col-sm-12"}, 
 	                  Select({name: "form-field-name", value: this.state.model._scrumMaster, clearable: false, 
-	                    options: userOptionsType, onChange: this.onSelectChangedMaster})
+	                    options: this.state.userOptionsType, onChange: this.onSelectChangedMaster})
 	                )
 	              ), 
 
@@ -48331,7 +48364,7 @@
 	                React.DOM.div({className: "col-sm-12"}, 
 	                  Select({name: "form-field-name", value: this.state.model.members, 
 	                    multi: true, clearable: true, 
-	                    options: userOptionsType, onChange: this.onSelectChangedMember})
+	                    options: this.state.userOptionsType, onChange: this.onSelectChangedMember})
 	                )
 	              ), 
 
@@ -48359,10 +48392,308 @@
 /* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @jsx React.DOM
+	 */
 	'use strict';
 
-	var Promise = __webpack_require__(272);
-	var $ = __webpack_require__(281);
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var UserActions = __webpack_require__(272);
+	var UserStore = __webpack_require__(273);
+
+	var MemberPage = React.createClass({
+	  displayName: 'Member',
+
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      members: {}
+	    };
+	  },
+
+	  componentWillMount: function() {
+	    UserActions.getAll();
+	  },
+
+	  componentDidMount: function() {
+	    UserStore.addListenerOnGetAllSuccess(this.onGetAllSuccess, this);
+	    UserStore.addListenerOnGetAllFail(this.onGetAllFail, this);
+	  },
+
+	  componentWillUnmount: function() {
+	    UserStore.rmvListenerOnGetAllSuccess(this.onGetAllSuccess);
+	    UserStore.rmvListenerOnGetAllFail(this.onGetAllFail);
+	  },
+
+	  onGetAllSuccess: function(response) {
+	    this.setState({members: response.data});
+	  },
+
+	  onGetAllFail: function(data) {
+	    console.log('data fail', data);
+	  },
+
+	  render: function() {
+	    var members = [];
+
+	    if (this.state.members.length) {
+	      members = this.state.members.map(function(member, index) {
+	        return (
+	          React.DOM.div({className: "media"}, 
+	            React.DOM.div({className: "media-left"}, 
+	              React.DOM.a({href: "#"}, 
+	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	              )
+	            ), 
+	            React.DOM.div({className: "media-body"}, 
+	              React.DOM.h4({className: "media-heading"}, member.fullName), 
+	              React.DOM.h5(null, "Javascript Developer")
+	            )
+	          )
+	        );
+	      });
+	    }
+
+
+	    return (
+	      React.DOM.div({className: "row"}, 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "MEMBER")
+	        ), 
+	        React.DOM.div({className: "col-sm-6 member-list"}, 
+	          members
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = MemberPage;
+
+
+/***/ },
+/* 272 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  login: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Login,
+	      data: data
+	    });
+	  },
+
+	  logout: function() {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Logout
+	    });
+	  },
+
+	  register: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Register,
+	      data: data
+	    });
+	  },
+
+	  getAll: function() {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.GetAll
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 273 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var UserApis = __webpack_require__(274).UserApis;
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'UserStore';
+
+	/**
+	 * Store Start
+	 */
+	var UserStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnRegisterSuccess: function(callback, context) {
+	    this.on(Events.RegisterSuccess, callback, context);
+	  },
+	  rmvListenerOnRegisterSuccess: function(context) {
+	    this.removeListener(Events.RegisterSuccess, context);
+	  },
+	  addListenerOnRegisterFail: function(callback, context) {
+	    this.on(Events.RegisterFail, callback, context);
+	  },
+	  rmvListenerOnRegisterFail: function(context) {
+	    this.removeListener(Events.RegisterFail, context);
+	  },
+	  // listener for login
+	  addListenerOnLoginSuccess: function(callback, context) {
+	    this.on(Events.LoginSuccess, callback, context);
+	  },
+	  rmvListenerOnLoginSuccess: function(context) {
+	    this.removeListener(Events.LoginSuccess, context);
+	  },
+	  addListenerOnLoginFail: function(callback, context) {
+	    this.on(Events.LoginFail, callback, context);
+	  },
+	  rmvListenerOnLoginFail: function(context) {
+	    this.removeListener(Events.LoginFail, context);
+	  },
+	  // listener for getAll
+	  addListenerOnGetAllSuccess: function(callback, context) {
+	    this.on(Events.GetAllSuccess, callback, context);
+	  },
+	  rmvListenerOnGetAllSuccess: function(context) {
+	    this.removeListener(Events.GetAllSuccess, context);
+	  },
+	  addListenerOnGetAllFail: function(callback, context) {
+	    this.on(Events.GetAllFail, callback, context);
+	  },
+	  rmvListenerOnGetAllFail: function(context) {
+	    this.removeListener(Events.GetAllFail, context);
+	  },
+
+	  // functions
+	  login: function(data) {
+	    console.log('login data', data);
+	    console.log('register data', data);
+
+	    UserApis.login(data).then(
+	    function(body) {
+	      // set token into localstorage
+	      window.localStorage.setItem('token', body.data.token);
+	      this.emit(Events.LoginSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.LoginFail, err);
+	    }.bind(this));
+	  },
+
+	  logout: function(data) {
+	    console.log('logout data', data);
+	  },
+
+	  register: function(data) {
+	    console.log('register data', data);
+
+	    UserApis.register(data).then(
+	    function(body) {
+	      console.log('register', body);
+	      // set token into localstorage
+	      window.localStorage.setItem('token', body.data.token);
+	      this.emit(Events.RegisterSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.RegisterFail, err);
+	    }.bind(this));
+	  },
+
+	  getAll: function() {
+	    UserApis.all().then(function(data) {
+	      this.emit(Events.GetAllSuccess, data);
+	    }.bind(this), function(err) {
+	      this.emit(Events.GetAllFail, err);
+	    }.bind(this));
+	  }
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.Login:
+	      UserStore.login(payload.data);
+	      break;
+
+	    case Actions.Logout:
+	      UserStore.logout(payload.data);
+	      break;
+
+	    case Actions.Register:
+	      UserStore.register(payload.data);
+	      break;
+
+	    case Actions.GetAll:
+	      UserStore.getAll();
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // UserStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = UserStore;
+
+
+/***/ },
+/* 274 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Promise = __webpack_require__(275);
+	var $ = __webpack_require__(284);
 	var config = __webpack_require__(163);
 	var apiList, result = {};
 
@@ -48439,34 +48770,34 @@
 
 
 /***/ },
-/* 272 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(273)
+	module.exports = __webpack_require__(276)
 
 
 /***/ },
-/* 273 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(274);
-	__webpack_require__(276);
-	__webpack_require__(277);
-	__webpack_require__(278);
+	module.exports = __webpack_require__(277);
 	__webpack_require__(279);
+	__webpack_require__(280);
+	__webpack_require__(281);
+	__webpack_require__(282);
 
 
 /***/ },
-/* 274 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(275);
+	var asap = __webpack_require__(278);
 
 	function noop() {}
 
@@ -48651,7 +48982,7 @@
 
 
 /***/ },
-/* 275 */
+/* 278 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -48878,12 +49209,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 276 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(274);
+	var Promise = __webpack_require__(277);
 
 	module.exports = Promise;
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -48897,12 +49228,12 @@
 
 
 /***/ },
-/* 277 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(274);
+	var Promise = __webpack_require__(277);
 
 	module.exports = Promise;
 	Promise.prototype['finally'] = function (f) {
@@ -48919,14 +49250,14 @@
 
 
 /***/ },
-/* 278 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains the ES6 extensions to the core Promises/A+ API
 
-	var Promise = __webpack_require__(274);
+	var Promise = __webpack_require__(277);
 
 	module.exports = Promise;
 
@@ -49032,7 +49363,7 @@
 
 
 /***/ },
-/* 279 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49040,8 +49371,8 @@
 	// This file contains then/promise specific extensions that are only useful
 	// for node.js interop
 
-	var Promise = __webpack_require__(274);
-	var asap = __webpack_require__(280);
+	var Promise = __webpack_require__(277);
+	var asap = __webpack_require__(283);
 
 	module.exports = Promise;
 
@@ -49109,13 +49440,13 @@
 
 
 /***/ },
-/* 280 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(275);
+	var rawAsap = __webpack_require__(278);
 	// RawTasks are recycled to reduce GC churn.
 	var freeTasks = [];
 	// We queue errors to ensure they are thrown in right order (FIFO).
@@ -49181,7 +49512,7 @@
 
 
 /***/ },
-/* 281 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -58397,7 +58728,274 @@
 
 
 /***/ },
-/* 282 */
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var CommonMixins = __webpack_require__(286);
+	var UserActions = __webpack_require__(272);
+	var NotificationActions = __webpack_require__(287);
+	var UserStore = __webpack_require__(273);
+
+	var LoginPage = React.createClass({
+	  mixins: [CommonMixins],
+
+	  displayName: 'Login Page',
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      model: {}
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    UserStore.addListenerOnLoginSuccess(this._onLoginSuccess, this);
+	    UserStore.addListenerOnLoginFail(this._onLoginFail, this);
+	  },
+	  componentWillUnmount: function() {
+	    UserStore.rmvListenerOnLoginSuccess(this._onLoginSuccess);
+	    UserStore.rmvListenerOnLoginFail(this._onLoginFail);
+	  },
+
+	  _onLoginSuccess: function(data) {
+	    console.log('_onLoginSuccess', data);
+	    window.location.hash = 'daily';
+	  },
+	  _onLoginFail: function(data) {
+	    console.log('_onLoginFail', data);
+	  },
+
+	  login: function(e) {
+	    e.preventDefault();
+	    var m = this.getModel();
+	    var model = {
+	      username: m.email,
+	      password: m.password
+	    };
+	    console.log('model', model);
+	    UserActions.login(model);
+	  },
+
+	  render: function() {
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
+	          React.DOM.div({className: "panel-heading"}, 
+	            React.DOM.div({className: "panel-title text-center"}, 
+	              "Login"
+	            )
+	          ), 
+
+	          React.DOM.div({className: "panel-body"}, 
+	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
+	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text", 
+	                  value: this.state.model.email, onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
+	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password", 
+	                  value: this.state.model.password, onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.div({className: "col-sm-12 controls"}, 
+	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
+	                    onClick: this.login}, 
+	                    "Log in"
+	                  ), 
+	                  React.DOM.a({href: "#/register", className: "btn btn-link pull-right"}, "Register")
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = LoginPage;
+
+
+/***/ },
+/* 286 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = {
+	  onChange: function(e) {
+	    var model = this.state.model;
+	    model[e.target.name] = e.target.value;
+
+	    this.setState({
+	      model: model
+	    });
+	  },
+
+	  getModel: function() {
+	    return this.state.model;
+	  }
+	};
+
+
+/***/ },
+/* 287 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  notification: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.Notification,
+	      data: data
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 288 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @jsx React.DOM
+	 */
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var DefaultLayout = React.createFactory(__webpack_require__(165));
+	var CommonMixins = __webpack_require__(286);
+	var UserActions = __webpack_require__(272);
+	var NotificationActions = __webpack_require__(287);
+	var UserStore = __webpack_require__(273);
+
+	var LoginPage = React.createClass({
+	  mixins: [CommonMixins],
+
+	  displayName: 'Login Page',
+	  getDefaultProps: function() {
+	    return {
+	      layout: DefaultLayout
+	    };
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      model: {}
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    UserStore.addListenerOnRegisterSuccess(this._onRegisterSuccess, this);
+	    UserStore.addListenerOnRegisterFail(this._onRegisterFail, this);
+	  },
+	  componentWillUnmount: function() {
+	    UserStore.rmvListenerOnRegisterSuccess(this._onRegisterSuccess);
+	    UserStore.rmvListenerOnRegisterFail(this._onRegisterFail);
+	  },
+
+	  _onRegisterSuccess: function(data) {
+	    console.log('_onRegisterSuccess', data);
+	    NotificationActions.notification(data);
+	    window.location.hash = 'login';
+	  },
+	  _onRegisterFail: function(data) {
+	    console.log('_onRegisterFail', data);
+	  },
+
+	  register: function(e) {
+	    e.preventDefault();
+	    var m = this.getModel();
+	    var model = {
+	      username: m.email,
+	      email: m.email,
+	      password: m.password,
+	      fullName: m.fullname
+	    };
+	    UserActions.register(model);
+	  },
+
+	  render: function() {
+	    return (
+	      React.DOM.div(null, 
+	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
+	          React.DOM.div({className: "panel-heading"}, 
+	            React.DOM.div({className: "panel-title text-center"}, 
+	              "Register"
+	            )
+	          ), 
+
+	          React.DOM.div({className: "panel-body"}, 
+	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-knight"}), 
+	                React.DOM.input({className: "form-control", id: "fullname", name: "fullname", 
+	                  placeholder: "full name", type: "text", value: this.state.model.fullname, 
+	                  onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
+	                React.DOM.input({className: "form-control", id: "email", name: "email", 
+	                  placeholder: "your email", type: "text", value: this.state.model.email, 
+	                  onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
+	                React.DOM.input({className: "form-control", id: "password", name: "password", 
+	                  placeholder: "password", type: "password", value: this.state.model.password, 
+	                  onChange: this.onChange})
+	              ), 
+
+	              React.DOM.div({className: "form-group"}, 
+	                React.DOM.div({className: "col-sm-12 controls"}, 
+	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
+	                    onClick: this.register.bind(this)}, 
+	                    "Register"
+	                  ), 
+	                  React.DOM.a({href: "#/login", className: "btn btn-link pull-right"}, "Login")
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = LoginPage;
+
+
+/***/ },
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58429,7 +59027,7 @@
 
 
 /***/ },
-/* 283 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58445,7 +59043,7 @@
 	var assign = __webpack_require__(13);
 	var Actions = __webpack_require__(162);
 	var Events = __webpack_require__(171);
-	var ProjectApis = __webpack_require__(271).ProjectApis;
+	var ProjectApis = __webpack_require__(274).ProjectApis;
 
 	/**
 	 * Variables
@@ -58549,533 +59147,6 @@
 	});
 
 	module.exports = ProjectStore;
-
-/***/ },
-/* 284 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  login: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Login,
-	      data: data
-	    });
-	  },
-
-	  logout: function() {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Logout
-	    });
-	  },
-
-	  register: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Register,
-	      data: data
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 285 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-
-	var MemberPage = React.createClass({
-	  displayName: 'Member',
-
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  render: function() {
-	    return (
-	      React.DOM.div({className: "row"}, 
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h4(null, "MEMBER")
-	        ), 
-
-	        React.DOM.div({className: "col-sm-6 member-list"}, 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Tam Pham"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Tan Nguyễn"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Nguyễn Văn Sơn"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          ), 
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
-	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, "Giang Strider"), 
-	              React.DOM.h5(null, "Javascript Developer")
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = MemberPage;
-
-
-/***/ },
-/* 286 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(287);
-	var UserActions = __webpack_require__(284);
-	var NotificationActions = __webpack_require__(288);
-	var UserStore = __webpack_require__(289);
-
-	var LoginPage = React.createClass({
-	  mixins: [CommonMixins],
-
-	  displayName: 'Login Page',
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      model: {}
-	    };
-	  },
-
-	  componentDidMount: function() {
-	    UserStore.addListenerOnLoginSuccess(this._onLoginSuccess, this);
-	    UserStore.addListenerOnLoginFail(this._onLoginFail, this);
-	  },
-	  componentWillUnmount: function() {
-	    UserStore.rmvListenerOnLoginSuccess(this._onLoginSuccess);
-	    UserStore.rmvListenerOnLoginFail(this._onLoginFail);
-	  },
-
-	  _onLoginSuccess: function(data) {
-	    console.log('_onLoginSuccess', data);
-	    window.location.hash = 'daily';
-	  },
-	  _onLoginFail: function(data) {
-	    console.log('_onLoginFail', data);
-	  },
-
-	  login: function(e) {
-	    e.preventDefault();
-	    var m = this.getModel();
-	    var model = {
-	      username: m.email,
-	      password: m.password
-	    };
-	    console.log('model', model);
-	    UserActions.login(model);
-	  },
-
-	  render: function() {
-	    return (
-	      React.DOM.div(null, 
-	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
-	          React.DOM.div({className: "panel-heading"}, 
-	            React.DOM.div({className: "panel-title text-center"}, 
-	              "Login"
-	            )
-	          ), 
-
-	          React.DOM.div({className: "panel-body"}, 
-	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
-	                React.DOM.input({className: "form-control", id: "email", name: "email", placeholder: "your email", type: "text", 
-	                  value: this.state.model.email, onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
-	                React.DOM.input({className: "form-control", id: "password", name: "password", placeholder: "password", type: "password", 
-	                  value: this.state.model.password, onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.div({className: "col-sm-12 controls"}, 
-	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
-	                    onClick: this.login}, 
-	                    "Log in"
-	                  ), 
-	                  React.DOM.a({href: "#/register", className: "btn btn-link pull-right"}, "Register")
-	                )
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = LoginPage;
-
-
-/***/ },
-/* 287 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	module.exports = {
-	  onChange: function(e) {
-	    var model = this.state.model;
-	    model[e.target.name] = e.target.value;
-
-	    this.setState({
-	      model: model
-	    });
-	  },
-
-	  getModel: function() {
-	    return this.state.model;
-	  }
-	};
-
-
-/***/ },
-/* 288 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  notification: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.Notification,
-	      data: data
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 289 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * ToDo Store
-	 */
-	'use strict';
-
-	/**
-	 * Libraries
-	 */
-	var AppDispatcher = __webpack_require__(158);
-	var EventEmitter = __webpack_require__(170).EventEmitter;
-	var assign = __webpack_require__(13);
-	var Actions = __webpack_require__(162);
-	var Events = __webpack_require__(171);
-	var UserApis = __webpack_require__(271).UserApis;
-
-	/**
-	 * Variables
-	 */
-	var DEBUG = false;
-	var _name = 'UserStore';
-
-	/**
-	 * Store Start
-	 */
-	var UserStore = assign({}, EventEmitter.prototype, {
-	  // listener events zone
-	  addListenerOnRegisterSuccess: function(callback, context) {
-	    this.on(Events.RegisterSuccess, callback, context);
-	  },
-	  rmvListenerOnRegisterSuccess: function(context) {
-	    this.removeListener(Events.RegisterSuccess, context);
-	  },
-	  addListenerOnRegisterFail: function(callback, context) {
-	    this.on(Events.RegisterFail, callback, context);
-	  },
-	  rmvListenerOnRegisterFail: function(context) {
-	    this.removeListener(Events.RegisterFail, context);
-	  },
-	  // listener for login
-	  addListenerOnLoginSuccess: function(callback, context) {
-	    this.on(Events.LoginSuccess, callback, context);
-	  },
-	  rmvListenerOnLoginSuccess: function(context) {
-	    this.removeListener(Events.LoginSuccess, context);
-	  },
-	  addListenerOnLoginFail: function(callback, context) {
-	    this.on(Events.LoginFail, callback, context);
-	  },
-	  rmvListenerOnLoginFail: function(context) {
-	    this.removeListener(Events.LoginFail, context);
-	  },
-
-	  // functions
-	  login: function(data) {
-	    console.log('login data', data);
-	    console.log('register data', data);
-
-	    UserApis.login(data).then(
-	    function(body) {
-	      // set token into localstorage
-	      window.localStorage.setItem('token', body.data.token);
-	      this.emit(Events.LoginSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.LoginFail, err);
-	    }.bind(this));
-	  },
-
-	  logout: function(data) {
-	    console.log('logout data', data);
-	  },
-
-	  register: function(data) {
-	    console.log('register data', data);
-
-	    UserApis.register(data).then(
-	    function(body) {
-	      console.log('register', body);
-	      // set token into localstorage
-	      window.localStorage.setItem('token', body.data.token);
-	      this.emit(Events.RegisterSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.RegisterFail, err);
-	    }.bind(this));
-	  }
-	});
-
-	/**
-	 * Integrated with Dispatcher
-	 */
-	AppDispatcher.register(function(payload) {
-
-	  var action = payload.actionType;
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
-	    console.log('     Payload:');
-	    console.log(payload);
-	  }
-
-	  // Route Logic
-	  switch (action) {
-	    case Actions.Login:
-	      UserStore.login(payload.data);
-	      break;
-
-	    case Actions.Logout:
-	      UserStore.logout(payload.data);
-	      break;
-
-	    case Actions.Register:
-	      UserStore.register(payload.data);
-	      break;
-
-	    default:
-	      if (DEBUG) {
-	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
-	      }
-	      return true;
-	  }
-
-	  // If action was responded to, emit change event
-	  // UserStore.emitChange();
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':emitChange ---');
-	  }
-
-	  return true;
-	});
-
-	module.exports = UserStore;
-
-
-/***/ },
-/* 290 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @jsx React.DOM
-	 */
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(287);
-	var UserActions = __webpack_require__(284);
-	var NotificationActions = __webpack_require__(288);
-	var UserStore = __webpack_require__(289);
-
-	var LoginPage = React.createClass({
-	  mixins: [CommonMixins],
-
-	  displayName: 'Login Page',
-	  getDefaultProps: function() {
-	    return {
-	      layout: DefaultLayout
-	    };
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      model: {}
-	    };
-	  },
-
-	  componentDidMount: function() {
-	    UserStore.addListenerOnRegisterSuccess(this._onRegisterSuccess, this);
-	    UserStore.addListenerOnRegisterFail(this._onRegisterFail, this);
-	  },
-	  componentWillUnmount: function() {
-	    UserStore.rmvListenerOnRegisterSuccess(this._onRegisterSuccess);
-	    UserStore.rmvListenerOnRegisterFail(this._onRegisterFail);
-	  },
-
-	  _onRegisterSuccess: function(data) {
-	    console.log('_onRegisterSuccess', data);
-	    NotificationActions.notification(data);
-	    window.location.hash = 'login';
-	  },
-	  _onRegisterFail: function(data) {
-	    console.log('_onRegisterFail', data);
-	  },
-
-	  register: function(e) {
-	    e.preventDefault();
-	    var m = this.getModel();
-	    var model = {
-	      username: m.email,
-	      email: m.email,
-	      password: m.password,
-	      fullName: m.fullname
-	    };
-	    UserActions.register(model);
-	  },
-
-	  render: function() {
-	    return (
-	      React.DOM.div(null, 
-	        React.DOM.div({className: "panel-login col-sm-4 col-sm-offset-4"}, 
-	          React.DOM.div({className: "panel-heading"}, 
-	            React.DOM.div({className: "panel-title text-center"}, 
-	              "Register"
-	            )
-	          ), 
-
-	          React.DOM.div({className: "panel-body"}, 
-	            React.DOM.form({className: "form-horizontal", enctype: "multipart/form-data", id: "form", method: "post", name: "form"}, 
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-knight"}), 
-	                React.DOM.input({className: "form-control", id: "fullname", name: "fullname", 
-	                  placeholder: "full name", type: "text", value: this.state.model.fullname, 
-	                  onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-send"}), 
-	                React.DOM.input({className: "form-control", id: "email", name: "email", 
-	                  placeholder: "your email", type: "text", value: this.state.model.email, 
-	                  onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "input-group"}, 
-	                React.DOM.span({className: "input-group-addon glyphicon glyphicon-lock"}), 
-	                React.DOM.input({className: "form-control", id: "password", name: "password", 
-	                  placeholder: "password", type: "password", value: this.state.model.password, 
-	                  onChange: this.onChange})
-	              ), 
-
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.div({className: "col-sm-12 controls"}, 
-	                  React.DOM.button({className: "btn btn-default pull-right", type: "submit", 
-	                    onClick: this.register.bind(this)}, 
-	                    "Register"
-	                  ), 
-	                  React.DOM.a({href: "#/login", className: "btn btn-link pull-right"}, "Login")
-	                )
-	              )
-	            )
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-
-	module.exports = LoginPage;
-
 
 /***/ }
 /******/ ]);

@@ -10,6 +10,7 @@ var ProjectApis = require('../commons/service-api').ProjectApis;
 var UserApis = require('../commons/service-api').UserApis;
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
+var UserActions = require('../actions/UserActions');
 
 var ProjectPage = React.createClass({
   displayName: 'Project',
@@ -23,7 +24,8 @@ var ProjectPage = React.createClass({
   getInitialState: function() {
       return {
       model: {},
-      projectList: []
+      projectList: [],
+      userOptions: []
     };
   },
 
@@ -36,6 +38,7 @@ var ProjectPage = React.createClass({
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
   },
+
   componentWillUnmount: function() {
     ProjectStore.rmvListenerOnCreateSuccess(this._onCreateSuccess);
     ProjectStore.rmvListenerOnCreateFail(this._onCreateFail);
@@ -70,6 +73,11 @@ var ProjectPage = React.createClass({
 
     ProjectActions.create(this.state.model);
 
+    pList.push({
+      name: this.state.model.name
+      //leader: "Giang"
+    });
+
     this.setState({
       projectList: pList,
       model: { name: '' }
@@ -80,11 +88,12 @@ var ProjectPage = React.createClass({
     var model = this.state.model;
     model[e.target.name] = e.target.value;
     this.setState({model: model});
+    console.log(model);
   },
 
-  onSelectChangedMaster: function(data) {
+  onSelectChangedMaster: function(e) {
     var model = this.state.model;
-    model.leader = data;
+    model._scrumMaster = e;
     this.setState({model: model});
   },
 
@@ -95,17 +104,12 @@ var ProjectPage = React.createClass({
   },
 
   render: function() {
-    var projectOptions = [
-      { value: 'vib', label: 'VIB' },
-      { value: 'nafoods', label: 'Nafoods' },
-      { value: 'daily-scrum', label: 'Daily Scrum' }
-    ];
 
-    var userOptions = [
-      { value: 'tampham', label: 'Tam Pham' },
-      { value: 'tannguyen', label: 'Tan Nguyen' },
-      { value: 'giangstrider', label: 'Giang Strider' },
-      { value: 'nguyenvanson', label: 'Nguyễn Văn Sơn' }
+    var userOptionsType = [
+      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
+      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
+      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
+      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
     ];
 
     return (
@@ -125,12 +129,13 @@ var ProjectPage = React.createClass({
               </tr>
             </thead>
             <tbody>
-              {this.state.projectList.map(function(item) {
+              {this.state.projectList.map(function(item, index) {
+
                 return (
                   <tr>
-                    <th scope="row">1</th>
+                    <th scope="row">{index + 1}</th>
                     <td>{item.name}</td>
-                    <td>{item.leader}</td>
+                    <td>{item._id}</td>
                     <td><a href="">Detail</a></td>
                   </tr>
                 );
@@ -154,8 +159,8 @@ var ProjectPage = React.createClass({
               <div className="form-group">
                 <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
                 <div className="col-sm-12">
-                  <Select name="form-field-name" value={this.state.model.leader} clearable={false}
-                    options={userOptions} onChange={this.onSelectChangedMaster} />
+                  <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
+                    options={userOptionsType} onChange={this.onSelectChangedMaster} />
                 </div>
               </div>
 
@@ -164,7 +169,7 @@ var ProjectPage = React.createClass({
                 <div className="col-sm-12">
                   <Select name="form-field-name" value={this.state.model.members}
                     multi={true} clearable={true}
-                    options={userOptions} onChange={this.onSelectChangedMember} />
+                    options={userOptionsType} onChange={this.onSelectChangedMember} />
                 </div>
               </div>
 

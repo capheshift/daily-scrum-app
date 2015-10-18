@@ -5,7 +5,8 @@
 
 var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
-var UserApis = require('../commons/service-api').UserApis;
+var UserActions = require('../actions/UserActions');
+var UserStore = require('../stores/UserStore');
 
 var MemberPage = React.createClass({
   displayName: 'Member',
@@ -23,16 +24,32 @@ var MemberPage = React.createClass({
   },
 
   componentWillMount: function() {
-    UserApis.all().then(function(data) {
-      this.setState({members: data});
-    }.bind(this));
+    UserActions.getAll();
+  },
+
+  componentDidMount: function() {
+    UserStore.addListenerOnGetAllSuccess(this.onGetAllSuccess, this);
+    UserStore.addListenerOnGetAllFail(this.onGetAllFail, this);
+  },
+
+  componentWillUnmount: function() {
+    UserStore.rmvListenerOnGetAllSuccess(this.onGetAllSuccess);
+    UserStore.rmvListenerOnGetAllFail(this.onGetAllFail);
+  },
+
+  onGetAllSuccess: function(response) {
+    this.setState({members: response.data});
+  },
+
+  onGetAllFail: function(data) {
+    console.log('data fail', data);
   },
 
   render: function() {
-    var members = {};
+    var members = [];
 
-    if (this.state.members.success) {
-      members = this.state.members.data.map(function(data, index) {
+    if (this.state.members.length) {
+      members = this.state.members.map(function(member, index) {
         return (
           <div className="media">
             <div className="media-left">
@@ -41,7 +58,7 @@ var MemberPage = React.createClass({
               </a>
             </div>
             <div className="media-body">
-              <h4 className="media-heading">{data.email}</h4>
+              <h4 className="media-heading">{member.fullName}</h4>
               <h5>Javascript Developer</h5>
             </div>
           </div>
@@ -49,12 +66,12 @@ var MemberPage = React.createClass({
       });
     }
 
+
     return (
       <div className="row">
         <div className="col-sm-12">
           <h4>MEMBER</h4>
         </div>
-
         <div className="col-sm-6 member-list">
           {members}
         </div>

@@ -26,6 +26,12 @@ var Actions = {
       actionType: ActionTypes.Register,
       data: data
     });
+  },
+
+  getAll: function() {
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.GetAll
+    });
   }
 
 };

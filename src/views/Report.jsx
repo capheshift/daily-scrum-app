@@ -17,6 +17,8 @@ var ReportPage = React.createClass({
     };
   },
 
+  // getIni
+
   onSelectChanged: function() {
     console.log('onSelectChanged');
   },

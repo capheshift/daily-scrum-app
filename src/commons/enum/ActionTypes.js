@@ -11,6 +11,7 @@ module.exports = keyMirror({
   Register: null,
   CreateProject: null,
   All: null,
+  GetAll: null,
 
   SET_CURRENT_ROUTE: null
 });

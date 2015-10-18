@@ -59,24 +59,9 @@ var DailyPage = React.createClass({
   },
 
   componentDidMount: function() {
-    var findData = {
-      q: {email: 'tampham47@live.com'},
-      l: {}
-    };
+  },
 
-    // test request data
-    UserApis.all().then(function(data) {
-      console.log('UserApis.all', data);
-    });
-    UserApis.getById(null, {_id: '5621d55a6d7edd0300e0417b'}).then(function(data) {
-      console.log('UserApis.detail', data);
-    });
-    UserApis.find(null, findData).then(function(data) {
-      console.log('UserApis.find', data);
-    });
-    TaskApis.update({}, {_id: '5621d55a6d7edd0300e0417b'}).then(function(data) {
-      console.log('TaskApis.find', data);
-    });
+  componentWillUnmount: function() {
   },
 
   newTaskOnClicked: function(dateItem) {

@@ -11,5 +11,8 @@ module.exports = keyMirror({
   Register: null,
   GetAllUsers: null,
 
-  SET_CURRENT_ROUTE: null
+  SET_CURRENT_ROUTE: null,
+
+  TASK_NEW: null,
+  TASK_UPDATE: null
 });

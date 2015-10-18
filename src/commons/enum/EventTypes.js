@@ -17,7 +17,7 @@ module.exports = keyMirror({
   CreateProjectFail: null,
 
   GetAllProjectSuccess: null,
-  GetAllProjectFail: null
+  GetAllProjectFail: null,
 
   GetAllSuccess: null,
   GetAllFail: null

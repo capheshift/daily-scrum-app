@@ -11,6 +11,7 @@ var UserApis = require('../commons/service-api').UserApis;
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
 var UserActions = require('../actions/UserActions');
+var UserStore = require('../stores/UserStore');
 
 var ProjectPage = React.createClass({
   displayName: 'Project',
@@ -25,18 +26,23 @@ var ProjectPage = React.createClass({
       return {
       model: {},
       projectList: [],
-      userOptions: []
+      userOptions: [],
+      userOptionsType:[]
     };
   },
 
   componentDidMount: function() {
     ProjectActions.all();
+    UserActions.getAll();
 
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
 
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllFail, this);
+
+    UserStore.addListenerOnGetAllSuccess(this._onGetAllUserSuccess, this);
+    UserStore.addListenerOnGetAllFail(this._onGetAllUserFail, this);
   },
 
   componentWillUnmount: function() {
@@ -45,10 +51,12 @@ var ProjectPage = React.createClass({
 
     ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllSuccess);
     ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllFail);
+
+    UserStore.rmvListenerOnGetAllSuccess(this._onGetAllUserSuccess);
+    UserStore.rmvListenerOnGetAllFail(this._onGetAllUserFail);
   },
 
   _onCreateSuccess: function(data) {
-    console.log('_onCreateSuccess', data);
     window.location.hash = 'project';
   },
 
@@ -57,7 +65,6 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllSuccess: function(data) {
-    console.log('_onGetAllSuccess', data);
     this.setState({projectList: data.data});
     window.location.hash = 'project';
   },
@@ -65,6 +72,27 @@ var ProjectPage = React.createClass({
   _onGetAllFail: function(data) {
     console.log('_onGetAllFail', data);
   },
+
+  _onGetAllUserSuccess: function(data) {
+    console.log(data);
+    this.setState({userOptions: data.data});
+    passValueUser();
+  },
+
+  _onGetAllUserFail: function(data) {
+    console.log('data fail', data);
+  },
+
+  passValueUser: function(){
+    var list = this.state.userOptions.map(function(item){
+      return {
+        label: item.name,
+        value: item._id
+      };
+  });
+
+  this.setState({userOptionsType: list});
+},
 
   onCreateProjectClicked: function(e) {
     e.preventDefault();
@@ -97,7 +125,7 @@ var ProjectPage = React.createClass({
     this.setState({model: model});
   },
 
-    onSelectChangedMember: function(data) {
+  onSelectChangedMember: function(data) {
     var model = this.state.model;
     model.members = data;
     this.setState({model: model});
@@ -105,12 +133,12 @@ var ProjectPage = React.createClass({
 
   render: function() {
 
-    var userOptionsType = [
+    /*var userOptionsType = [
       { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
       { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
       { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
       { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
-    ];
+    ];*/
 
     return (
       <div className="row">
@@ -130,7 +158,6 @@ var ProjectPage = React.createClass({
             </thead>
             <tbody>
               {this.state.projectList.map(function(item, index) {
-
                 return (
                   <tr>
                     <th scope="row">{index + 1}</th>
@@ -160,7 +187,7 @@ var ProjectPage = React.createClass({
                 <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
                 <div className="col-sm-12">
                   <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
-                    options={userOptionsType} onChange={this.onSelectChangedMaster} />
+                    options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
                 </div>
               </div>
 
@@ -169,7 +196,7 @@ var ProjectPage = React.createClass({
                 <div className="col-sm-12">
                   <Select name="form-field-name" value={this.state.model.members}
                     multi={true} clearable={true}
-                    options={userOptionsType} onChange={this.onSelectChangedMember} />
+                    options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
                 </div>
               </div>
 

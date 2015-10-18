@@ -27,7 +27,12 @@ var ProjectPage = React.createClass({
       model: {},
       projectList: [],
       userOptions: [],
-      userOptionsType:[]
+      userOptionsType: [
+      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
+      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
+      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
+      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
+    ]
     };
   },
 
@@ -65,6 +70,7 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllSuccess: function(data) {
+    console.log(data);
     this.setState({projectList: data.data});
     window.location.hash = 'project';
   },
@@ -74,17 +80,16 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllUserSuccess: function(data) {
-    console.log(data);
     this.setState({userOptions: data.data});
-    passValueUser();
+    passValueUser(data.data);
   },
 
   _onGetAllUserFail: function(data) {
     console.log('data fail', data);
   },
 
-  passValueUser: function(){
-    var list = this.state.userOptions.map(function(item){
+  passValueUser: function(data){
+    var list = data.map(function(item){
       return {
         label: item.name,
         value: item._id
@@ -92,6 +97,7 @@ var ProjectPage = React.createClass({
   });
 
   this.setState({userOptionsType: list});
+  console.log("kiem tra : ",this.state.userOptionsType);
 },
 
   onCreateProjectClicked: function(e) {
@@ -127,18 +133,11 @@ var ProjectPage = React.createClass({
 
   onSelectChangedMember: function(data) {
     var model = this.state.model;
-    model.members = data;
+    model._user = data;
     this.setState({model: model});
   },
 
   render: function() {
-
-    /*var userOptionsType = [
-      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
-      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
-      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
-      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
-    ];*/
 
     return (
       <div className="row">
@@ -162,7 +161,7 @@ var ProjectPage = React.createClass({
                   <tr>
                     <th scope="row">{index + 1}</th>
                     <td>{item.name}</td>
-                    <td>{item._id}</td>
+                    <td>{item._scrumMaster}</td>
                     <td><a href="">Detail</a></td>
                   </tr>
                 );
@@ -194,7 +193,7 @@ var ProjectPage = React.createClass({
               <div className="form-group">
                 <label className="col-sm-12 control-label" for="textinput">Team Members</label>
                 <div className="col-sm-12">
-                  <Select name="form-field-name" value={this.state.model.members}
+                  <Select name="form-field-name" value={this.state.model._user}
                     multi={true} clearable={true}
                     options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
                 </div>

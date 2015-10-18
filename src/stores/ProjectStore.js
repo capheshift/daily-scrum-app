@@ -12,6 +12,7 @@ var assign = require('react/lib/Object.assign');
 var Actions = require('../commons/enum/ActionTypes');
 var Events = require('../commons/enum/EventTypes');
 var ProjectApis = require('../commons/service-api').ProjectApis;
+var UProjectApis = require('../commons/service-api').UProjectApis;
 
 /**
  * Variables
@@ -52,6 +53,8 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
 
   // functions
   create: function(data) {
+
+    UProjectApis.create(data);
 
     ProjectApis.create(data).then(
     function(body) {

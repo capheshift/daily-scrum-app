@@ -21995,12 +21995,70 @@
 	var _name = 'Navbar.jsx';
 	var React = __webpack_require__(1);
 	var Link = React.createFactory(__webpack_require__(167));
+	var UserStore = __webpack_require__(287);
+	var UserActions = __webpack_require__(285);
 
 	var Navbar = React.createClass({
 
 	  displayName: _name,
 
-	  render:function() {
+	  getInitialState: function() {
+	    var fullName = window.localStorage.getItem('fullName');
+	    return {
+	      fullName: fullName || null
+	    };
+	  },
+
+	  componentDidMount: function() {
+	    UserStore.addListenerOnLoginSuccess(this._onLoginSuccess, this);
+	    UserStore.addListenerOnLoginFail(this._onLoginFail, this);
+	    UserStore.addListenerOnLogoutSuccess(this._onLogoutSuccess, this);
+	  },
+	  componentWillUnmount: function() {
+	    UserStore.rmvListenerOnLoginSuccess(this._onLoginSuccess);
+	    UserStore.rmvListenerOnLoginFail(this._onLoginFail);
+	    UserStore.rmvListenerOnLogoutSuccess(this._onLogoutSuccess);
+	  },
+
+	  _onLoginSuccess: function(body) {
+	    var fullName = body.data.fullName;
+	    this.setState({
+	      fullName: fullName
+	    });
+	  },
+
+	  _onLogoutSuccess: function(body) {
+	    window.location.hash = 'login';
+
+	    this.setState({
+	      fullName: ''
+	    });
+	  },
+
+	  _onLoginFail: function() {
+	  },
+
+	  logout: function() {
+	    console.log('logout');
+	    UserActions.logout({});
+	  },
+
+	  render: function() {
+	    var rightBlock = '';
+	    if (this.state.fullName) {
+	      rightBlock = (
+	        React.DOM.li({className: this._checkUri('todo')}, 
+	          React.DOM.a({href: "javascript:;", className: "navbar-item", onClick: this.logout}, this.state.fullName)
+	        )
+	      );
+	    } else {
+	      rightBlock = (
+	        React.DOM.li({className: this._checkUri('todo')}, 
+	          Link({ className: 'navbar-item', to: '/login' }, 'LOGIN')
+	        )
+	      );
+	    }
+
 	    return (
 	      React.DOM.nav({className: "navbar"}, 
 	        Link({ className: 'navbar-brand', to: '/' }, 'DAILY SCRUM'), 
@@ -22021,9 +22079,7 @@
 	        ), 
 
 	        React.DOM.ul({className: "nav navbar-nav navbar-right"}, 
-	          React.DOM.li({className: this._checkUri('todo')}, 
-	            Link({ className: 'navbar-item', to: '/login' }, 'LOGIN')
-	          )
+	          rightBlock
 	        )
 	      )
 	    );
@@ -22525,8 +22581,11 @@
 	var keyMirror = __webpack_require__(6);
 
 	module.exports = keyMirror({
-	  LoginSuccesss: null,
+	  LoginSuccess: null,
 	  LoginFail: null,
+
+	  LogoutSuccess: null,
+	  LogoutFail: null,
 
 	  RegisterSuccess: null,
 	  RegisterFail: null,
@@ -58689,6 +58748,21 @@
 	  rmvListenerOnLoginFail: function(context) {
 	    this.removeListener(Events.LoginFail, context);
 	  },
+	  //
+	  // listener for login
+	  addListenerOnLogoutSuccess: function(callback, context) {
+	    this.on(Events.LogoutSuccess, callback, context);
+	  },
+	  rmvListenerOnLogoutSuccess: function(context) {
+	    this.removeListener(Events.LogoutSuccess, context);
+	  },
+	  addListenerOnLogoutFail: function(callback, context) {
+	    this.on(Events.LogoutFail, callback, context);
+	  },
+	  rmvListenerOnLogoutFail: function(context) {
+	    this.removeListener(Events.LogoutFail, context);
+	  },
+
 
 	  // functions
 	  login: function(data) {
@@ -58699,6 +58773,7 @@
 	    function(body) {
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
+	      window.localStorage.setItem('fullName', body.data.fullName);
 	      this.emit(Events.LoginSuccess, body);
 	    }.bind(this),
 	    function(err) {
@@ -58708,6 +58783,8 @@
 
 	  logout: function(data) {
 	    console.log('logout data', data);
+	    window.localStorage.clear();
+	    this.emit(Events.LogoutSuccess);
 	  },
 
 	  register: function(data) {
@@ -58718,6 +58795,7 @@
 	      console.log('register', body);
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
+	      window.localStorage.setItem('fullName', body.data.fullName);
 	      this.emit(Events.RegisterSuccess, body);
 	    }.bind(this),
 	    function(err) {

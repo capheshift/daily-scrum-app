@@ -49,6 +49,19 @@ var UserStore = assign({}, EventEmitter.prototype, {
   rmvListenerOnLoginFail: function(context) {
     this.removeListener(Events.LoginFail, context);
   },
+  // listener for getAll
+  addListenerOnGetAllSuccess: function(callback, context) {
+    this.on(Events.GetAllSuccess, callback, context);
+  },
+  rmvListenerOnGetAllSuccess: function(context) {
+    this.removeListener(Events.GetAllSuccess, context);
+  },
+  addListenerOnGetAllFail: function(callback, context) {
+    this.on(Events.GetAllFail, callback, context);
+  },
+  rmvListenerOnGetAllFail: function(context) {
+    this.removeListener(Events.GetAllFail, context);
+  },
 
   // functions
   login: function(data) {
@@ -83,6 +96,14 @@ var UserStore = assign({}, EventEmitter.prototype, {
     function(err) {
       this.emit(Events.RegisterFail, err);
     }.bind(this));
+  },
+
+  getAll: function() {
+    UserApis.all().then(function(data) {
+      this.emit(Events.GetAllSuccess, data);
+    }.bind(this), function(err) {
+      this.emit(Events.GetAllFail, err);
+    }.bind(this));
   }
 });
 
@@ -111,6 +132,10 @@ AppDispatcher.register(function(payload) {
 
     case Actions.Register:
       UserStore.register(payload.data);
+      break;
+
+    case Actions.GetAll:
+      UserStore.getAll();
       break;
 
     default:

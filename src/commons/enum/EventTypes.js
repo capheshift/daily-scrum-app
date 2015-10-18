@@ -12,4 +12,7 @@ module.exports = keyMirror({
 
   RegisterSuccess: null,
   RegisterFail: null,
+
+  GetAllSuccess: null,
+  GetAllFail: null
 });

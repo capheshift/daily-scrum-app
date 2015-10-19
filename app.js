@@ -97,23 +97,23 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/report': function() {
-	    var page = React.createFactory(__webpack_require__(281));
+	    var page = React.createFactory(__webpack_require__(285));
 	    render(router.getRoute(), page);
 	  },
 	  '/project': function() {
-	    var page = React.createFactory(__webpack_require__(283));
-	    render(router.getRoute(), page);
-	  },
-	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(286));
-	    render(router.getRoute(), page);
-	  },
-	  '/login': function() {
 	    var page = React.createFactory(__webpack_require__(287));
 	    render(router.getRoute(), page);
 	  },
+	  '/member': function() {
+	    var page = React.createFactory(__webpack_require__(288));
+	    render(router.getRoute(), page);
+	  },
+	  '/login': function() {
+	    var page = React.createFactory(__webpack_require__(289));
+	    render(router.getRoute(), page);
+	  },
 	  '/register': function() {
-	    var page = React.createFactory(__webpack_require__(290));
+	    var page = React.createFactory(__webpack_require__(292));
 	    render(router.getRoute(), page);
 	  },
 	});
@@ -21644,8 +21644,27 @@
 	var CFG = {
 	  // Paint Area for this application
 	  container: document.getElementById('app'),
-	  apiPath: 'http://daily-scrum-api.herokuapp.com',
-	  // apiPath: 'http://localhost:3000',
+	  // apiPath: 'http://daily-scrum-api.herokuapp.com',
+	  apiPath: 'http://localhost:3000',
+
+	  estimateList: [
+	    { value: '0.5', label: '30 mins' },
+	    { value: '1', label: '1 hour' },
+	    { value: '1.5', label: '1 hours 30 mins' },
+	    { value: '2', label: '2 hours' },
+	    { value: '2.5', label: '2 hours 30 mins' },
+	    { value: '3', label: '3 hours' },
+	    { value: '3.5', label: '3 hours 30 mins' },
+	    { value: '4', label: '4 hours' },
+	    { value: '4.5', label: '4 hours 30 mins' },
+	    { value: '5', label: '5 hours' },
+	    { value: '5.5', label: '5 hours 30 mins' },
+	    { value: '6', label: '6 hours' },
+	    { value: '6.5', label: '6 hours 30 mins' },
+	    { value: '7', label: '7 hours' },
+	    { value: '7.5', label: '7 hours 30 mins' },
+	    { value: '8', label: '8 hours' },
+	  ]
 	};
 
 	module.exports = CFG;
@@ -21667,14 +21686,15 @@
 	var lodash = __webpack_require__(174);
 	var moment = __webpack_require__(194);
 
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 
-	var UserApis = __webpack_require__(172).UserApis;
-	var TaskApis = __webpack_require__(172).TaskApis;
+	var TaskActions = __webpack_require__(283);
+	var TaskStore = __webpack_require__(284);
 
 	var DailyPage = React.createClass({
 	  displayName: 'Daily',
+	  currentUser: '',
 
 	  getDefaultProps: function() {
 	    return {
@@ -21684,6 +21704,7 @@
 
 	  getInitialState: function() {
 	    var m = moment(), dateList = [], taskList = [];
+	    this.currentUser = window.localStorage.getItem('_id');
 
 	    // create default data
 	    dateList.push({
@@ -21693,10 +21714,11 @@
 	    });
 	    // add task list for today day
 	    taskList.push({
+	      _user: this.currentUser,
 	      id: Guid.raw(),
 	      date: m.format('YYYYMMDD'),
 	      isCompleted: false,
-	      value: ''
+	      content: ''
 	    });
 
 	    // add
@@ -21707,10 +21729,11 @@
 	      index: 2
 	    });
 	    taskList.push({
+	      _user: this.currentUser,
 	      id: Guid.raw(),
 	      date: m.format('YYYYMMDD'),
 	      isCompleted: false,
-	      value: ''
+	      content: ''
 	    });
 
 	    return {
@@ -21724,12 +21747,24 @@
 	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
 	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
 
+	    TaskStore.addListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
+	    TaskStore.addListenerOnNewTaskFail(this._onNewTaskFail, this);
+
 	    ProjectActions.all();
 	  },
 
 	  componentWillUnmount: function() {
 	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
 	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+
+	    TaskStore.rmvListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
+	    TaskStore.rmvListenerOnNewTaskFail(this._onNewTaskFail, this);
+	  },
+
+	  _onNewTaskSuccess: function(data) {
+	  },
+
+	  _onNewTaskFail: function(err) {
 	  },
 
 	  _onGetAllProjectSuccess: function(body) {
@@ -21748,14 +21783,21 @@
 	  },
 
 	  newTaskOnClicked: function(dateItem) {
+	    // save the last task
+	    var filterTaskByDate = lodash.filter(this.state.taskList, {date: dateItem.value});
+	    var taskItem = filterTaskByDate[filterTaskByDate.length - 1];
+	    console.log('newTaskOnClicked', taskItem);
+	    TaskActions.newTask(taskItem);
+
 	    console.log('newTaskOnClicked', dateItem, this.state.taskList);
 	    var newDateList, newTaskList;
 
 	    newTaskList = this.state.taskList.concat([{
+	      _user: this.currentUser,
 	      id: Guid.raw(),
 	      date: dateItem.value,
 	      isCompleted: false,
-	      value: ''
+	      content: ''
 	    }]);
 
 	    // only add the next day, when click on the last item
@@ -21805,7 +21847,7 @@
 	    var total = 0;
 
 	    for (var i = 0; i < filterTask.length; i++) {
-	      total += parseFloat(filterTask[i].estimate) || 0;
+	      total += parseFloat(filterTask[i].estimation) || 0;
 	    }
 
 	    return total;
@@ -21814,7 +21856,8 @@
 	  onTaskChanged: function(id, e) {
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
-	    currItem.task = e.target.value;
+	    currItem[e.target.name] = e.target.value;
+	    console.log('onTaskChanged', nList);
 
 	    this.setState({
 	      taskList: nList
@@ -21827,7 +21870,7 @@
 	    var currItem = this.findItem(nList, id);
 	    var currDate = this.findDateItem(this.state.dateList, currItem.date);
 
-	    currItem.estimate = newValue;
+	    currItem.estimation = newValue;
 	    // update total time
 	    currDate.totalTime = this.getTotalTime(nList, currItem);
 
@@ -21840,7 +21883,7 @@
 	  onProjectChanged: function(id, newValue) {
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
-	    currItem.project = newValue;
+	    currItem._project = newValue;
 
 	    this.setState({
 	      taskList: nList
@@ -21880,18 +21923,19 @@
 	            React.DOM.div({className: "input-group"}, 
 	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
 	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                value: item.task, 
+	                placeholder: "your task", type: "text", 
+	                ref: "content", name: "content", 
+	                value: item.content, 
 	                onChange: this.onTaskChanged.bind(null, item.id)})
 	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "project", clearable: false, value: item.project, 
+	            Select({name: "_project", clearable: false, value: item._project, 
 	              options: projectOptions, onChange: this.onProjectChanged.bind(null, item.id)})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            Select({name: "estimation", clearable: false, 
-	              value: item.estimate, options: timeRangeOptions, 
+	              value: item.estimation, options: timeRangeOptions, 
 	              onChange: this.onEstimateChanged.bind(null, item.id)})
 	          )
 	        )
@@ -22285,6 +22329,7 @@
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
 	      window.localStorage.setItem('fullName', body.data.fullName);
+	      window.localStorage.setItem('_id', body.data._id);
 	      this.emit(Events.LoginSuccess, body);
 	    }.bind(this),
 	    function(err) {
@@ -58029,17 +58074,334 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  create: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.CreateProject,
+	      data: data
+	    });
+	  },
+
+	  all: function(){
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.All
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var ProjectApis = __webpack_require__(172).ProjectApis;
+	var UProjectApis = __webpack_require__(172).UProjectApis;
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'ProjectStore';
+
+	/**
+	 * Store Start
+	 */
+	var ProjectStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnCreateSuccess: function(callback, context) {
+	    this.on(Events.CreateProjectSuccess, callback, context);
+	  },
+	  rmvListenerOnCreateSuccess: function(context) {
+	    this.removeListener(Events.CreateProjectSuccess, context);
+	  },
+	  addListenerOnCreateFail: function(callback, context) {
+	    this.on(Events.CreateProjectFail, callback, context);
+	  },
+	  rmvListenerOnCreateFail: function(context) {
+	    this.removeListener(Events.CreateProjectFail, context);
+	  },
+
+	  addListenerGetAllProjectSuccess: function(callback, context) {
+	    this.on(Events.GetAllProjectSuccess, callback, context);
+	  },
+	  rmvListenerGetAllProjectSuccess: function(context) {
+	    this.removeListener(Events.GetAllProjectSuccess, context);
+	  },
+	  addListenerGetAllProjectFail: function(callback, context) {
+	    this.on(Events.GetAllProjectFail, callback, context);
+	  },
+	  rmvListenerGetAllProjectFail: function(context) {
+	    this.removeListener(Events.GetAllProjectFail, context);
+	  },
+
+	  // functions
+	  create: function(data) {
+
+	    UProjectApis.create(data);
+
+	    ProjectApis.create(data).then(
+	    function(body) {
+	      this.emit(Events.CreateProjectSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.CreateProjectFail, err);
+	    }.bind(this));
+	  },
+
+	  all: function() {
+
+	    ProjectApis.all().then(
+	    function(body) {
+	      this.emit(Events.GetAllProjectSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.GetAllProjectFail, err);
+	    }.bind(this));
+	  }
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.CreateProject:
+	      ProjectStore.create(payload.data);
+	      break;
+
+	    case Actions.All:
+	      ProjectStore.all(payload.data);
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // UserStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = ProjectStore;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var AppActions = {
+
+	  /**
+	   * Set the current route.
+	   * @param {string} route Supply a route value, such as `todos/completed`.
+	   */
+	  newTask: function(data) {
+	    console.log('Action newTask', data);
+	    AppDispatcher.handleViewAction({
+	      actionType: ActionTypes.TASK_NEW,
+	      data: data
+	    });
+	  },
+
+	  updateTask: function(data) {
+	    AppDispatcher.handleViewAction({
+	      actionType: ActionTypes.TASK_UPDATE,
+	      data: data
+	    });
+	  }
+	};
+
+	module.exports = AppActions;
+
+
+/***/ },
+/* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var TaskApis = __webpack_require__(172).TaskApis;
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'TaskStore';
+
+	/**
+	 * Store Start
+	 */
+	var TaskStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnNewTaskSuccess: function(callback, context) {
+	    this.on(Events.NewTaskSuccess, callback, context);
+	  },
+	  rmvListenerOnNewTaskSuccess: function(context) {
+	    this.removeListener(Events.NewTaskSuccess, context);
+	  },
+	  addListenerOnNewTaskFail: function(callback, context) {
+	    this.on(Events.NewTaskFail, callback, context);
+	  },
+	  rmvListenerOnNewTaskFail: function(context) {
+	    this.removeListener(Events.NewTaskFail, context);
+	  },
+
+	  // listener events zone
+	  addListenerOnUpdateTaskSuccess: function(callback, context) {
+	    this.on(Events.UpdateTaskSuccess, callback, context);
+	  },
+	  rmvListenerOnUpdateTaskSuccess: function(context) {
+	    this.removeListener(Events.UpdateTaskSuccess, context);
+	  },
+	  addListenerOnUpdateTaskFail: function(callback, context) {
+	    this.on(Events.UpdateTaskFail, callback, context);
+	  },
+	  rmvListenerOnUpdateTaskFail: function(context) {
+	    this.removeListener(Events.UpdateTaskFail, context);
+	  },
+
+	  newTask: function(data) {
+	    console.log('newTask', data);
+	    TaskApis.create(data).then(
+	    function(body) {
+	      this.emit(Event.NewTaskSuccess, body);
+	    },
+	    function(err) {
+	      this.emit(Event.NewTaskFail, err);
+	    });
+	  },
+
+	  updateTask: function(data) {
+	    TaskApis.update(data, {}).then(
+	    function(body) {
+	      this.emit(Event.UpdateTaskSuccess, body);
+	    },
+	    function(err) {
+	      this.emit(Event.UpdateTaskFail, err);
+	    });
+	  }
+
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.TASK_NEW:
+	      TaskStore.newTask(payload.data);
+	      break;
+
+	    case Actions.TASK_UPDATE:
+	      TaskStore.updateTask(payload.data);
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // TaskStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = TaskStore;
+
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * @jsx React.DOM
 	 */
 	'use strict';
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = React.createFactory(__webpack_require__(282));
+	var Rating = React.createFactory(__webpack_require__(286));
 	var Select = React.createFactory(__webpack_require__(187));
 
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 
 	var ReportPage = React.createClass({
 	  displayName: 'Report',
@@ -58110,13 +58472,13 @@
 
 	    return (
 	      React.DOM.div(null, 
-	        React.DOM.div({className: "row"}, 
-	          React.DOM.div({className: "col-sm-5"}, 
-	            React.DOM.h4(null, "CHOOSE PROJECT"), 
-	            Select({name: "form-field-name", value: "nafoods", clearable: false, 
-	              options: projectOptions, onChange: this.onSelectChanged})
-	          )
-	        ), 
+	        /*<div className="row">
+	          <div className="col-sm-5">
+	            <h4>CHOOSE PROJECT</h4>
+	            <Select name="form-field-name" value="nafoods" clearable={false}
+	              options={projectOptions} onChange={this.onSelectChanged} />
+	          </div>
+	        </div>*/
 
 	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
 	        React.DOM.div({className: "day-block"}, 
@@ -58235,7 +58597,7 @@
 
 
 /***/ },
-/* 282 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
@@ -58562,7 +58924,7 @@
 	;
 
 /***/ },
-/* 283 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58575,8 +58937,8 @@
 	var Select = React.createFactory(__webpack_require__(187));
 	var ProjectApis = __webpack_require__(172).ProjectApis;
 	var UserApis = __webpack_require__(172).UserApis;
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 	var UserActions = __webpack_require__(185);
 	var UserStore = __webpack_require__(169);
 
@@ -58791,164 +59153,7 @@
 
 
 /***/ },
-/* 284 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  create: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.CreateProject,
-	      data: data
-	    });
-	  },
-
-	  all: function(){
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.All
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 285 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * ToDo Store
-	 */
-	'use strict';
-
-	/**
-	 * Libraries
-	 */
-	var AppDispatcher = __webpack_require__(158);
-	var EventEmitter = __webpack_require__(170).EventEmitter;
-	var assign = __webpack_require__(13);
-	var Actions = __webpack_require__(162);
-	var Events = __webpack_require__(171);
-	var ProjectApis = __webpack_require__(172).ProjectApis;
-	var UProjectApis = __webpack_require__(172).UProjectApis;
-
-	/**
-	 * Variables
-	 */
-	var DEBUG = false;
-	var _name = 'ProjectStore';
-
-	/**
-	 * Store Start
-	 */
-	var ProjectStore = assign({}, EventEmitter.prototype, {
-	  // listener events zone
-	  addListenerOnCreateSuccess: function(callback, context) {
-	    this.on(Events.CreateProjectSuccess, callback, context);
-	  },
-	  rmvListenerOnCreateSuccess: function(context) {
-	    this.removeListener(Events.CreateProjectSuccess, context);
-	  },
-	  addListenerOnCreateFail: function(callback, context) {
-	    this.on(Events.CreateProjectFail, callback, context);
-	  },
-	  rmvListenerOnCreateFail: function(context) {
-	    this.removeListener(Events.CreateProjectFail, context);
-	  },
-
-	  addListenerGetAllProjectSuccess: function(callback, context) {
-	    this.on(Events.GetAllProjectSuccess, callback, context);
-	  },
-	  rmvListenerGetAllProjectSuccess: function(context) {
-	    this.removeListener(Events.GetAllProjectSuccess, context);
-	  },
-	  addListenerGetAllProjectFail: function(callback, context) {
-	    this.on(Events.GetAllProjectFail, callback, context);
-	  },
-	  rmvListenerGetAllProjectFail: function(context) {
-	    this.removeListener(Events.GetAllProjectFail, context);
-	  },
-
-	  // functions
-	  create: function(data) {
-
-	    UProjectApis.create(data);
-
-	    ProjectApis.create(data).then(
-	    function(body) {
-	      this.emit(Events.CreateProjectSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.CreateProjectFail, err);
-	    }.bind(this));
-	  },
-
-	  all: function() {
-
-	    ProjectApis.all().then(
-	    function(body) {
-	      this.emit(Events.GetAllProjectSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.GetAllProjectFail, err);
-	    }.bind(this));
-	  }
-	});
-
-	/**
-	 * Integrated with Dispatcher
-	 */
-	AppDispatcher.register(function(payload) {
-
-	  var action = payload.actionType;
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
-	    console.log('     Payload:');
-	    console.log(payload);
-	  }
-
-	  // Route Logic
-	  switch (action) {
-	    case Actions.CreateProject:
-	      ProjectStore.create(payload.data);
-	      break;
-
-	    case Actions.All:
-	      ProjectStore.all(payload.data);
-	      break;
-
-	    default:
-	      if (DEBUG) {
-	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
-	      }
-	      return true;
-	  }
-
-	  // If action was responded to, emit change event
-	  // UserStore.emitChange();
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':emitChange ---');
-	  }
-
-	  return true;
-	});
-
-	module.exports = ProjectStore;
-
-/***/ },
-/* 286 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59037,7 +59242,7 @@
 
 
 /***/ },
-/* 287 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59047,9 +59252,9 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(288);
+	var CommonMixins = __webpack_require__(290);
 	var UserActions = __webpack_require__(185);
-	var NotificationActions = __webpack_require__(289);
+	var NotificationActions = __webpack_require__(291);
 	var UserStore = __webpack_require__(169);
 
 	var LoginPage = React.createClass({
@@ -59141,7 +59346,7 @@
 
 
 /***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -59163,7 +59368,7 @@
 
 
 /***/ },
-/* 289 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59189,7 +59394,7 @@
 
 
 /***/ },
-/* 290 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59199,9 +59404,9 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(288);
+	var CommonMixins = __webpack_require__(290);
 	var UserActions = __webpack_require__(185);
-	var NotificationActions = __webpack_require__(289);
+	var NotificationActions = __webpack_require__(291);
 	var UserStore = __webpack_require__(169);
 
 	var LoginPage = React.createClass({

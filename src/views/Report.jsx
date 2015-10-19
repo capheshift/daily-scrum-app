@@ -80,13 +80,13 @@ var ReportPage = React.createClass({
 
     return (
       <div>
-        <div className="row">
+        {/*<div className="row">
           <div className="col-sm-5">
             <h4>CHOOSE PROJECT</h4>
             <Select name="form-field-name" value="nafoods" clearable={false}
               options={projectOptions} onChange={this.onSelectChanged} />
           </div>
-        </div>
+        </div>*/}
 
         <h4 className="header-title">REPORT/TODAY</h4>
         <div className="day-block">

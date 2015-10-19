@@ -13,11 +13,12 @@ var moment = require('moment');
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
 
-var UserApis = require('../commons/service-api').UserApis;
-var TaskApis = require('../commons/service-api').TaskApis;
+var TaskActions = require('../actions/TaskActions');
+var TaskStore = require('../stores/TaskStore');
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
+  currentUser: '',
 
   getDefaultProps: function() {
     return {
@@ -27,6 +28,7 @@ var DailyPage = React.createClass({
 
   getInitialState: function() {
     var m = moment(), dateList = [], taskList = [];
+    this.currentUser = window.localStorage.getItem('_id');
 
     // create default data
     dateList.push({
@@ -36,10 +38,11 @@ var DailyPage = React.createClass({
     });
     // add task list for today day
     taskList.push({
+      _user: this.currentUser,
       id: Guid.raw(),
       date: m.format('YYYYMMDD'),
       isCompleted: false,
-      value: ''
+      content: ''
     });
 
     // add
@@ -50,10 +53,11 @@ var DailyPage = React.createClass({
       index: 2
     });
     taskList.push({
+      _user: this.currentUser,
       id: Guid.raw(),
       date: m.format('YYYYMMDD'),
       isCompleted: false,
-      value: ''
+      content: ''
     });
 
     return {
@@ -67,12 +71,24 @@ var DailyPage = React.createClass({
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
 
+    TaskStore.addListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
+    TaskStore.addListenerOnNewTaskFail(this._onNewTaskFail, this);
+
     ProjectActions.all();
   },
 
   componentWillUnmount: function() {
     ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
     ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+
+    TaskStore.rmvListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
+    TaskStore.rmvListenerOnNewTaskFail(this._onNewTaskFail, this);
+  },
+
+  _onNewTaskSuccess: function(data) {
+  },
+
+  _onNewTaskFail: function(err) {
   },
 
   _onGetAllProjectSuccess: function(body) {
@@ -91,14 +107,21 @@ var DailyPage = React.createClass({
   },
 
   newTaskOnClicked: function(dateItem) {
+    // save the last task
+    var filterTaskByDate = lodash.filter(this.state.taskList, {date: dateItem.value});
+    var taskItem = filterTaskByDate[filterTaskByDate.length - 1];
+    console.log('newTaskOnClicked', taskItem);
+    TaskActions.newTask(taskItem);
+
     console.log('newTaskOnClicked', dateItem, this.state.taskList);
     var newDateList, newTaskList;
 
     newTaskList = this.state.taskList.concat([{
+      _user: this.currentUser,
       id: Guid.raw(),
       date: dateItem.value,
       isCompleted: false,
-      value: ''
+      content: ''
     }]);
 
     // only add the next day, when click on the last item
@@ -148,7 +171,7 @@ var DailyPage = React.createClass({
     var total = 0;
 
     for (var i = 0; i < filterTask.length; i++) {
-      total += parseFloat(filterTask[i].estimate) || 0;
+      total += parseFloat(filterTask[i].estimation) || 0;
     }
 
     return total;
@@ -157,7 +180,8 @@ var DailyPage = React.createClass({
   onTaskChanged: function(id, e) {
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
-    currItem.task = e.target.value;
+    currItem[e.target.name] = e.target.value;
+    console.log('onTaskChanged', nList);
 
     this.setState({
       taskList: nList
@@ -170,7 +194,7 @@ var DailyPage = React.createClass({
     var currItem = this.findItem(nList, id);
     var currDate = this.findDateItem(this.state.dateList, currItem.date);
 
-    currItem.estimate = newValue;
+    currItem.estimation = newValue;
     // update total time
     currDate.totalTime = this.getTotalTime(nList, currItem);
 
@@ -183,7 +207,7 @@ var DailyPage = React.createClass({
   onProjectChanged: function(id, newValue) {
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
-    currItem.project = newValue;
+    currItem._project = newValue;
 
     this.setState({
       taskList: nList
@@ -223,18 +247,19 @@ var DailyPage = React.createClass({
             <div className="input-group">
               <span className="input-group-addon"> <input type="checkbox" /></span>
               <input className="form-control" id="prependedcheckbox"
-                name="prependedcheckbox" placeholder="your task" type="text"
-                value={item.task}
+                placeholder="your task" type="text"
+                ref="content" name="content"
+                value={item.content}
                 onChange={this.onTaskChanged.bind(null, item.id)} />
             </div>
           </div>
           <div className="col-sm-2">
-            <Select name="project" clearable={false} value={item.project}
+            <Select name="_project" clearable={false} value={item._project}
               options={projectOptions} onChange={this.onProjectChanged.bind(null, item.id)} />
           </div>
           <div className="col-sm-2">
             <Select name="estimation" clearable={false}
-              value={item.estimate} options={timeRangeOptions}
+              value={item.estimation} options={timeRangeOptions}
               onChange={this.onEstimateChanged.bind(null, item.id)} />
           </div>
         </li>

@@ -52,6 +52,7 @@ var TaskStore = assign({}, EventEmitter.prototype, {
   },
 
   newTask: function(data) {
+    console.log('newTask', data);
     TaskApis.create(data).then(
     function(body) {
       this.emit(Event.NewTaskSuccess, body);

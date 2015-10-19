@@ -86,6 +86,7 @@ var UserStore = assign({}, EventEmitter.prototype, {
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
       window.localStorage.setItem('fullName', body.data.fullName);
+      window.localStorage.setItem('_id', body.data._id);
       this.emit(Events.LoginSuccess, body);
     }.bind(this),
     function(err) {

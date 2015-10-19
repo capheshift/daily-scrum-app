@@ -17,5 +17,6 @@ module.exports = keyMirror({
   SET_CURRENT_ROUTE: null,
 
   TASK_NEW: null,
-  TASK_UPDATE: null
+  TASK_UPDATE: null,
+  TASK_FIND: null
 });

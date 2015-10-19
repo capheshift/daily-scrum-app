@@ -74,7 +74,14 @@ var DailyPage = React.createClass({
     TaskStore.addListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
     TaskStore.addListenerOnNewTaskFail(this._onNewTaskFail, this);
 
+    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
+
     ProjectActions.all();
+    TaskActions.find({
+      q: { _user: this.currentUser },
+      l: {}
+    });
   },
 
   componentWillUnmount: function() {
@@ -83,9 +90,24 @@ var DailyPage = React.createClass({
 
     TaskStore.rmvListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
     TaskStore.rmvListenerOnNewTaskFail(this._onNewTaskFail, this);
+
+    TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+  },
+
+  _onFindTaskSuccess: function(data) {
+    console.log('_onFindTaskSuccess', data);
+    this.setState({
+      taskList: data
+    });
+  },
+
+  _onFindTaskFail: function(err) {
+    console.log('_onFindTaskFail', err);
   },
 
   _onNewTaskSuccess: function(data) {
+    console.log('_onNewTaskSuccess', data);
   },
 
   _onNewTaskFail: function(err) {
@@ -181,7 +203,6 @@ var DailyPage = React.createClass({
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
     currItem[e.target.name] = e.target.value;
-    console.log('onTaskChanged', nList);
 
     this.setState({
       taskList: nList
@@ -242,7 +263,7 @@ var DailyPage = React.createClass({
     var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
     var renderList = filterTask.map(function(item, i) {
       return (
-        <li className="daily-item row">
+        <li className="daily-item row" key={item.id}>
           <div className="col-sm-5">
             <div className="input-group">
               <span className="input-group-addon"> <input type="checkbox" /></span>
@@ -272,7 +293,7 @@ var DailyPage = React.createClass({
         <li className="daily-item row">
           <div className="col-sm-9">
             <button className="btn btn-sm btn-default"
-              onClick={this.newTaskOnClicked.bind(null, dateItem)}>+ new task</button>
+              onClick={this.newTaskOnClicked.bind(null, dateItem)}>save task</button>
 
             <span className="pull-right">
               Total: { dateItem.totalTime || 0 } hours

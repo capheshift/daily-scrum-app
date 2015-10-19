@@ -21627,7 +21627,8 @@
 	  SET_CURRENT_ROUTE: null,
 
 	  TASK_NEW: null,
-	  TASK_UPDATE: null
+	  TASK_UPDATE: null,
+	  TASK_FIND: null
 	});
 
 
@@ -21750,7 +21751,14 @@
 	    TaskStore.addListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
 	    TaskStore.addListenerOnNewTaskFail(this._onNewTaskFail, this);
 
+	    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+	    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
+
 	    ProjectActions.all();
+	    TaskActions.find({
+	      q: { _user: this.currentUser },
+	      l: {}
+	    });
 	  },
 
 	  componentWillUnmount: function() {
@@ -21759,9 +21767,24 @@
 
 	    TaskStore.rmvListenerOnNewTaskSuccess(this._onNewTaskSuccess, this);
 	    TaskStore.rmvListenerOnNewTaskFail(this._onNewTaskFail, this);
+
+	    TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+	  },
+
+	  _onFindTaskSuccess: function(data) {
+	    console.log('_onFindTaskSuccess', data);
+	    this.setState({
+	      taskList: data
+	    });
+	  },
+
+	  _onFindTaskFail: function(err) {
+	    console.log('_onFindTaskFail', err);
 	  },
 
 	  _onNewTaskSuccess: function(data) {
+	    console.log('_onNewTaskSuccess', data);
 	  },
 
 	  _onNewTaskFail: function(err) {
@@ -21857,7 +21880,6 @@
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem[e.target.name] = e.target.value;
-	    console.log('onTaskChanged', nList);
 
 	    this.setState({
 	      taskList: nList
@@ -21918,7 +21940,7 @@
 	    var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
 	    var renderList = filterTask.map(function(item, i) {
 	      return (
-	        React.DOM.li({className: "daily-item row"}, 
+	        React.DOM.li({className: "daily-item row", key: item.id}, 
 	          React.DOM.div({className: "col-sm-5"}, 
 	            React.DOM.div({className: "input-group"}, 
 	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
@@ -21948,7 +21970,7 @@
 	        React.DOM.li({className: "daily-item row"}, 
 	          React.DOM.div({className: "col-sm-9"}, 
 	            React.DOM.button({className: "btn btn-sm btn-default", 
-	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "+ new task"), 
+	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "save task"), 
 
 	            React.DOM.span({className: "pull-right"}, 
 	              "Total: ",  dateItem.totalTime || 0, " hours"
@@ -22763,7 +22785,9 @@
 	  NewTaskSuccess: null,
 	  NewTaskFail: null,
 	  UpdateTaskSuccess: null,
-	  UpdateTaskFail: null
+	  UpdateTaskFail: null,
+	  FindTaskSuccess: null,
+	  FindTaskFail: null
 	});
 
 
@@ -58257,6 +58281,13 @@
 	      actionType: ActionTypes.TASK_UPDATE,
 	      data: data
 	    });
+	  },
+
+	  find: function(data) {
+	    AppDispatcher.handleViewAction({
+	      actionType: ActionTypes.TASK_FIND,
+	      data: data
+	    });
 	  }
 	};
 
@@ -58320,27 +58351,51 @@
 	    this.removeListener(Events.UpdateTaskFail, context);
 	  },
 
+	  // listener events zone
+	  addListenerOnFindTaskSuccess: function(callback, context) {
+	    this.on(Events.FindTaskSuccess, callback, context);
+	  },
+	  rmvListenerOnFindTaskSuccess: function(context) {
+	    this.removeListener(Events.FindTaskSuccess, context);
+	  },
+	  addListenerOnFindTaskFail: function(callback, context) {
+	    this.on(Events.FindTaskFail, callback, context);
+	  },
+	  rmvListenerOnFindTaskFail: function(context) {
+	    this.removeListener(Events.FindTaskFail, context);
+	  },
+
 	  newTask: function(data) {
 	    console.log('newTask', data);
 	    TaskApis.create(data).then(
 	    function(body) {
-	      this.emit(Event.NewTaskSuccess, body);
+	      this.emit(Events.NewTaskSuccess, body);
 	    },
 	    function(err) {
-	      this.emit(Event.NewTaskFail, err);
+	      this.emit(Events.NewTaskFail, err);
 	    });
 	  },
 
 	  updateTask: function(data) {
 	    TaskApis.update(data, {}).then(
 	    function(body) {
-	      this.emit(Event.UpdateTaskSuccess, body);
+	      this.emit(Events.UpdateTaskSuccess, body);
 	    },
 	    function(err) {
-	      this.emit(Event.UpdateTaskFail, err);
+	      this.emit(Events.UpdateTaskFail, err);
 	    });
-	  }
+	  },
 
+	  find: function(params) {
+	    TaskApis.find(null, params).then(
+	    function(body) {
+	      // console.log('find', Events.FindTaskSuccess, body.data);
+	      this.emit(Events.FindTaskSuccess, body.data);
+	    },
+	    function(err) {
+	      this.emit(Events.FindTaskFail, err);
+	    });
+	  },
 	});
 
 	/**
@@ -58364,6 +58419,10 @@
 
 	    case Actions.TASK_UPDATE:
 	      TaskStore.updateTask(payload.data);
+	      break;
+
+	    case Actions.TASK_FIND:
+	      TaskStore.find(payload.data);
 	      break;
 
 	    default:

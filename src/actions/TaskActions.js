@@ -25,6 +25,13 @@ var AppActions = {
       actionType: ActionTypes.TASK_UPDATE,
       data: data
     });
+  },
+
+  find: function(data) {
+    AppDispatcher.handleViewAction({
+      actionType: ActionTypes.TASK_FIND,
+      data: data
+    });
   }
 };
 

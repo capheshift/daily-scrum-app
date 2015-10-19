@@ -70,20 +70,20 @@ var TaskStore = assign({}, EventEmitter.prototype, {
     TaskApis.create(data).then(
     function(body) {
       this.emit(Events.NewTaskSuccess, body);
-    },
+    }.bind(this),
     function(err) {
       this.emit(Events.NewTaskFail, err);
-    });
+    }.bind(this));
   },
 
   updateTask: function(data) {
     TaskApis.update(data, {}).then(
     function(body) {
       this.emit(Events.UpdateTaskSuccess, body);
-    },
+    }.bind(this),
     function(err) {
       this.emit(Events.UpdateTaskFail, err);
-    });
+    }.bind(this));
   },
 
   find: function(params) {
@@ -91,10 +91,10 @@ var TaskStore = assign({}, EventEmitter.prototype, {
     function(body) {
       // console.log('find', Events.FindTaskSuccess, body.data);
       this.emit(Events.FindTaskSuccess, body.data);
-    },
+    }.bind(this),
     function(err) {
       this.emit(Events.FindTaskFail, err);
-    });
+    }.bind(this));
   },
 });
 

@@ -21754,11 +21754,11 @@
 	    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
 	    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
 
-	    ProjectActions.all();
 	    TaskActions.find({
 	      q: { _user: this.currentUser },
 	      l: {}
 	    });
+	    ProjectActions.all();
 	  },
 
 	  componentWillUnmount: function() {
@@ -21774,8 +21774,19 @@
 
 	  _onFindTaskSuccess: function(data) {
 	    console.log('_onFindTaskSuccess', data);
+	    var data2 = data.map(function(item) {
+	      var newItem = lodash.clone(item);
+	      if (newItem._project) {
+	        newItem._project = newItem._project._id;
+	        newItem.id = newItem._id;
+	        newItem.estimation = newItem.estimation.toString();
+	      }
+	      return newItem;
+	    });
+	    console.log('_onFindTaskSuccess', data2);
+
 	    this.setState({
-	      taskList: data
+	      taskList: data2
 	    });
 	  },
 
@@ -21797,6 +21808,7 @@
 	        label: item.name
 	      };
 	    });
+	    console.log('_onGetAllProjectSuccess', pList);
 	    this.setState({
 	      projectList: pList
 	    });
@@ -21903,6 +21915,7 @@
 	  },
 
 	  onProjectChanged: function(id, newValue) {
+	    console.log('onProjectChanged', id, newValue);
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem._project = newValue;

@@ -59281,15 +59281,17 @@
 	    if (this.state.members.length) {
 	      members = this.state.members.map(function(member, index) {
 	        return (
-	          React.DOM.div({className: "media"}, 
-	            React.DOM.div({className: "media-left"}, 
-	              React.DOM.a({href: "#"}, 
-	                React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	          React.DOM.div({className: "col-sm-4 member-list"}, 
+	            React.DOM.div({className: "media"}, 
+	              React.DOM.div({className: "media-left"}, 
+	                React.DOM.a({href: "#"}, 
+	                  React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	                )
+	              ), 
+	              React.DOM.div({className: "media-body"}, 
+	                React.DOM.h4({className: "media-heading"}, member.fullName), 
+	                React.DOM.h5(null, "Javascript Developer")
 	              )
-	            ), 
-	            React.DOM.div({className: "media-body"}, 
-	              React.DOM.h4({className: "media-heading"}, member.fullName), 
-	              React.DOM.h5(null, "Javascript Developer")
 	            )
 	          )
 	        );
@@ -59302,9 +59304,7 @@
 	        React.DOM.div({className: "col-sm-12"}, 
 	          React.DOM.h4(null, "MEMBER")
 	        ), 
-	        React.DOM.div({className: "col-sm-6 member-list"}, 
-	          members
-	        )
+	        members
 	      )
 	    );
 	  }

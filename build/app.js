@@ -58467,6 +58467,8 @@
 	 */
 	'use strict';
 
+	var moment = __webpack_require__(194);
+	var lodash = __webpack_require__(174);
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
 	var Rating = React.createFactory(__webpack_require__(286));
@@ -58474,6 +58476,9 @@
 
 	var ProjectActions = __webpack_require__(281);
 	var ProjectStore = __webpack_require__(282);
+
+	var TaskActions = __webpack_require__(283);
+	var TaskStore = __webpack_require__(284);
 
 	var ReportPage = React.createClass({
 	  displayName: 'Report',
@@ -58486,7 +58491,8 @@
 
 	  getInitialState: function() {
 	    return {
-	      projectList: []
+	      projectList: [],
+	      taskList: []
 	    };
 	  },
 
@@ -58494,12 +58500,45 @@
 	    ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
 	    ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
 
+	    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+	    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
+
+	    TaskActions.find({
+	      q: { date: moment().format('YYYYMMDD') },
+	      // q: {},
+	      l: {}
+	    });
 	    ProjectActions.all();
 	  },
 
 	  componentWillUnmount: function() {
 	    ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
 	    ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+
+	    TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+	  },
+
+	  /**
+	   * function for handle data of task
+	   */
+	  _onFindTaskSuccess: function(data) {
+	    // map for usage data
+	    var data2 = data.map(function(item) {
+	      var newItem = lodash.clone(item);
+	      if (newItem._project) {
+	        newItem._project = newItem._project._id;
+	        newItem.id = newItem._id;
+	        newItem.estimation = newItem.estimation.toString();
+	      }
+	      return newItem;
+	    });
+	    console.log('_onFindTaskSuccess', data2);
+	    this.setState({
+	      taskList: data2
+	    });
+	  },
+	  _onFindTaskFail: function(data) {
 	  },
 
 	  _onGetAllProjectSuccess: function(body) {
@@ -58542,6 +58581,30 @@
 	      { value: '8', label: '8 hours' },
 	    ];
 
+	    var renderList = this.state.taskList.map(function(item, i) {
+	      return (
+	        React.DOM.li({className: "daily-item row", key: item.id}, 
+	          React.DOM.div({className: "col-sm-5"}, 
+	            React.DOM.div({className: "input-group"}, 
+	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                placeholder: "your task", type: "text", 
+	                ref: "content", name: "content", 
+	                value: item.content})
+	            )
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            Select({name: "_project", clearable: false, value: item._project, 
+	              options: projectOptions})
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            Select({name: "estimation", clearable: false, 
+	              value: item.estimation, options: timeRangeOptions})
+	          )
+	        )
+	      )
+	    }.bind(this));
+
 	    return (
 	      React.DOM.div(null, 
 	        /*<div className="row">
@@ -58556,46 +58619,12 @@
 	        React.DOM.div({className: "day-block"}, 
 	          React.DOM.p(null, "PHẠM MINH TÂM"), 
 	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "4", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "vib", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "3.5", options: timeRangeOptions})
-	              )
-	            ), 
+	            renderList, 
 	            React.DOM.li({className: "row daily-item"}, 
 	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "pull-right"}, 
 	                  Rating(null)
 	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-4"}, 
-	                React.DOM.span({className: "pull-right"}, "Total: 7.5 hours")
 	              )
 	            )
 	          )
@@ -58603,54 +58632,7 @@
 	        React.DOM.div({className: "day-block"}, 
 	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
 	          React.DOM.ul({className: "daily-list"}, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Nếu biết tình như thế, chẳng lớn lên làm gì"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "input-group"}, 
-	                  React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox", checked: true})), 
-	                  React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                    name: "prependedcheckbox", placeholder: "your task", type: "text", 
-	                    value: "Ai bảo say sưa là khổ"})
-	                )
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "project", clearable: false, value: "", options: projectOptions})
-	              ), 
-	              React.DOM.div({className: "col-sm-2"}, 
-	                Select({name: "estimation", clearable: false, value: "", options: timeRangeOptions})
-	              )
-	            ), 
+	            renderList, 
 	            React.DOM.li({className: "row daily-item"}, 
 	              React.DOM.div({className: "col-sm-5"}, 
 	                React.DOM.div({className: "pull-right"}, 

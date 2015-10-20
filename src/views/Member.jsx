@@ -51,15 +51,17 @@ var MemberPage = React.createClass({
     if (this.state.members.length) {
       members = this.state.members.map(function(member, index) {
         return (
-          <div className="media">
-            <div className="media-left">
-              <a href="#">
-                <img className="media-object" src="./img/avt.png" />
-              </a>
-            </div>
-            <div className="media-body">
-              <h4 className="media-heading">{member.fullName}</h4>
-              <h5>Javascript Developer</h5>
+          <div className="col-sm-4 member-list">
+            <div className="media">
+              <div className="media-left">
+                <a href="#">
+                  <img className="media-object" src="./img/avt.png" />
+                </a>
+              </div>
+              <div className="media-body">
+                <h4 className="media-heading">{member.fullName}</h4>
+                <h5>Javascript Developer</h5>
+              </div>
             </div>
           </div>
         );
@@ -72,9 +74,7 @@ var MemberPage = React.createClass({
         <div className="col-sm-12">
           <h4>MEMBER</h4>
         </div>
-        <div className="col-sm-6 member-list">
-          {members}
-        </div>
+        {members}
       </div>
     );
   }

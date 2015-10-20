@@ -51,26 +51,51 @@ var TaskStore = assign({}, EventEmitter.prototype, {
     this.removeListener(Events.UpdateTaskFail, context);
   },
 
+  // listener events zone
+  addListenerOnFindTaskSuccess: function(callback, context) {
+    this.on(Events.FindTaskSuccess, callback, context);
+  },
+  rmvListenerOnFindTaskSuccess: function(context) {
+    this.removeListener(Events.FindTaskSuccess, context);
+  },
+  addListenerOnFindTaskFail: function(callback, context) {
+    this.on(Events.FindTaskFail, callback, context);
+  },
+  rmvListenerOnFindTaskFail: function(context) {
+    this.removeListener(Events.FindTaskFail, context);
+  },
+
   newTask: function(data) {
+    console.log('newTask', data);
     TaskApis.create(data).then(
     function(body) {
-      this.emit(Event.NewTaskSuccess, body);
-    },
+      this.emit(Events.NewTaskSuccess, body);
+    }.bind(this),
     function(err) {
-      this.emit(Event.NewTaskFail, err);
-    });
+      this.emit(Events.NewTaskFail, err);
+    }.bind(this));
   },
 
   updateTask: function(data) {
     TaskApis.update(data, {}).then(
     function(body) {
-      this.emit(Event.UpdateTaskSuccess, body);
-    },
+      this.emit(Events.UpdateTaskSuccess, body);
+    }.bind(this),
     function(err) {
-      this.emit(Event.UpdateTaskFail, err);
-    });
-  }
+      this.emit(Events.UpdateTaskFail, err);
+    }.bind(this));
+  },
 
+  find: function(params) {
+    TaskApis.find(null, params).then(
+    function(body) {
+      // console.log('find', Events.FindTaskSuccess, body.data);
+      this.emit(Events.FindTaskSuccess, body.data);
+    }.bind(this),
+    function(err) {
+      this.emit(Events.FindTaskFail, err);
+    }.bind(this));
+  },
 });
 
 /**
@@ -94,6 +119,10 @@ AppDispatcher.register(function(payload) {
 
     case Actions.TASK_UPDATE:
       TaskStore.updateTask(payload.data);
+      break;
+
+    case Actions.TASK_FIND:
+      TaskStore.find(payload.data);
       break;
 
     default:

@@ -13,6 +13,7 @@ var AppActions = {
    * @param {string} route Supply a route value, such as `todos/completed`.
    */
   newTask: function(data) {
+    console.log('Action newTask', data);
     AppDispatcher.handleViewAction({
       actionType: ActionTypes.TASK_NEW,
       data: data
@@ -22,6 +23,13 @@ var AppActions = {
   updateTask: function(data) {
     AppDispatcher.handleViewAction({
       actionType: ActionTypes.TASK_UPDATE,
+      data: data
+    });
+  },
+
+  find: function(data) {
+    AppDispatcher.handleViewAction({
+      actionType: ActionTypes.TASK_FIND,
       data: data
     });
   }

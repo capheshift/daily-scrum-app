@@ -12,9 +12,10 @@ var Select = React.createFactory(require('react-select'));
 
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
-
 var TaskActions = require('../actions/TaskActions');
 var TaskStore = require('../stores/TaskStore');
+var UserActions = require('../actions/UserActions');
+var UserStore = require('../stores/UserStore');
 
 var ReportPage = React.createClass({
   displayName: 'Report',
@@ -28,7 +29,8 @@ var ReportPage = React.createClass({
   getInitialState: function() {
     return {
       projectList: [],
-      taskList: []
+      taskList: [],
+      userList: []
     };
   },
 
@@ -39,12 +41,15 @@ var ReportPage = React.createClass({
     TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
     TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
 
+    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
+    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
+
     TaskActions.find({
       q: { date: moment().format('YYYYMMDD') },
-      // q: {},
       l: {}
     });
     ProjectActions.all();
+    UserActions.getAllUsers();
   },
 
   componentWillUnmount: function() {
@@ -53,6 +58,19 @@ var ReportPage = React.createClass({
 
     TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
     TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+
+    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
+    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
+  },
+
+  _onGetAllUserSuccess: function(body) {
+    console.log('_onGetAllUserSuccess', body);
+    this.setState({
+      userList: body.data
+    });
+  },
+
+  _onGetAllUserFail: function(err) {
   },
 
   /**
@@ -96,7 +114,8 @@ var ReportPage = React.createClass({
     console.log('onSelectChanged');
   },
 
-  render: function() {
+  renderUserTask: function(arr, userId) {
+    console.log('renderUserTask', arr, userId);
     var projectOptions = this.state.projectList;
     var timeRangeOptions = [
       { value: '0.5', label: '30 mins' },
@@ -116,31 +135,82 @@ var ReportPage = React.createClass({
       { value: '7.5', label: '7 hours 30 mins' },
       { value: '8', label: '8 hours' },
     ];
+    var filterUserList = lodash.filter(arr, function(item) {
+      return (item._user._id === userId);
+    });
+    var item = {};
+    var renderList = (
+      <li className="daily-item row" key={item.id}>
+        <div className="col-sm-5">
+          <div className="input-group">
+            <span className="input-group-addon">
+              <input type="checkbox" checked={item.isCompleted} />
+            </span>
+            <input className="form-control" id="prependedcheckbox"
+              placeholder="your task" type="text"
+              ref="content" name="content"
+              value={item.content} />
+          </div>
+        </div>
+        <div className="col-sm-2">
+          <Select name="_project" clearable={false} value={item._project}
+            options={projectOptions} />
+        </div>
+        <div className="col-sm-2">
+          <Select name="estimation" clearable={false}
+            value={item.estimation} options={timeRangeOptions} />
+        </div>
+      </li>
+    );
 
-    var renderList = this.state.taskList.map(function(item, i) {
-      return (
-        <li className="daily-item row" key={item.id}>
-          <div className="col-sm-5">
-            <div className="input-group">
-              <span className="input-group-addon">
-                <input type="checkbox" checked={item.isCompleted} />
-              </span>
-              <input className="form-control" id="prependedcheckbox"
-                placeholder="your task" type="text"
-                ref="content" name="content"
-                value={item.content} />
+    if (filterUserList.length > 0) {
+      renderList = filterUserList.map(function(item, i) {
+        return (
+          <li className="daily-item row" key={item.id}>
+            <div className="col-sm-5">
+              <div className="input-group">
+                <span className="input-group-addon">
+                  <input type="checkbox" checked={item.isCompleted} />
+                </span>
+                <input className="form-control" id="prependedcheckbox"
+                  placeholder="your task" type="text"
+                  ref="content" name="content"
+                  value={item.content} />
+              </div>
             </div>
-          </div>
-          <div className="col-sm-2">
-            <Select name="_project" clearable={false} value={item._project}
-              options={projectOptions} />
-          </div>
-          <div className="col-sm-2">
-            <Select name="estimation" clearable={false}
-              value={item.estimation} options={timeRangeOptions} />
-          </div>
-        </li>
-      )
+            <div className="col-sm-2">
+              <Select name="_project" clearable={false} value={item._project}
+                options={projectOptions} />
+            </div>
+            <div className="col-sm-2">
+              <Select name="estimation" clearable={false}
+                value={item.estimation} options={timeRangeOptions} />
+            </div>
+          </li>
+        )
+      }.bind(this));
+    }
+
+    return renderList;
+  },
+
+  render: function() {
+    var userListRender = this.state.userList.map(function(item) {
+      return (
+        <div className="day-block">
+          <p className="username-title">{item.fullName}</p>
+          <ul className="daily-list">
+            {this.renderUserTask(this.state.taskList, item._id)}
+            {/*<li className="row daily-item">
+              <div className="col-sm-5">
+                <div className="pull-right">
+                  <Rating />
+                </div>
+              </div>
+            </li>*/}
+          </ul>
+        </div>
+      );
     }.bind(this));
 
     return (
@@ -154,32 +224,7 @@ var ReportPage = React.createClass({
         </div>*/}
 
         <h4 className="header-title">REPORT/TODAY</h4>
-        <div className="day-block">
-          <p>PHẠM MINH TÂM</p>
-          <ul className="daily-list">
-            {renderList}
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="pull-right">
-                  <Rating />
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div className="day-block">
-          <p>NGUYỄN DUY TÂN</p>
-          <ul className="daily-list">
-            {renderList}
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="pull-right">
-                  <Rating />
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        {userListRender}
       </div>
     );
   }

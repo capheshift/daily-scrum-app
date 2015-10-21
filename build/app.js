@@ -58493,9 +58493,10 @@
 
 	var ProjectActions = __webpack_require__(281);
 	var ProjectStore = __webpack_require__(282);
-
 	var TaskActions = __webpack_require__(283);
 	var TaskStore = __webpack_require__(284);
+	var UserActions = __webpack_require__(185);
+	var UserStore = __webpack_require__(169);
 
 	var ReportPage = React.createClass({
 	  displayName: 'Report',
@@ -58509,7 +58510,8 @@
 	  getInitialState: function() {
 	    return {
 	      projectList: [],
-	      taskList: []
+	      taskList: [],
+	      userList: []
 	    };
 	  },
 
@@ -58520,12 +58522,15 @@
 	    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
 	    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
 
+	    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
+	    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
+
 	    TaskActions.find({
 	      q: { date: moment().format('YYYYMMDD') },
-	      // q: {},
 	      l: {}
 	    });
 	    ProjectActions.all();
+	    UserActions.getAllUsers();
 	  },
 
 	  componentWillUnmount: function() {
@@ -58534,6 +58539,19 @@
 
 	    TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
 	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+
+	    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
+	    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
+	  },
+
+	  _onGetAllUserSuccess: function(body) {
+	    console.log('_onGetAllUserSuccess', body);
+	    this.setState({
+	      userList: body.data
+	    });
+	  },
+
+	  _onGetAllUserFail: function(err) {
 	  },
 
 	  /**
@@ -58577,7 +58595,8 @@
 	    console.log('onSelectChanged');
 	  },
 
-	  render: function() {
+	  renderUserTask: function(arr, userId) {
+	    console.log('renderUserTask', arr, userId);
 	    var projectOptions = this.state.projectList;
 	    var timeRangeOptions = [
 	      { value: '0.5', label: '30 mins' },
@@ -58597,31 +58616,82 @@
 	      { value: '7.5', label: '7 hours 30 mins' },
 	      { value: '8', label: '8 hours' },
 	    ];
-
-	    var renderList = this.state.taskList.map(function(item, i) {
-	      return (
-	        React.DOM.li({className: "daily-item row", key: item.id}, 
-	          React.DOM.div({className: "col-sm-5"}, 
-	            React.DOM.div({className: "input-group"}, 
-	              React.DOM.span({className: "input-group-addon"}, 
-	                React.DOM.input({type: "checkbox", checked: item.isCompleted})
-	              ), 
-	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
-	                placeholder: "your task", type: "text", 
-	                ref: "content", name: "content", 
-	                value: item.content})
-	            )
-	          ), 
-	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "_project", clearable: false, value: item._project, 
-	              options: projectOptions})
-	          ), 
-	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "estimation", clearable: false, 
-	              value: item.estimation, options: timeRangeOptions})
+	    var filterUserList = lodash.filter(arr, function(item) {
+	      return (item._user._id === userId);
+	    });
+	    var item = {};
+	    var renderList = (
+	      React.DOM.li({className: "daily-item row", key: item.id}, 
+	        React.DOM.div({className: "col-sm-5"}, 
+	          React.DOM.div({className: "input-group"}, 
+	            React.DOM.span({className: "input-group-addon"}, 
+	              React.DOM.input({type: "checkbox", checked: item.isCompleted})
+	            ), 
+	            React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	              placeholder: "your task", type: "text", 
+	              ref: "content", name: "content", 
+	              value: item.content})
 	          )
+	        ), 
+	        React.DOM.div({className: "col-sm-2"}, 
+	          Select({name: "_project", clearable: false, value: item._project, 
+	            options: projectOptions})
+	        ), 
+	        React.DOM.div({className: "col-sm-2"}, 
+	          Select({name: "estimation", clearable: false, 
+	            value: item.estimation, options: timeRangeOptions})
 	        )
 	      )
+	    );
+
+	    if (filterUserList.length > 0) {
+	      renderList = filterUserList.map(function(item, i) {
+	        return (
+	          React.DOM.li({className: "daily-item row", key: item.id}, 
+	            React.DOM.div({className: "col-sm-5"}, 
+	              React.DOM.div({className: "input-group"}, 
+	                React.DOM.span({className: "input-group-addon"}, 
+	                  React.DOM.input({type: "checkbox", checked: item.isCompleted})
+	                ), 
+	                React.DOM.input({className: "form-control", id: "prependedcheckbox", 
+	                  placeholder: "your task", type: "text", 
+	                  ref: "content", name: "content", 
+	                  value: item.content})
+	              )
+	            ), 
+	            React.DOM.div({className: "col-sm-2"}, 
+	              Select({name: "_project", clearable: false, value: item._project, 
+	                options: projectOptions})
+	            ), 
+	            React.DOM.div({className: "col-sm-2"}, 
+	              Select({name: "estimation", clearable: false, 
+	                value: item.estimation, options: timeRangeOptions})
+	            )
+	          )
+	        )
+	      }.bind(this));
+	    }
+
+	    return renderList;
+	  },
+
+	  render: function() {
+	    var userListRender = this.state.userList.map(function(item) {
+	      return (
+	        React.DOM.div({className: "day-block"}, 
+	          React.DOM.p({className: "username-title"}, item.fullName), 
+	          React.DOM.ul({className: "daily-list"}, 
+	            this.renderUserTask(this.state.taskList, item._id)
+	            /*<li className="row daily-item">
+	              <div className="col-sm-5">
+	                <div className="pull-right">
+	                  <Rating />
+	                </div>
+	              </div>
+	            </li>*/
+	          )
+	        )
+	      );
 	    }.bind(this));
 
 	    return (
@@ -58635,32 +58705,7 @@
 	        </div>*/
 
 	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "PHẠM MINH TÂM"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            renderList, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              )
-	            )
-	          )
-	        ), 
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p(null, "NGUYỄN DUY TÂN"), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            renderList, 
-	            React.DOM.li({className: "row daily-item"}, 
-	              React.DOM.div({className: "col-sm-5"}, 
-	                React.DOM.div({className: "pull-right"}, 
-	                  Rating(null)
-	                )
-	              )
-	            )
-	          )
-	        )
+	        userListRender
 	      )
 	    );
 	  }

@@ -21888,6 +21888,20 @@
 	    return total;
 	  },
 
+
+	  onCheckChanged: function(id, e) {
+	    console.log('onCheckChanged', id, e);
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    // below is a trick, it should be get data from e.target.checked
+	    // currItem[e.target.isCompleted] = e.target.checked;
+	    currItem.isCompleted = !currItem.isCompleted;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
 	  onTaskChanged: function(id, e) {
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
@@ -21956,7 +21970,10 @@
 	        React.DOM.li({className: "daily-item row", key: item.id}, 
 	          React.DOM.div({className: "col-sm-5"}, 
 	            React.DOM.div({className: "input-group"}, 
-	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	              React.DOM.span({className: "input-group-addon"}, 
+	                React.DOM.input({type: "checkbox", checked: item.isCompleted, 
+	                  onChange: this.onCheckChanged.bind(null, item.id)})
+	              ), 
 	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                placeholder: "your task", type: "text", 
 	                ref: "content", name: "content", 
@@ -58586,7 +58603,9 @@
 	        React.DOM.li({className: "daily-item row", key: item.id}, 
 	          React.DOM.div({className: "col-sm-5"}, 
 	            React.DOM.div({className: "input-group"}, 
-	              React.DOM.span({className: "input-group-addon"}, " ", React.DOM.input({type: "checkbox"})), 
+	              React.DOM.span({className: "input-group-addon"}, 
+	                React.DOM.input({type: "checkbox", checked: item.isCompleted})
+	              ), 
 	              React.DOM.input({className: "form-control", id: "prependedcheckbox", 
 	                placeholder: "your task", type: "text", 
 	                ref: "content", name: "content", 

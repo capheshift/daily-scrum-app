@@ -211,6 +211,20 @@ var DailyPage = React.createClass({
     return total;
   },
 
+
+  onCheckChanged: function(id, e) {
+    console.log('onCheckChanged', id, e);
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    // below is a trick, it should be get data from e.target.checked
+    // currItem[e.target.isCompleted] = e.target.checked;
+    currItem.isCompleted = !currItem.isCompleted;
+
+    this.setState({
+      taskList: nList
+    });
+  },
+
   onTaskChanged: function(id, e) {
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
@@ -279,7 +293,10 @@ var DailyPage = React.createClass({
         <li className="daily-item row" key={item.id}>
           <div className="col-sm-5">
             <div className="input-group">
-              <span className="input-group-addon"> <input type="checkbox" /></span>
+              <span className="input-group-addon">
+                <input type="checkbox" checked={item.isCompleted}
+                  onChange={this.onCheckChanged.bind(null, item.id)} />
+              </span>
               <input className="form-control" id="prependedcheckbox"
                 placeholder="your task" type="text"
                 ref="content" name="content"

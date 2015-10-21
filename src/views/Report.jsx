@@ -122,7 +122,9 @@ var ReportPage = React.createClass({
         <li className="daily-item row" key={item.id}>
           <div className="col-sm-5">
             <div className="input-group">
-              <span className="input-group-addon"> <input type="checkbox" /></span>
+              <span className="input-group-addon">
+                <input type="checkbox" checked={item.isCompleted} />
+              </span>
               <input className="form-control" id="prependedcheckbox"
                 placeholder="your task" type="text"
                 ref="content" name="content"

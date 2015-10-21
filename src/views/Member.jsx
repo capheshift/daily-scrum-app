@@ -55,7 +55,7 @@ var MemberPage = React.createClass({
             <div className="media">
               <div className="media-left">
                 <a href="#">
-                  <img className="media-object" src="./img/avt.png" />
+                  <img className="media-object" src={"http://avatars.io/email/" + member.email} />
                 </a>
               </div>
               <div className="media-body">

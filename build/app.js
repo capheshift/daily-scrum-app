@@ -59267,7 +59267,7 @@
 	            React.DOM.div({className: "media"}, 
 	              React.DOM.div({className: "media-left"}, 
 	                React.DOM.a({href: "#"}, 
-	                  React.DOM.img({className: "media-object", src: "./img/avt.png"})
+	                  React.DOM.img({className: "media-object", src: "http://avatars.io/email/" + member.email})
 	                )
 	              ), 
 	              React.DOM.div({className: "media-body"}, 

@@ -13,6 +13,7 @@ var Actions = require('../commons/enum/ActionTypes');
 var Events = require('../commons/enum/EventTypes');
 var ProjectApis = require('../commons/service-api').ProjectApis;
 var UProjectApis = require('../commons/service-api').UProjectApis;
+var async = require('async');
 
 /**
  * Variables
@@ -53,17 +54,26 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
 
   // functions
   create: function(data) {
-
-    UProjectApis.create(data);
-
-    ProjectApis.create(data).then(
-    function(body) {
-      this.emit(Events.CreateProjectSuccess, body);
+  // data must be include 2 part
+  // data.project is object
+  // data.uproject is []
+    ProjectApis.create(data).then(function(projectData){
+      async.each(data._user, function(user, callback){
+        UProjectApis.create({_project: projectData.data._id});
+        callback();
+      }, function(err){
+        console.log(err);
+      });
+      this.emit(Events.GetAllProjectSuccess, projectData);
     }.bind(this),
-    function(err) {
-      this.emit(Events.CreateProjectFail, err);
+    function(err){
+      this.emit(Events.GetAllProjectFail, err);
     }.bind(this));
-  },
+
+},
+
+
+
 
   all: function() {
 

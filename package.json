@@ -9,6 +9,7 @@
     "npm": ">= 2.1"
   },
   "dependencies": {
+    "async": "^1.4.2",
     "balanced-match": "^0.2.0",
     "bootstrap": "^3.3.2",
     "browser-sync": "^2.7.1",

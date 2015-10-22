@@ -27,12 +27,7 @@ var ProjectPage = React.createClass({
       model: {},
       projectList: [],
       userOptions: [],
-      userOptionsType: [
-      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
-      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
-      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
-      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
-    ]
+      userOptionsType: []
     };
   },
 
@@ -78,7 +73,6 @@ var ProjectPage = React.createClass({
       }
     });
     this.setState({projectList: pList});
-    // window.location.hash = 'project';
   },
 
   _onGetAllFail: function(data) {
@@ -86,7 +80,6 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllUserSuccess: function(data) {
-    console.log('_onGetAllUserSuccess', data);
     this.setState({userOptions: data.data});
     this.passValueUser(data.data);
   },
@@ -102,7 +95,6 @@ var ProjectPage = React.createClass({
         value: item._id
       };
     });
-    console.log('passValueUser', list);
     this.setState({userOptionsType: list});
   },
 
@@ -126,7 +118,6 @@ var ProjectPage = React.createClass({
     var model = this.state.model;
     model[e.target.name] = e.target.value;
     this.setState({model: model});
-    console.log(model);
   },
 
   onSelectChangedMaster: function(e) {
@@ -135,9 +126,10 @@ var ProjectPage = React.createClass({
     this.setState({model: model});
   },
 
-  onSelectChangedMember: function(data) {
+  onSelectChangedMember: function(data, listUser) {
     var model = this.state.model;
-    model._user = data;
+    model._user = listUser;
+    console.log(listUser);
     this.setState({model: model});
   },
 

@@ -97,23 +97,23 @@
 	    render(router.getRoute(), page);
 	  },
 	  '/report': function() {
-	    var page = React.createFactory(__webpack_require__(281));
+	    var page = React.createFactory(__webpack_require__(285));
 	    render(router.getRoute(), page);
 	  },
 	  '/project': function() {
-	    var page = React.createFactory(__webpack_require__(283));
-	    render(router.getRoute(), page);
-	  },
-	  '/member': function() {
-	    var page = React.createFactory(__webpack_require__(286));
-	    render(router.getRoute(), page);
-	  },
-	  '/login': function() {
 	    var page = React.createFactory(__webpack_require__(287));
 	    render(router.getRoute(), page);
 	  },
+	  '/member': function() {
+	    var page = React.createFactory(__webpack_require__(288));
+	    render(router.getRoute(), page);
+	  },
+	  '/login': function() {
+	    var page = React.createFactory(__webpack_require__(289));
+	    render(router.getRoute(), page);
+	  },
 	  '/register': function() {
-	    var page = React.createFactory(__webpack_require__(290));
+	    var page = React.createFactory(__webpack_require__(292));
 	    render(router.getRoute(), page);
 	  },
 	});
@@ -331,7 +331,9 @@
 	        currentQueue = queue;
 	        queue = [];
 	        while (++queueIndex < len) {
-	            currentQueue[queueIndex].run();
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
 	        }
 	        queueIndex = -1;
 	        len = queue.length;
@@ -383,7 +385,6 @@
 	    throw new Error('process.binding is not supported');
 	};
 
-	// TODO(shtylman)
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -21286,15 +21287,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(160)
+	module.exports.Dispatcher = __webpack_require__(160);
 
 
 /***/ },
 /* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/*
-	 * Copyright (c) 2014, Facebook, Inc.
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright (c) 2014-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
 	 * This source code is licensed under the BSD-style license found in the
@@ -21302,14 +21303,18 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 *
 	 * @providesModule Dispatcher
-	 * @typechecks
+	 * 
+	 * @preventMunge
 	 */
 
-	"use strict";
+	'use strict';
+
+	exports.__esModule = true;
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	var invariant = __webpack_require__(161);
 
-	var _lastID = 1;
 	var _prefix = 'ID_';
 
 	/**
@@ -21359,7 +21364,7 @@
 	 *
 	 * This payload is digested by both stores:
 	 *
-	 *    CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+	 *   CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
 	 *     if (payload.actionType === 'country-update') {
 	 *       CountryStore.country = payload.selectedCountry;
 	 *     }
@@ -21387,14 +21392,10 @@
 	 *     flightDispatcher.register(function(payload) {
 	 *       switch (payload.actionType) {
 	 *         case 'country-update':
+	 *         case 'city-update':
 	 *           flightDispatcher.waitFor([CityStore.dispatchToken]);
 	 *           FlightPriceStore.price =
 	 *             getFlightPriceStore(CountryStore.country, CityStore.city);
-	 *           break;
-	 *
-	 *         case 'city-update':
-	 *           FlightPriceStore.price =
-	 *             FlightPriceStore(CountryStore.country, CityStore.city);
 	 *           break;
 	 *     }
 	 *   });
@@ -21404,131 +21405,109 @@
 	 * `FlightPriceStore`.
 	 */
 
+	var Dispatcher = (function () {
 	  function Dispatcher() {
-	    this.$Dispatcher_callbacks = {};
-	    this.$Dispatcher_isPending = {};
-	    this.$Dispatcher_isHandled = {};
-	    this.$Dispatcher_isDispatching = false;
-	    this.$Dispatcher_pendingPayload = null;
+	    _classCallCheck(this, Dispatcher);
+
+	    this._callbacks = {};
+	    this._isDispatching = false;
+	    this._isHandled = {};
+	    this._isPending = {};
+	    this._lastID = 1;
 	  }
 
 	  /**
 	   * Registers a callback to be invoked with every dispatched payload. Returns
 	   * a token that can be used with `waitFor()`.
-	   *
-	   * @param {function} callback
-	   * @return {string}
 	   */
-	  Dispatcher.prototype.register=function(callback) {
-	    var id = _prefix + _lastID++;
-	    this.$Dispatcher_callbacks[id] = callback;
+
+	  Dispatcher.prototype.register = function register(callback) {
+	    var id = _prefix + this._lastID++;
+	    this._callbacks[id] = callback;
 	    return id;
 	  };
 
 	  /**
 	   * Removes a callback based on its token.
-	   *
-	   * @param {string} id
 	   */
-	  Dispatcher.prototype.unregister=function(id) {
-	    invariant(
-	      this.$Dispatcher_callbacks[id],
-	      'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
-	      id
-	    );
-	    delete this.$Dispatcher_callbacks[id];
+
+	  Dispatcher.prototype.unregister = function unregister(id) {
+	    !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.unregister(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	    delete this._callbacks[id];
 	  };
 
 	  /**
 	   * Waits for the callbacks specified to be invoked before continuing execution
 	   * of the current callback. This method should only be used by a callback in
 	   * response to a dispatched payload.
-	   *
-	   * @param {array<string>} ids
 	   */
-	  Dispatcher.prototype.waitFor=function(ids) {
-	    invariant(
-	      this.$Dispatcher_isDispatching,
-	      'Dispatcher.waitFor(...): Must be invoked while dispatching.'
-	    );
+
+	  Dispatcher.prototype.waitFor = function waitFor(ids) {
+	    !this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Must be invoked while dispatching.') : invariant(false) : undefined;
 	    for (var ii = 0; ii < ids.length; ii++) {
 	      var id = ids[ii];
-	      if (this.$Dispatcher_isPending[id]) {
-	        invariant(
-	          this.$Dispatcher_isHandled[id],
-	          'Dispatcher.waitFor(...): Circular dependency detected while ' +
-	          'waiting for `%s`.',
-	          id
-	        );
+	      if (this._isPending[id]) {
+	        !this._isHandled[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): Circular dependency detected while ' + 'waiting for `%s`.', id) : invariant(false) : undefined;
 	        continue;
 	      }
-	      invariant(
-	        this.$Dispatcher_callbacks[id],
-	        'Dispatcher.waitFor(...): `%s` does not map to a registered callback.',
-	        id
-	      );
-	      this.$Dispatcher_invokeCallback(id);
+	      !this._callbacks[id] ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatcher.waitFor(...): `%s` does not map to a registered callback.', id) : invariant(false) : undefined;
+	      this._invokeCallback(id);
 	    }
 	  };
 
 	  /**
 	   * Dispatches a payload to all registered callbacks.
-	   *
-	   * @param {object} payload
 	   */
-	  Dispatcher.prototype.dispatch=function(payload) {
-	    invariant(
-	      !this.$Dispatcher_isDispatching,
-	      'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.'
-	    );
-	    this.$Dispatcher_startDispatching(payload);
+
+	  Dispatcher.prototype.dispatch = function dispatch(payload) {
+	    !!this._isDispatching ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.') : invariant(false) : undefined;
+	    this._startDispatching(payload);
 	    try {
-	      for (var id in this.$Dispatcher_callbacks) {
-	        if (this.$Dispatcher_isPending[id]) {
+	      for (var id in this._callbacks) {
+	        if (this._isPending[id]) {
 	          continue;
 	        }
-	        this.$Dispatcher_invokeCallback(id);
+	        this._invokeCallback(id);
 	      }
 	    } finally {
-	      this.$Dispatcher_stopDispatching();
+	      this._stopDispatching();
 	    }
 	  };
 
 	  /**
 	   * Is this Dispatcher currently dispatching.
-	   *
-	   * @return {boolean}
 	   */
-	  Dispatcher.prototype.isDispatching=function() {
-	    return this.$Dispatcher_isDispatching;
+
+	  Dispatcher.prototype.isDispatching = function isDispatching() {
+	    return this._isDispatching;
 	  };
 
 	  /**
 	   * Call the callback stored with the given id. Also do some internal
 	   * bookkeeping.
 	   *
-	   * @param {string} id
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_invokeCallback=function(id) {
-	    this.$Dispatcher_isPending[id] = true;
-	    this.$Dispatcher_callbacks[id](this.$Dispatcher_pendingPayload);
-	    this.$Dispatcher_isHandled[id] = true;
+
+	  Dispatcher.prototype._invokeCallback = function _invokeCallback(id) {
+	    this._isPending[id] = true;
+	    this._callbacks[id](this._pendingPayload);
+	    this._isHandled[id] = true;
 	  };
 
 	  /**
 	   * Set up bookkeeping needed when dispatching.
 	   *
-	   * @param {object} payload
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_startDispatching=function(payload) {
-	    for (var id in this.$Dispatcher_callbacks) {
-	      this.$Dispatcher_isPending[id] = false;
-	      this.$Dispatcher_isHandled[id] = false;
+
+	  Dispatcher.prototype._startDispatching = function _startDispatching(payload) {
+	    for (var id in this._callbacks) {
+	      this._isPending[id] = false;
+	      this._isHandled[id] = false;
 	    }
-	    this.$Dispatcher_pendingPayload = payload;
-	    this.$Dispatcher_isDispatching = true;
+	    this._pendingPayload = payload;
+	    this._isDispatching = true;
 	  };
 
 	  /**
@@ -21536,21 +21515,24 @@
 	   *
 	   * @internal
 	   */
-	  Dispatcher.prototype.$Dispatcher_stopDispatching=function() {
-	    this.$Dispatcher_pendingPayload = null;
-	    this.$Dispatcher_isDispatching = false;
+
+	  Dispatcher.prototype._stopDispatching = function _stopDispatching() {
+	    delete this._pendingPayload;
+	    this._isDispatching = false;
 	  };
 
+	  return Dispatcher;
+	})();
 
 	module.exports = Dispatcher;
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
 /* 161 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Copyright (c) 2014, Facebook, Inc.
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2015, Facebook, Inc.
 	 * All rights reserved.
 	 *
 	 * This source code is licensed under the BSD-style license found in the
@@ -21573,8 +21555,8 @@
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var invariant = function(condition, format, a, b, c, d, e, f) {
-	  if (false) {
+	var invariant = function (condition, format, a, b, c, d, e, f) {
+	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
 	    }
@@ -21583,17 +21565,13 @@
 	  if (!condition) {
 	    var error;
 	    if (format === undefined) {
-	      error = new Error(
-	        'Minified exception occurred; use the non-minified dev environment ' +
-	        'for the full error message and additional helpful warnings.'
-	      );
+	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
-	      error = new Error(
-	        'Invariant Violation: ' +
-	        format.replace(/%s/g, function() { return args[argIndex++]; })
-	      );
+	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+	        return args[argIndex++];
+	      }));
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
@@ -21602,7 +21580,7 @@
 	};
 
 	module.exports = invariant;
-
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
 /* 162 */
@@ -21667,8 +21645,8 @@
 	var lodash = __webpack_require__(174);
 	var moment = __webpack_require__(194);
 
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 
 	var UserApis = __webpack_require__(172).UserApis;
 	var TaskApis = __webpack_require__(172).TaskApis;
@@ -22461,18 +22439,11 @@
 	        break;
 	      // slower
 	      default:
-	        len = arguments.length;
-	        args = new Array(len - 1);
-	        for (i = 1; i < len; i++)
-	          args[i - 1] = arguments[i];
+	        args = Array.prototype.slice.call(arguments, 1);
 	        handler.apply(this, args);
 	    }
 	  } else if (isObject(handler)) {
-	    len = arguments.length;
-	    args = new Array(len - 1);
-	    for (i = 1; i < len; i++)
-	      args[i - 1] = arguments[i];
-
+	    args = Array.prototype.slice.call(arguments, 1);
 	    listeners = handler.slice();
 	    len = listeners.length;
 	    for (i = 0; i < len; i++)
@@ -22510,7 +22481,6 @@
 
 	  // Check for listener leak
 	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    var m;
 	    if (!isUndefined(this._maxListeners)) {
 	      m = this._maxListeners;
 	    } else {
@@ -22632,7 +22602,7 @@
 
 	  if (isFunction(listeners)) {
 	    this.removeListener(type, listeners);
-	  } else {
+	  } else if (listeners) {
 	    // LIFO order
 	    while (listeners.length)
 	      this.removeListener(type, listeners[listeners.length - 1]);
@@ -22653,15 +22623,20 @@
 	  return ret;
 	};
 
+	EventEmitter.prototype.listenerCount = function(type) {
+	  if (this._events) {
+	    var evlistener = this._events[type];
+
+	    if (isFunction(evlistener))
+	      return 1;
+	    else if (evlistener)
+	      return evlistener.length;
+	  }
+	  return 0;
+	};
+
 	EventEmitter.listenerCount = function(emitter, type) {
-	  var ret;
-	  if (!emitter._events || !emitter._events[type])
-	    ret = 0;
-	  else if (isFunction(emitter._events[type]))
-	    ret = 1;
-	  else
-	    ret = emitter._events[type].length;
-	  return ret;
+	  return emitter.listenerCount(type);
 	};
 
 	function isFunction(arg) {
@@ -45320,22 +45295,25 @@
 			clearable: React.PropTypes.bool, // should it be possible to reset value
 			delimiter: React.PropTypes.string, // delimiter to use to join multiple values
 			disabled: React.PropTypes.bool, // whether the Select is disabled or not
-			filterOption: React.PropTypes.func, // method to filter a single option: function(option, filterString)
-			filterOptions: React.PropTypes.func, // method to filter the options array: function([options], filterString, [values])
+			filterOption: React.PropTypes.func, // method to filter a single option  (option, filterString)
+			filterOptions: React.PropTypes.func, // method to filter the options array: function ([options], filterString, [values])
 			ignoreCase: React.PropTypes.bool, // whether to perform case-insensitive filtering
 			inputProps: React.PropTypes.object, // custom attributes for the Input (in the Select-control) e.g: {'data-foo': 'bar'}
+			isLoading: React.PropTypes.bool, // whether the Select is loading externally or not (such as options being loaded)
+			labelKey: React.PropTypes.string, // path of the label value in option objects
 			matchPos: React.PropTypes.string, // (any|start) match the start or entire string when filtering
 			matchProp: React.PropTypes.string, // (any|label|value) which option property to filter on
 			multi: React.PropTypes.bool, // multi-value input
 			name: React.PropTypes.string, // field name, for hidden <input /> tag
 			newOptionCreator: React.PropTypes.func, // factory to create new options when allowCreate set
 			noResultsText: React.PropTypes.string, // placeholder displayed when there are no matching search results
-			onBlur: React.PropTypes.func, // onBlur handler: function(event) {}
-			onChange: React.PropTypes.func, // onChange handler: function(newValue) {}
-			onFocus: React.PropTypes.func, // onFocus handler: function(event) {}
+			onBlur: React.PropTypes.func, // onBlur handler: function (event) {}
+			onChange: React.PropTypes.func, // onChange handler: function (newValue) {}
+			onFocus: React.PropTypes.func, // onFocus handler: function (event) {}
+			onInputChange: React.PropTypes.func, // onInputChange handler: function (inputValue) {}
 			onOptionLabelClick: React.PropTypes.func, // onCLick handler for value labels: function (value, event) {}
 			optionComponent: React.PropTypes.func, // option component to render in dropdown
-			optionRenderer: React.PropTypes.func, // optionRenderer: function(option) {}
+			optionRenderer: React.PropTypes.func, // optionRenderer: function (option) {}
 			options: React.PropTypes.array, // array of options
 			placeholder: React.PropTypes.string, // field placeholder, displayed when there's no value
 			searchable: React.PropTypes.bool, // whether to enable searching feature or not
@@ -45344,7 +45322,8 @@
 			singleValueComponent: React.PropTypes.func, // single value component when multiple is set to false
 			value: React.PropTypes.any, // initial field value
 			valueComponent: React.PropTypes.func, // value component to render in multiple mode
-			valueRenderer: React.PropTypes.func // valueRenderer: function(option) {}
+			valueKey: React.PropTypes.string, // path of the label value in option objects
+			valueRenderer: React.PropTypes.func // valueRenderer: function (option) {}
 		},
 
 		getDefaultProps: function getDefaultProps() {
@@ -45363,12 +45342,15 @@
 				disabled: false,
 				ignoreCase: true,
 				inputProps: {},
+				isLoading: false,
+				labelKey: 'label',
 				matchPos: 'any',
 				matchProp: 'any',
 				name: undefined,
 				newOptionCreator: undefined,
 				noResultsText: 'No results found',
 				onChange: undefined,
+				onInputChange: undefined,
 				onOptionLabelClick: undefined,
 				optionComponent: Option,
 				options: undefined,
@@ -45378,7 +45360,8 @@
 				searchPromptText: 'Type to search',
 				singleValueComponent: SingleValue,
 				value: undefined,
-				valueComponent: Value
+				valueComponent: Value,
+				valueKey: 'value'
 			};
 		},
 
@@ -45424,16 +45407,16 @@
 			};
 			this._bindCloseMenuIfClickedOutside = function () {
 				if (!document.addEventListener && document.attachEvent) {
-					document.attachEvent('onclick', this._closeMenuIfClickedOutside);
+					document.attachEvent('onclick', _this._closeMenuIfClickedOutside);
 				} else {
-					document.addEventListener('click', this._closeMenuIfClickedOutside);
+					document.addEventListener('click', _this._closeMenuIfClickedOutside);
 				}
 			};
 			this._unbindCloseMenuIfClickedOutside = function () {
 				if (!document.removeEventListener && document.detachEvent) {
-					document.detachEvent('onclick', this._closeMenuIfClickedOutside);
+					document.detachEvent('onclick', _this._closeMenuIfClickedOutside);
 				} else {
-					document.removeEventListener('click', this._closeMenuIfClickedOutside);
+					document.removeEventListener('click', _this._closeMenuIfClickedOutside);
 				}
 			};
 			this.setState(this.getStateFromValue(this.props.value));
@@ -45481,7 +45464,9 @@
 
 			if (!this.props.disabled && this._focusAfterUpdate) {
 				clearTimeout(this._blurTimeout);
+				clearTimeout(this._focusTimeout);
 				this._focusTimeout = setTimeout(function () {
+					if (!_this3.isMounted()) return;
 					_this3.getInputNode().focus();
 					_this3._focusAfterUpdate = false;
 				}, 50);
@@ -45515,6 +45500,8 @@
 		},
 
 		getStateFromValue: function getStateFromValue(value, options, placeholder) {
+			var _this4 = this;
+
 			if (!options) {
 				options = this.state.options;
 			}
@@ -45532,11 +45519,11 @@
 			var valueForState = null;
 			if (!this.props.multi && values.length) {
 				focusedOption = values[0];
-				valueForState = values[0].value;
+				valueForState = values[0][this.props.valueKey];
 			} else {
 				focusedOption = this.getFirstFocusableOption(filteredOptions);
 				valueForState = values.map(function (v) {
-					return v.value;
+					return v[_this4.props.valueKey];
 				}).join(this.props.delimiter);
 			}
 
@@ -45545,7 +45532,7 @@
 				values: values,
 				inputValue: '',
 				filteredOptions: filteredOptions,
-				placeholder: !this.props.multi && values.length ? values[0].label : placeholder,
+				placeholder: !this.props.multi && values.length ? values[0][this.props.labelKey] : placeholder,
 				focusedOption: focusedOption
 			};
 		},
@@ -45560,9 +45547,11 @@
 		},
 
 		initValuesArray: function initValuesArray(values, options) {
+			var _this5 = this;
+
 			if (!Array.isArray(values)) {
 				if (typeof values === 'string') {
-					values = values === '' ? [] : values.split(this.props.delimiter);
+					values = values === '' ? [] : this.props.multi ? values.split(this.props.delimiter) : [values];
 				} else {
 					values = values !== undefined && values !== null ? [values] : [];
 				}
@@ -45570,7 +45559,7 @@
 			return values.map(function (val) {
 				if (typeof val === 'string' || typeof val === 'number') {
 					for (var key in options) {
-						if (options.hasOwnProperty(key) && options[key] && (options[key].value === val || typeof options[key].value === 'number' && options[key].value.toString() === val)) {
+						if (options.hasOwnProperty(key) && options[key] && (options[key][_this5.props.valueKey] === val || typeof options[key][_this5.props.valueKey] === 'number' && options[key][_this5.props.valueKey].toString() === val)) {
 							return options[key];
 						}
 					}
@@ -45667,6 +45656,16 @@
 			}
 		},
 
+		handleMouseDownOnMenu: function handleMouseDownOnMenu(event) {
+			// if the event was triggered by a mousedown and not the primary
+			// button, or if the component is disabled, ignore it.
+			if (this.props.disabled || event.type === 'mousedown' && event.button !== 0) {
+				return;
+			}
+			event.stopPropagation();
+			event.preventDefault();
+		},
+
 		handleMouseDownOnArrow: function handleMouseDownOnArrow(event) {
 			// if the event was triggered by a mousedown and not the primary
 			// button, or if the component is disabled, ignore it.
@@ -45685,15 +45684,17 @@
 		},
 
 		handleInputFocus: function handleInputFocus(event) {
+			var _this6 = this;
+
 			var newIsOpen = this.state.isOpen || this._openAfterFocus;
 			this.setState({
 				isFocused: true,
 				isOpen: newIsOpen
 			}, function () {
 				if (newIsOpen) {
-					this._bindCloseMenuIfClickedOutside();
+					_this6._bindCloseMenuIfClickedOutside();
 				} else {
-					this._unbindCloseMenuIfClickedOutside();
+					_this6._unbindCloseMenuIfClickedOutside();
 				}
 			});
 			this._openAfterFocus = false;
@@ -45703,11 +45704,11 @@
 		},
 
 		handleInputBlur: function handleInputBlur(event) {
-			var _this4 = this;
+			var _this7 = this;
 
 			this._blurTimeout = setTimeout(function () {
-				if (_this4._focusAfterUpdate) return;
-				_this4.setState({
+				if (_this7._focusAfterUpdate || !_this7.isMounted()) return;
+				_this7.setState({
 					isFocused: false,
 					isOpen: false
 				});
@@ -45723,6 +45724,7 @@
 				case 8:
 					// backspace
 					if (!this.state.inputValue && this.props.backspaceRemoves) {
+						event.preventDefault();
 						this.popValue();
 					}
 					return;
@@ -45736,7 +45738,6 @@
 				case 13:
 					// enter
 					if (!this.state.isOpen) return;
-
 					this.selectFocusedOption();
 					break;
 				case 27:
@@ -45787,6 +45788,10 @@
 			// the latest value before setState() has completed.
 			this._optionsFilterString = event.target.value;
 
+			if (this.props.onInputChange) {
+				this.props.onInputChange(event.target.value);
+			}
+
 			if (this.props.asyncOptions) {
 				this.setState({
 					isLoading: true,
@@ -45808,16 +45813,19 @@
 		},
 
 		autoloadAsyncOptions: function autoloadAsyncOptions() {
-			var _this5 = this;
+			var _this8 = this;
 
-			this.loadAsyncOptions(this.props.value || '', {}, function () {
-				// update with fetched but don't focus
-				_this5.setValue(_this5.props.value, false);
+			this.setState({
+				isLoading: true
+			});
+			this.loadAsyncOptions(this.props.value || '', { isLoading: false }, function () {
+				// update with new options but don't focus
+				_this8.setValue(_this8.props.value, false);
 			});
 		},
 
 		loadAsyncOptions: function loadAsyncOptions(input, state, callback) {
-			var _this6 = this;
+			var _this9 = this;
 
 			var thisRequestId = this._currentRequestId = requestId++;
 			if (this.props.cacheAsyncResults) {
@@ -45845,25 +45853,27 @@
 
 			this.props.asyncOptions(input, function (err, data) {
 				if (err) throw err;
-				if (_this6.props.cacheAsyncResults) {
-					_this6._optionsCache[input] = data;
+				if (_this9.props.cacheAsyncResults) {
+					_this9._optionsCache[input] = data;
 				}
-				if (thisRequestId !== _this6._currentRequestId) {
+				if (thisRequestId !== _this9._currentRequestId) {
 					return;
 				}
-				var filteredOptions = _this6.filterOptions(data.options);
+				var filteredOptions = _this9.filterOptions(data.options);
 				var newState = {
 					options: data.options,
 					filteredOptions: filteredOptions,
-					focusedOption: _this6._getNewFocusedOption(filteredOptions)
+					focusedOption: _this9._getNewFocusedOption(filteredOptions)
 				};
 				for (var key in state) {
 					if (state.hasOwnProperty(key)) {
 						newState[key] = state[key];
 					}
 				}
-				_this6.setState(newState);
-				if (callback) callback.call(_this6, newState);
+				_this9.setState(newState);
+				if (callback) {
+					callback.call(_this9, newState);
+				}
 			});
 		},
 
@@ -45876,10 +45886,10 @@
 				return this.props.filterOptions.call(this, options, filterValue, exclude);
 			} else {
 				var filterOption = function filterOption(op) {
-					if (this.props.multi && exclude.indexOf(op.value) > -1) return false;
+					if (this.props.multi && exclude.indexOf(op[this.props.valueKey]) > -1) return false;
 					if (this.props.filterOption) return this.props.filterOption.call(this, op, filterValue);
-					var valueTest = String(op.value),
-					    labelTest = String(op.label);
+					var valueTest = String(op[this.props.valueKey]);
+					var labelTest = String(op[this.props.labelKey]);
 					if (this.props.ignoreCase) {
 						valueTest = valueTest.toLowerCase();
 						labelTest = labelTest.toLowerCase();
@@ -45962,9 +45972,12 @@
 		},
 
 		buildMenu: function buildMenu() {
-			var focusedValue = this.state.focusedOption ? this.state.focusedOption.value : null;
-			var renderLabel = this.props.optionRenderer || function (op) {
-				return op.label;
+			var _this10 = this;
+
+			var focusedValue = this.state.focusedOption ? this.state.focusedOption[this.props.valueKey] : null;
+			var renderLabel = this.props.optionRenderer;
+			if (!renderLabel) renderLabel = function (op) {
+				return op[_this10.props.labelKey];
 			};
 			if (this.state.filteredOptions.length > 0) {
 				focusedValue = focusedValue == null ? this.state.filteredOptions[0] : focusedValue;
@@ -45983,8 +45996,8 @@
 			}
 			var ops = Object.keys(options).map(function (key) {
 				var op = options[key];
-				var isSelected = this.state.value === op.value;
-				var isFocused = focusedValue === op.value;
+				var isSelected = this.state.value === op[this.props.valueKey];
+				var isFocused = focusedValue === op[this.props.valueKey];
 				var optionClass = classes({
 					'Select-option': true,
 					'is-selected': isSelected,
@@ -45996,7 +46009,7 @@
 				var mouseLeave = this.unfocusOption.bind(this, op);
 				var mouseDown = this.selectValue.bind(this, op);
 				var optionResult = React.createElement(this.props.optionComponent, {
-					key: 'option-' + op.value,
+					key: 'option-' + op[this.props.valueKey],
 					className: optionClass,
 					renderFunc: renderLabel,
 					mouseEnter: mouseEnter,
@@ -46014,7 +46027,7 @@
 				return ops;
 			} else {
 				var noResultsText, promptClass;
-				if (this.state.isLoading) {
+				if (this.isLoading()) {
 					promptClass = 'Select-searching';
 					noResultsText = this.props.searchingText;
 				} else if (this.state.inputValue || !this.props.asyncOptions) {
@@ -46039,13 +46052,17 @@
 			}
 		},
 
+		isLoading: function isLoading() {
+			return this.props.isLoading || this.state.isLoading;
+		},
+
 		render: function render() {
 			var selectClass = classes('Select', this.props.className, {
 				'is-multi': this.props.multi,
 				'is-searchable': this.props.searchable,
 				'is-open': this.state.isOpen,
 				'is-focused': this.state.isFocused,
-				'is-loading': this.state.isLoading,
+				'is-loading': this.isLoading(),
 				'is-disabled': this.props.disabled,
 				'has-value': this.state.value
 			});
@@ -46085,8 +46102,8 @@
 				}
 			}
 
-			var loading = this.state.isLoading ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
-			var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
+			var loading = this.isLoading() ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
+			var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onTouchEnd: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
 
 			var menu;
 			var menuProps;
@@ -46094,7 +46111,7 @@
 				menuProps = {
 					ref: 'menu',
 					className: 'Select-menu',
-					onMouseDown: this.handleMouseDown
+					onMouseDown: this.handleMouseDownOnMenu
 				};
 				menu = React.createElement(
 					'div',
@@ -46281,12 +46298,14 @@
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
+	/* global define */
 
 	(function () {
 		'use strict';
 
-		function classNames () {
+		var hasOwn = {}.hasOwnProperty;
 
+		function classNames () {
 			var classes = '';
 
 			for (var i = 0; i < arguments.length; i++) {
@@ -46295,15 +46314,13 @@
 
 				var argType = typeof arg;
 
-				if ('string' === argType || 'number' === argType) {
+				if (argType === 'string' || argType === 'number') {
 					classes += ' ' + arg;
-
 				} else if (Array.isArray(arg)) {
 					classes += ' ' + classNames.apply(null, arg);
-
-				} else if ('object' === argType) {
+				} else if (argType === 'object') {
 					for (var key in arg) {
-						if (arg.hasOwnProperty(key) && arg[key]) {
+						if (hasOwn.call(arg, key) && arg[key]) {
 							classes += ' ' + key;
 						}
 					}
@@ -46315,15 +46332,14 @@
 
 		if (typeof module !== 'undefined' && module.exports) {
 			module.exports = classNames;
-		} else if (true){
-			// AMD. Register as an anonymous module.
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
 			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 				return classNames;
 			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 		} else {
 			window.classNames = classNames;
 		}
-
 	}());
 
 
@@ -46378,7 +46394,6 @@
 			}
 
 			if (this.props.optionLabelClick) {
-
 				label = React.createElement(
 					'a',
 					{ className: classes('Select-item-label__a', this.props.option.className),
@@ -46433,7 +46448,6 @@
 			value: React.PropTypes.object // selected option
 		},
 		render: function render() {
-
 			var classNames = classes('Select-placeholder', this.props.value && this.props.value.className);
 			return React.createElement(
 				'div',
@@ -58029,17 +58043,1495 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * Route Action
+	 */
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(158);
+	var ActionTypes = __webpack_require__(162);
+
+	var Actions = {
+
+	  create: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.CreateProject,
+	      data: data
+	    });
+	  },
+
+	  all: function(){
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.All
+	    });
+	  }
+
+	};
+
+	module.exports = Actions;
+
+
+/***/ },
+/* 282 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * ToDo Store
+	 */
+	'use strict';
+
+	/**
+	 * Libraries
+	 */
+	var AppDispatcher = __webpack_require__(158);
+	var EventEmitter = __webpack_require__(170).EventEmitter;
+	var assign = __webpack_require__(13);
+	var Actions = __webpack_require__(162);
+	var Events = __webpack_require__(171);
+	var ProjectApis = __webpack_require__(172).ProjectApis;
+	var UProjectApis = __webpack_require__(172).UProjectApis;
+	var async = __webpack_require__(283);
+
+	/**
+	 * Variables
+	 */
+	var DEBUG = false;
+	var _name = 'ProjectStore';
+
+	/**
+	 * Store Start
+	 */
+	var ProjectStore = assign({}, EventEmitter.prototype, {
+	  // listener events zone
+	  addListenerOnCreateSuccess: function(callback, context) {
+	    this.on(Events.CreateProjectSuccess, callback, context);
+	  },
+	  rmvListenerOnCreateSuccess: function(context) {
+	    this.removeListener(Events.CreateProjectSuccess, context);
+	  },
+	  addListenerOnCreateFail: function(callback, context) {
+	    this.on(Events.CreateProjectFail, callback, context);
+	  },
+	  rmvListenerOnCreateFail: function(context) {
+	    this.removeListener(Events.CreateProjectFail, context);
+	  },
+
+	  addListenerGetAllProjectSuccess: function(callback, context) {
+	    this.on(Events.GetAllProjectSuccess, callback, context);
+	  },
+	  rmvListenerGetAllProjectSuccess: function(context) {
+	    this.removeListener(Events.GetAllProjectSuccess, context);
+	  },
+	  addListenerGetAllProjectFail: function(callback, context) {
+	    this.on(Events.GetAllProjectFail, callback, context);
+	  },
+	  rmvListenerGetAllProjectFail: function(context) {
+	    this.removeListener(Events.GetAllProjectFail, context);
+	  },
+
+	  // functions
+	  create: function(data) {
+	  // data must be include 2 part
+	  // data.project is object
+	  // data.uproject is []
+	    ProjectApis.create(data).then(function(projectData){
+	      async.each(data._user, function(user, callback){
+	        UProjectApis.create({_project: projectData.data._id});
+	        callback();
+	      }, function(err){
+	        console.log(err);
+	      });
+	      this.emit(Events.GetAllProjectSuccess, projectData);
+	    }.bind(this),
+	    function(err){
+	      this.emit(Events.GetAllProjectFail, err);
+	    }.bind(this));
+
+	},
+
+
+
+
+	  all: function() {
+
+	    ProjectApis.all().then(
+	    function(body) {
+	      this.emit(Events.GetAllProjectSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.GetAllProjectFail, err);
+	    }.bind(this));
+	  }
+	});
+
+	/**
+	 * Integrated with Dispatcher
+	 */
+	AppDispatcher.register(function(payload) {
+
+	  var action = payload.actionType;
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
+	    console.log('     Payload:');
+	    console.log(payload);
+	  }
+
+	  // Route Logic
+	  switch (action) {
+	    case Actions.CreateProject:
+	      ProjectStore.create(payload.data);
+	      break;
+
+	    case Actions.All:
+	      ProjectStore.all(payload.data);
+	      break;
+
+	    default:
+	      if (DEBUG) {
+	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
+	      }
+	      return true;
+	  }
+
+	  // If action was responded to, emit change event
+	  // UserStore.emitChange();
+
+	  if (DEBUG) {
+	    console.log('[*] ' + _name + ':emitChange ---');
+	  }
+
+	  return true;
+	});
+
+	module.exports = ProjectStore;
+
+/***/ },
+/* 283 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, setImmediate, process) {/*!
+	 * async
+	 * https://github.com/caolan/async
+	 *
+	 * Copyright 2010-2014 Caolan McMahon
+	 * Released under the MIT license
+	 */
+	(function () {
+
+	    var async = {};
+	    function noop() {}
+	    function identity(v) {
+	        return v;
+	    }
+	    function toBool(v) {
+	        return !!v;
+	    }
+	    function notId(v) {
+	        return !v;
+	    }
+
+	    // global on the server, window in the browser
+	    var previous_async;
+
+	    // Establish the root object, `window` (`self`) in the browser, `global`
+	    // on the server, or `this` in some virtual machines. We use `self`
+	    // instead of `window` for `WebWorker` support.
+	    var root = typeof self === 'object' && self.self === self && self ||
+	            typeof global === 'object' && global.global === global && global ||
+	            this;
+
+	    if (root != null) {
+	        previous_async = root.async;
+	    }
+
+	    async.noConflict = function () {
+	        root.async = previous_async;
+	        return async;
+	    };
+
+	    function only_once(fn) {
+	        return function() {
+	            if (fn === null) throw new Error("Callback was already called.");
+	            fn.apply(this, arguments);
+	            fn = null;
+	        };
+	    }
+
+	    function _once(fn) {
+	        return function() {
+	            if (fn === null) return;
+	            fn.apply(this, arguments);
+	            fn = null;
+	        };
+	    }
+
+	    //// cross-browser compatiblity functions ////
+
+	    var _toString = Object.prototype.toString;
+
+	    var _isArray = Array.isArray || function (obj) {
+	        return _toString.call(obj) === '[object Array]';
+	    };
+
+	    // Ported from underscore.js isObject
+	    var _isObject = function(obj) {
+	        var type = typeof obj;
+	        return type === 'function' || type === 'object' && !!obj;
+	    };
+
+	    function _isArrayLike(arr) {
+	        return _isArray(arr) || (
+	            // has a positive integer length property
+	            typeof arr.length === "number" &&
+	            arr.length >= 0 &&
+	            arr.length % 1 === 0
+	        );
+	    }
+
+	    function _each(coll, iterator) {
+	        return _isArrayLike(coll) ?
+	            _arrayEach(coll, iterator) :
+	            _forEachOf(coll, iterator);
+	    }
+
+	    function _arrayEach(arr, iterator) {
+	        var index = -1,
+	            length = arr.length;
+
+	        while (++index < length) {
+	            iterator(arr[index], index, arr);
+	        }
+	    }
+
+	    function _map(arr, iterator) {
+	        var index = -1,
+	            length = arr.length,
+	            result = Array(length);
+
+	        while (++index < length) {
+	            result[index] = iterator(arr[index], index, arr);
+	        }
+	        return result;
+	    }
+
+	    function _range(count) {
+	        return _map(Array(count), function (v, i) { return i; });
+	    }
+
+	    function _reduce(arr, iterator, memo) {
+	        _arrayEach(arr, function (x, i, a) {
+	            memo = iterator(memo, x, i, a);
+	        });
+	        return memo;
+	    }
+
+	    function _forEachOf(object, iterator) {
+	        _arrayEach(_keys(object), function (key) {
+	            iterator(object[key], key);
+	        });
+	    }
+
+	    function _indexOf(arr, item) {
+	        for (var i = 0; i < arr.length; i++) {
+	            if (arr[i] === item) return i;
+	        }
+	        return -1;
+	    }
+
+	    var _keys = Object.keys || function (obj) {
+	        var keys = [];
+	        for (var k in obj) {
+	            if (obj.hasOwnProperty(k)) {
+	                keys.push(k);
+	            }
+	        }
+	        return keys;
+	    };
+
+	    function _keyIterator(coll) {
+	        var i = -1;
+	        var len;
+	        var keys;
+	        if (_isArrayLike(coll)) {
+	            len = coll.length;
+	            return function next() {
+	                i++;
+	                return i < len ? i : null;
+	            };
+	        } else {
+	            keys = _keys(coll);
+	            len = keys.length;
+	            return function next() {
+	                i++;
+	                return i < len ? keys[i] : null;
+	            };
+	        }
+	    }
+
+	    // Similar to ES6's rest param (http://ariya.ofilabs.com/2013/03/es6-and-rest-parameter.html)
+	    // This accumulates the arguments passed into an array, after a given index.
+	    // From underscore.js (https://github.com/jashkenas/underscore/pull/2140).
+	    function _restParam(func, startIndex) {
+	        startIndex = startIndex == null ? func.length - 1 : +startIndex;
+	        return function() {
+	            var length = Math.max(arguments.length - startIndex, 0);
+	            var rest = Array(length);
+	            for (var index = 0; index < length; index++) {
+	                rest[index] = arguments[index + startIndex];
+	            }
+	            switch (startIndex) {
+	                case 0: return func.call(this, rest);
+	                case 1: return func.call(this, arguments[0], rest);
+	            }
+	            // Currently unused but handle cases outside of the switch statement:
+	            // var args = Array(startIndex + 1);
+	            // for (index = 0; index < startIndex; index++) {
+	            //     args[index] = arguments[index];
+	            // }
+	            // args[startIndex] = rest;
+	            // return func.apply(this, args);
+	        };
+	    }
+
+	    function _withoutIndex(iterator) {
+	        return function (value, index, callback) {
+	            return iterator(value, callback);
+	        };
+	    }
+
+	    //// exported async module functions ////
+
+	    //// nextTick implementation with browser-compatible fallback ////
+
+	    // capture the global reference to guard against fakeTimer mocks
+	    var _setImmediate = typeof setImmediate === 'function' && setImmediate;
+
+	    var _delay = _setImmediate ? function(fn) {
+	        // not a direct alias for IE10 compatibility
+	        _setImmediate(fn);
+	    } : function(fn) {
+	        setTimeout(fn, 0);
+	    };
+
+	    if (typeof process === 'object' && typeof process.nextTick === 'function') {
+	        async.nextTick = process.nextTick;
+	    } else {
+	        async.nextTick = _delay;
+	    }
+	    async.setImmediate = _setImmediate ? _delay : async.nextTick;
+
+
+	    async.forEach =
+	    async.each = function (arr, iterator, callback) {
+	        return async.eachOf(arr, _withoutIndex(iterator), callback);
+	    };
+
+	    async.forEachSeries =
+	    async.eachSeries = function (arr, iterator, callback) {
+	        return async.eachOfSeries(arr, _withoutIndex(iterator), callback);
+	    };
+
+
+	    async.forEachLimit =
+	    async.eachLimit = function (arr, limit, iterator, callback) {
+	        return _eachOfLimit(limit)(arr, _withoutIndex(iterator), callback);
+	    };
+
+	    async.forEachOf =
+	    async.eachOf = function (object, iterator, callback) {
+	        callback = _once(callback || noop);
+	        object = object || [];
+	        var size = _isArrayLike(object) ? object.length : _keys(object).length;
+	        var completed = 0;
+	        if (!size) {
+	            return callback(null);
+	        }
+	        _each(object, function (value, key) {
+	            iterator(object[key], key, only_once(done));
+	        });
+	        function done(err) {
+	            if (err) {
+	                callback(err);
+	            }
+	            else {
+	                completed += 1;
+	                if (completed >= size) {
+	                    callback(null);
+	                }
+	            }
+	        }
+	    };
+
+	    async.forEachOfSeries =
+	    async.eachOfSeries = function (obj, iterator, callback) {
+	        callback = _once(callback || noop);
+	        obj = obj || [];
+	        var nextKey = _keyIterator(obj);
+	        var key = nextKey();
+	        function iterate() {
+	            var sync = true;
+	            if (key === null) {
+	                return callback(null);
+	            }
+	            iterator(obj[key], key, only_once(function (err) {
+	                if (err) {
+	                    callback(err);
+	                }
+	                else {
+	                    key = nextKey();
+	                    if (key === null) {
+	                        return callback(null);
+	                    } else {
+	                        if (sync) {
+	                            async.nextTick(iterate);
+	                        } else {
+	                            iterate();
+	                        }
+	                    }
+	                }
+	            }));
+	            sync = false;
+	        }
+	        iterate();
+	    };
+
+
+
+	    async.forEachOfLimit =
+	    async.eachOfLimit = function (obj, limit, iterator, callback) {
+	        _eachOfLimit(limit)(obj, iterator, callback);
+	    };
+
+	    function _eachOfLimit(limit) {
+
+	        return function (obj, iterator, callback) {
+	            callback = _once(callback || noop);
+	            obj = obj || [];
+	            var nextKey = _keyIterator(obj);
+	            if (limit <= 0) {
+	                return callback(null);
+	            }
+	            var done = false;
+	            var running = 0;
+	            var errored = false;
+
+	            (function replenish () {
+	                if (done && running <= 0) {
+	                    return callback(null);
+	                }
+
+	                while (running < limit && !errored) {
+	                    var key = nextKey();
+	                    if (key === null) {
+	                        done = true;
+	                        if (running <= 0) {
+	                            callback(null);
+	                        }
+	                        return;
+	                    }
+	                    running += 1;
+	                    iterator(obj[key], key, only_once(function (err) {
+	                        running -= 1;
+	                        if (err) {
+	                            callback(err);
+	                            errored = true;
+	                        }
+	                        else {
+	                            replenish();
+	                        }
+	                    }));
+	                }
+	            })();
+	        };
+	    }
+
+
+	    function doParallel(fn) {
+	        return function (obj, iterator, callback) {
+	            return fn(async.eachOf, obj, iterator, callback);
+	        };
+	    }
+	    function doParallelLimit(fn) {
+	        return function (obj, limit, iterator, callback) {
+	            return fn(_eachOfLimit(limit), obj, iterator, callback);
+	        };
+	    }
+	    function doSeries(fn) {
+	        return function (obj, iterator, callback) {
+	            return fn(async.eachOfSeries, obj, iterator, callback);
+	        };
+	    }
+
+	    function _asyncMap(eachfn, arr, iterator, callback) {
+	        callback = _once(callback || noop);
+	        var results = [];
+	        eachfn(arr, function (value, index, callback) {
+	            iterator(value, function (err, v) {
+	                results[index] = v;
+	                callback(err);
+	            });
+	        }, function (err) {
+	            callback(err, results);
+	        });
+	    }
+
+	    async.map = doParallel(_asyncMap);
+	    async.mapSeries = doSeries(_asyncMap);
+	    async.mapLimit = doParallelLimit(_asyncMap);
+
+	    // reduce only has a series version, as doing reduce in parallel won't
+	    // work in many situations.
+	    async.inject =
+	    async.foldl =
+	    async.reduce = function (arr, memo, iterator, callback) {
+	        async.eachOfSeries(arr, function (x, i, callback) {
+	            iterator(memo, x, function (err, v) {
+	                memo = v;
+	                callback(err);
+	            });
+	        }, function (err) {
+	            callback(err || null, memo);
+	        });
+	    };
+
+	    async.foldr =
+	    async.reduceRight = function (arr, memo, iterator, callback) {
+	        var reversed = _map(arr, identity).reverse();
+	        async.reduce(reversed, memo, iterator, callback);
+	    };
+
+	    function _filter(eachfn, arr, iterator, callback) {
+	        var results = [];
+	        eachfn(arr, function (x, index, callback) {
+	            iterator(x, function (v) {
+	                if (v) {
+	                    results.push({index: index, value: x});
+	                }
+	                callback();
+	            });
+	        }, function () {
+	            callback(_map(results.sort(function (a, b) {
+	                return a.index - b.index;
+	            }), function (x) {
+	                return x.value;
+	            }));
+	        });
+	    }
+
+	    async.select =
+	    async.filter = doParallel(_filter);
+
+	    async.selectLimit =
+	    async.filterLimit = doParallelLimit(_filter);
+
+	    async.selectSeries =
+	    async.filterSeries = doSeries(_filter);
+
+	    function _reject(eachfn, arr, iterator, callback) {
+	        _filter(eachfn, arr, function(value, cb) {
+	            iterator(value, function(v) {
+	                cb(!v);
+	            });
+	        }, callback);
+	    }
+	    async.reject = doParallel(_reject);
+	    async.rejectLimit = doParallelLimit(_reject);
+	    async.rejectSeries = doSeries(_reject);
+
+	    function _createTester(eachfn, check, getResult) {
+	        return function(arr, limit, iterator, cb) {
+	            function done() {
+	                if (cb) cb(getResult(false, void 0));
+	            }
+	            function iteratee(x, _, callback) {
+	                if (!cb) return callback();
+	                iterator(x, function (v) {
+	                    if (cb && check(v)) {
+	                        cb(getResult(true, x));
+	                        cb = iterator = false;
+	                    }
+	                    callback();
+	                });
+	            }
+	            if (arguments.length > 3) {
+	                eachfn(arr, limit, iteratee, done);
+	            } else {
+	                cb = iterator;
+	                iterator = limit;
+	                eachfn(arr, iteratee, done);
+	            }
+	        };
+	    }
+
+	    async.any =
+	    async.some = _createTester(async.eachOf, toBool, identity);
+
+	    async.someLimit = _createTester(async.eachOfLimit, toBool, identity);
+
+	    async.all =
+	    async.every = _createTester(async.eachOf, notId, notId);
+
+	    async.everyLimit = _createTester(async.eachOfLimit, notId, notId);
+
+	    function _findGetResult(v, x) {
+	        return x;
+	    }
+	    async.detect = _createTester(async.eachOf, identity, _findGetResult);
+	    async.detectSeries = _createTester(async.eachOfSeries, identity, _findGetResult);
+	    async.detectLimit = _createTester(async.eachOfLimit, identity, _findGetResult);
+
+	    async.sortBy = function (arr, iterator, callback) {
+	        async.map(arr, function (x, callback) {
+	            iterator(x, function (err, criteria) {
+	                if (err) {
+	                    callback(err);
+	                }
+	                else {
+	                    callback(null, {value: x, criteria: criteria});
+	                }
+	            });
+	        }, function (err, results) {
+	            if (err) {
+	                return callback(err);
+	            }
+	            else {
+	                callback(null, _map(results.sort(comparator), function (x) {
+	                    return x.value;
+	                }));
+	            }
+
+	        });
+
+	        function comparator(left, right) {
+	            var a = left.criteria, b = right.criteria;
+	            return a < b ? -1 : a > b ? 1 : 0;
+	        }
+	    };
+
+	    async.auto = function (tasks, callback) {
+	        callback = _once(callback || noop);
+	        var keys = _keys(tasks);
+	        var remainingTasks = keys.length;
+	        if (!remainingTasks) {
+	            return callback(null);
+	        }
+
+	        var results = {};
+
+	        var listeners = [];
+	        function addListener(fn) {
+	            listeners.unshift(fn);
+	        }
+	        function removeListener(fn) {
+	            var idx = _indexOf(listeners, fn);
+	            if (idx >= 0) listeners.splice(idx, 1);
+	        }
+	        function taskComplete() {
+	            remainingTasks--;
+	            _arrayEach(listeners.slice(0), function (fn) {
+	                fn();
+	            });
+	        }
+
+	        addListener(function () {
+	            if (!remainingTasks) {
+	                callback(null, results);
+	            }
+	        });
+
+	        _arrayEach(keys, function (k) {
+	            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+	            var taskCallback = _restParam(function(err, args) {
+	                if (args.length <= 1) {
+	                    args = args[0];
+	                }
+	                if (err) {
+	                    var safeResults = {};
+	                    _forEachOf(results, function(val, rkey) {
+	                        safeResults[rkey] = val;
+	                    });
+	                    safeResults[k] = args;
+	                    callback(err, safeResults);
+	                }
+	                else {
+	                    results[k] = args;
+	                    async.setImmediate(taskComplete);
+	                }
+	            });
+	            var requires = task.slice(0, task.length - 1);
+	            // prevent dead-locks
+	            var len = requires.length;
+	            var dep;
+	            while (len--) {
+	                if (!(dep = tasks[requires[len]])) {
+	                    throw new Error('Has inexistant dependency');
+	                }
+	                if (_isArray(dep) && _indexOf(dep, k) >= 0) {
+	                    throw new Error('Has cyclic dependencies');
+	                }
+	            }
+	            function ready() {
+	                return _reduce(requires, function (a, x) {
+	                    return (a && results.hasOwnProperty(x));
+	                }, true) && !results.hasOwnProperty(k);
+	            }
+	            if (ready()) {
+	                task[task.length - 1](taskCallback, results);
+	            }
+	            else {
+	                addListener(listener);
+	            }
+	            function listener() {
+	                if (ready()) {
+	                    removeListener(listener);
+	                    task[task.length - 1](taskCallback, results);
+	                }
+	            }
+	        });
+	    };
+
+
+
+	    async.retry = function(times, task, callback) {
+	        var DEFAULT_TIMES = 5;
+	        var DEFAULT_INTERVAL = 0;
+
+	        var attempts = [];
+
+	        var opts = {
+	            times: DEFAULT_TIMES,
+	            interval: DEFAULT_INTERVAL
+	        };
+
+	        function parseTimes(acc, t){
+	            if(typeof t === 'number'){
+	                acc.times = parseInt(t, 10) || DEFAULT_TIMES;
+	            } else if(typeof t === 'object'){
+	                acc.times = parseInt(t.times, 10) || DEFAULT_TIMES;
+	                acc.interval = parseInt(t.interval, 10) || DEFAULT_INTERVAL;
+	            } else {
+	                throw new Error('Unsupported argument type for \'times\': ' + typeof t);
+	            }
+	        }
+
+	        var length = arguments.length;
+	        if (length < 1 || length > 3) {
+	            throw new Error('Invalid arguments - must be either (task), (task, callback), (times, task) or (times, task, callback)');
+	        } else if (length <= 2 && typeof times === 'function') {
+	            callback = task;
+	            task = times;
+	        }
+	        if (typeof times !== 'function') {
+	            parseTimes(opts, times);
+	        }
+	        opts.callback = callback;
+	        opts.task = task;
+
+	        function wrappedTask(wrappedCallback, wrappedResults) {
+	            function retryAttempt(task, finalAttempt) {
+	                return function(seriesCallback) {
+	                    task(function(err, result){
+	                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+	                    }, wrappedResults);
+	                };
+	            }
+
+	            function retryInterval(interval){
+	                return function(seriesCallback){
+	                    setTimeout(function(){
+	                        seriesCallback(null);
+	                    }, interval);
+	                };
+	            }
+
+	            while (opts.times) {
+
+	                var finalAttempt = !(opts.times-=1);
+	                attempts.push(retryAttempt(opts.task, finalAttempt));
+	                if(!finalAttempt && opts.interval > 0){
+	                    attempts.push(retryInterval(opts.interval));
+	                }
+	            }
+
+	            async.series(attempts, function(done, data){
+	                data = data[data.length - 1];
+	                (wrappedCallback || opts.callback)(data.err, data.result);
+	            });
+	        }
+
+	        // If a callback is passed, run this as a controll flow
+	        return opts.callback ? wrappedTask() : wrappedTask;
+	    };
+
+	    async.waterfall = function (tasks, callback) {
+	        callback = _once(callback || noop);
+	        if (!_isArray(tasks)) {
+	            var err = new Error('First argument to waterfall must be an array of functions');
+	            return callback(err);
+	        }
+	        if (!tasks.length) {
+	            return callback();
+	        }
+	        function wrapIterator(iterator) {
+	            return _restParam(function (err, args) {
+	                if (err) {
+	                    callback.apply(null, [err].concat(args));
+	                }
+	                else {
+	                    var next = iterator.next();
+	                    if (next) {
+	                        args.push(wrapIterator(next));
+	                    }
+	                    else {
+	                        args.push(callback);
+	                    }
+	                    ensureAsync(iterator).apply(null, args);
+	                }
+	            });
+	        }
+	        wrapIterator(async.iterator(tasks))();
+	    };
+
+	    function _parallel(eachfn, tasks, callback) {
+	        callback = callback || noop;
+	        var results = _isArrayLike(tasks) ? [] : {};
+
+	        eachfn(tasks, function (task, key, callback) {
+	            task(_restParam(function (err, args) {
+	                if (args.length <= 1) {
+	                    args = args[0];
+	                }
+	                results[key] = args;
+	                callback(err);
+	            }));
+	        }, function (err) {
+	            callback(err, results);
+	        });
+	    }
+
+	    async.parallel = function (tasks, callback) {
+	        _parallel(async.eachOf, tasks, callback);
+	    };
+
+	    async.parallelLimit = function(tasks, limit, callback) {
+	        _parallel(_eachOfLimit(limit), tasks, callback);
+	    };
+
+	    async.series = function(tasks, callback) {
+	        _parallel(async.eachOfSeries, tasks, callback);
+	    };
+
+	    async.iterator = function (tasks) {
+	        function makeCallback(index) {
+	            function fn() {
+	                if (tasks.length) {
+	                    tasks[index].apply(null, arguments);
+	                }
+	                return fn.next();
+	            }
+	            fn.next = function () {
+	                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+	            };
+	            return fn;
+	        }
+	        return makeCallback(0);
+	    };
+
+	    async.apply = _restParam(function (fn, args) {
+	        return _restParam(function (callArgs) {
+	            return fn.apply(
+	                null, args.concat(callArgs)
+	            );
+	        });
+	    });
+
+	    function _concat(eachfn, arr, fn, callback) {
+	        var result = [];
+	        eachfn(arr, function (x, index, cb) {
+	            fn(x, function (err, y) {
+	                result = result.concat(y || []);
+	                cb(err);
+	            });
+	        }, function (err) {
+	            callback(err, result);
+	        });
+	    }
+	    async.concat = doParallel(_concat);
+	    async.concatSeries = doSeries(_concat);
+
+	    async.whilst = function (test, iterator, callback) {
+	        callback = callback || noop;
+	        if (test()) {
+	            var next = _restParam(function(err, args) {
+	                if (err) {
+	                    callback(err);
+	                } else if (test.apply(this, args)) {
+	                    iterator(next);
+	                } else {
+	                    callback(null);
+	                }
+	            });
+	            iterator(next);
+	        } else {
+	            callback(null);
+	        }
+	    };
+
+	    async.doWhilst = function (iterator, test, callback) {
+	        var calls = 0;
+	        return async.whilst(function() {
+	            return ++calls <= 1 || test.apply(this, arguments);
+	        }, iterator, callback);
+	    };
+
+	    async.until = function (test, iterator, callback) {
+	        return async.whilst(function() {
+	            return !test.apply(this, arguments);
+	        }, iterator, callback);
+	    };
+
+	    async.doUntil = function (iterator, test, callback) {
+	        return async.doWhilst(iterator, function() {
+	            return !test.apply(this, arguments);
+	        }, callback);
+	    };
+
+	    async.during = function (test, iterator, callback) {
+	        callback = callback || noop;
+
+	        var next = _restParam(function(err, args) {
+	            if (err) {
+	                callback(err);
+	            } else {
+	                args.push(check);
+	                test.apply(this, args);
+	            }
+	        });
+
+	        var check = function(err, truth) {
+	            if (err) {
+	                callback(err);
+	            } else if (truth) {
+	                iterator(next);
+	            } else {
+	                callback(null);
+	            }
+	        };
+
+	        test(check);
+	    };
+
+	    async.doDuring = function (iterator, test, callback) {
+	        var calls = 0;
+	        async.during(function(next) {
+	            if (calls++ < 1) {
+	                next(null, true);
+	            } else {
+	                test.apply(this, arguments);
+	            }
+	        }, iterator, callback);
+	    };
+
+	    function _queue(worker, concurrency, payload) {
+	        if (concurrency == null) {
+	            concurrency = 1;
+	        }
+	        else if(concurrency === 0) {
+	            throw new Error('Concurrency must not be zero');
+	        }
+	        function _insert(q, data, pos, callback) {
+	            if (callback != null && typeof callback !== "function") {
+	                throw new Error("task callback must be a function");
+	            }
+	            q.started = true;
+	            if (!_isArray(data)) {
+	                data = [data];
+	            }
+	            if(data.length === 0 && q.idle()) {
+	                // call drain immediately if there are no tasks
+	                return async.setImmediate(function() {
+	                    q.drain();
+	                });
+	            }
+	            _arrayEach(data, function(task) {
+	                var item = {
+	                    data: task,
+	                    callback: callback || noop
+	                };
+
+	                if (pos) {
+	                    q.tasks.unshift(item);
+	                } else {
+	                    q.tasks.push(item);
+	                }
+
+	                if (q.tasks.length === q.concurrency) {
+	                    q.saturated();
+	                }
+	            });
+	            async.setImmediate(q.process);
+	        }
+	        function _next(q, tasks) {
+	            return function(){
+	                workers -= 1;
+	                var args = arguments;
+	                _arrayEach(tasks, function (task) {
+	                    task.callback.apply(task, args);
+	                });
+	                if (q.tasks.length + workers === 0) {
+	                    q.drain();
+	                }
+	                q.process();
+	            };
+	        }
+
+	        var workers = 0;
+	        var q = {
+	            tasks: [],
+	            concurrency: concurrency,
+	            payload: payload,
+	            saturated: noop,
+	            empty: noop,
+	            drain: noop,
+	            started: false,
+	            paused: false,
+	            push: function (data, callback) {
+	                _insert(q, data, false, callback);
+	            },
+	            kill: function () {
+	                q.drain = noop;
+	                q.tasks = [];
+	            },
+	            unshift: function (data, callback) {
+	                _insert(q, data, true, callback);
+	            },
+	            process: function () {
+	                if (!q.paused && workers < q.concurrency && q.tasks.length) {
+	                    while(workers < q.concurrency && q.tasks.length){
+	                        var tasks = q.payload ?
+	                            q.tasks.splice(0, q.payload) :
+	                            q.tasks.splice(0, q.tasks.length);
+
+	                        var data = _map(tasks, function (task) {
+	                            return task.data;
+	                        });
+
+	                        if (q.tasks.length === 0) {
+	                            q.empty();
+	                        }
+	                        workers += 1;
+	                        var cb = only_once(_next(q, tasks));
+	                        worker(data, cb);
+	                    }
+	                }
+	            },
+	            length: function () {
+	                return q.tasks.length;
+	            },
+	            running: function () {
+	                return workers;
+	            },
+	            idle: function() {
+	                return q.tasks.length + workers === 0;
+	            },
+	            pause: function () {
+	                q.paused = true;
+	            },
+	            resume: function () {
+	                if (q.paused === false) { return; }
+	                q.paused = false;
+	                var resumeCount = Math.min(q.concurrency, q.tasks.length);
+	                // Need to call q.process once per concurrent
+	                // worker to preserve full concurrency after pause
+	                for (var w = 1; w <= resumeCount; w++) {
+	                    async.setImmediate(q.process);
+	                }
+	            }
+	        };
+	        return q;
+	    }
+
+	    async.queue = function (worker, concurrency) {
+	        var q = _queue(function (items, cb) {
+	            worker(items[0], cb);
+	        }, concurrency, 1);
+
+	        return q;
+	    };
+
+	    async.priorityQueue = function (worker, concurrency) {
+
+	        function _compareTasks(a, b){
+	            return a.priority - b.priority;
+	        }
+
+	        function _binarySearch(sequence, item, compare) {
+	            var beg = -1,
+	                end = sequence.length - 1;
+	            while (beg < end) {
+	                var mid = beg + ((end - beg + 1) >>> 1);
+	                if (compare(item, sequence[mid]) >= 0) {
+	                    beg = mid;
+	                } else {
+	                    end = mid - 1;
+	                }
+	            }
+	            return beg;
+	        }
+
+	        function _insert(q, data, priority, callback) {
+	            if (callback != null && typeof callback !== "function") {
+	                throw new Error("task callback must be a function");
+	            }
+	            q.started = true;
+	            if (!_isArray(data)) {
+	                data = [data];
+	            }
+	            if(data.length === 0) {
+	                // call drain immediately if there are no tasks
+	                return async.setImmediate(function() {
+	                    q.drain();
+	                });
+	            }
+	            _arrayEach(data, function(task) {
+	                var item = {
+	                    data: task,
+	                    priority: priority,
+	                    callback: typeof callback === 'function' ? callback : noop
+	                };
+
+	                q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
+
+	                if (q.tasks.length === q.concurrency) {
+	                    q.saturated();
+	                }
+	                async.setImmediate(q.process);
+	            });
+	        }
+
+	        // Start with a normal queue
+	        var q = async.queue(worker, concurrency);
+
+	        // Override push to accept second parameter representing priority
+	        q.push = function (data, priority, callback) {
+	            _insert(q, data, priority, callback);
+	        };
+
+	        // Remove unshift function
+	        delete q.unshift;
+
+	        return q;
+	    };
+
+	    async.cargo = function (worker, payload) {
+	        return _queue(worker, 1, payload);
+	    };
+
+	    function _console_fn(name) {
+	        return _restParam(function (fn, args) {
+	            fn.apply(null, args.concat([_restParam(function (err, args) {
+	                if (typeof console === 'object') {
+	                    if (err) {
+	                        if (console.error) {
+	                            console.error(err);
+	                        }
+	                    }
+	                    else if (console[name]) {
+	                        _arrayEach(args, function (x) {
+	                            console[name](x);
+	                        });
+	                    }
+	                }
+	            })]));
+	        });
+	    }
+	    async.log = _console_fn('log');
+	    async.dir = _console_fn('dir');
+	    /*async.info = _console_fn('info');
+	    async.warn = _console_fn('warn');
+	    async.error = _console_fn('error');*/
+
+	    async.memoize = function (fn, hasher) {
+	        var memo = {};
+	        var queues = {};
+	        hasher = hasher || identity;
+	        var memoized = _restParam(function memoized(args) {
+	            var callback = args.pop();
+	            var key = hasher.apply(null, args);
+	            if (key in memo) {
+	                async.nextTick(function () {
+	                    callback.apply(null, memo[key]);
+	                });
+	            }
+	            else if (key in queues) {
+	                queues[key].push(callback);
+	            }
+	            else {
+	                queues[key] = [callback];
+	                fn.apply(null, args.concat([_restParam(function (args) {
+	                    memo[key] = args;
+	                    var q = queues[key];
+	                    delete queues[key];
+	                    for (var i = 0, l = q.length; i < l; i++) {
+	                        q[i].apply(null, args);
+	                    }
+	                })]));
+	            }
+	        });
+	        memoized.memo = memo;
+	        memoized.unmemoized = fn;
+	        return memoized;
+	    };
+
+	    async.unmemoize = function (fn) {
+	        return function () {
+	            return (fn.unmemoized || fn).apply(null, arguments);
+	        };
+	    };
+
+	    function _times(mapper) {
+	        return function (count, iterator, callback) {
+	            mapper(_range(count), iterator, callback);
+	        };
+	    }
+
+	    async.times = _times(async.map);
+	    async.timesSeries = _times(async.mapSeries);
+	    async.timesLimit = function (count, limit, iterator, callback) {
+	        return async.mapLimit(_range(count), limit, iterator, callback);
+	    };
+
+	    async.seq = function (/* functions... */) {
+	        var fns = arguments;
+	        return _restParam(function (args) {
+	            var that = this;
+
+	            var callback = args[args.length - 1];
+	            if (typeof callback == 'function') {
+	                args.pop();
+	            } else {
+	                callback = noop;
+	            }
+
+	            async.reduce(fns, args, function (newargs, fn, cb) {
+	                fn.apply(that, newargs.concat([_restParam(function (err, nextargs) {
+	                    cb(err, nextargs);
+	                })]));
+	            },
+	            function (err, results) {
+	                callback.apply(that, [err].concat(results));
+	            });
+	        });
+	    };
+
+	    async.compose = function (/* functions... */) {
+	        return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+	    };
+
+
+	    function _applyEach(eachfn) {
+	        return _restParam(function(fns, args) {
+	            var go = _restParam(function(args) {
+	                var that = this;
+	                var callback = args.pop();
+	                return eachfn(fns, function (fn, _, cb) {
+	                    fn.apply(that, args.concat([cb]));
+	                },
+	                callback);
+	            });
+	            if (args.length) {
+	                return go.apply(this, args);
+	            }
+	            else {
+	                return go;
+	            }
+	        });
+	    }
+
+	    async.applyEach = _applyEach(async.eachOf);
+	    async.applyEachSeries = _applyEach(async.eachOfSeries);
+
+
+	    async.forever = function (fn, callback) {
+	        var done = only_once(callback || noop);
+	        var task = ensureAsync(fn);
+	        function next(err) {
+	            if (err) {
+	                return done(err);
+	            }
+	            task(next);
+	        }
+	        next();
+	    };
+
+	    function ensureAsync(fn) {
+	        return _restParam(function (args) {
+	            var callback = args.pop();
+	            args.push(function () {
+	                var innerArgs = arguments;
+	                if (sync) {
+	                    async.setImmediate(function () {
+	                        callback.apply(null, innerArgs);
+	                    });
+	                } else {
+	                    callback.apply(null, innerArgs);
+	                }
+	            });
+	            var sync = true;
+	            fn.apply(this, args);
+	            sync = false;
+	        });
+	    }
+
+	    async.ensureAsync = ensureAsync;
+
+	    async.constant = _restParam(function(values) {
+	        var args = [null].concat(values);
+	        return function (callback) {
+	            return callback.apply(this, args);
+	        };
+	    });
+
+	    async.wrapSync =
+	    async.asyncify = function asyncify(func) {
+	        return _restParam(function (args) {
+	            var callback = args.pop();
+	            var result;
+	            try {
+	                result = func.apply(this, args);
+	            } catch (e) {
+	                return callback(e);
+	            }
+	            // if result is Promise object
+	            if (_isObject(result) && typeof result.then === "function") {
+	                result.then(function(value) {
+	                    callback(null, value);
+	                })["catch"](function(err) {
+	                    callback(err.message ? err : new Error(err));
+	                });
+	            } else {
+	                callback(null, result);
+	            }
+	        });
+	    };
+
+	    // Node.js
+	    if (typeof module === 'object' && module.exports) {
+	        module.exports = async;
+	    }
+	    // AMD / RequireJS
+	    else if (true) {
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	            return async;
+	        }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    }
+	    // included directly via <script> tag
+	    else {
+	        root.async = async;
+	    }
+
+	}());
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(284).setImmediate, __webpack_require__(3)))
+
+/***/ },
+/* 284 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(3).nextTick;
+	var apply = Function.prototype.apply;
+	var slice = Array.prototype.slice;
+	var immediateIds = {};
+	var nextImmediateId = 0;
+
+	// DOM APIs, for completeness
+
+	exports.setTimeout = function() {
+	  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+	};
+	exports.setInterval = function() {
+	  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+	};
+	exports.clearTimeout =
+	exports.clearInterval = function(timeout) { timeout.close(); };
+
+	function Timeout(id, clearFn) {
+	  this._id = id;
+	  this._clearFn = clearFn;
+	}
+	Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+	Timeout.prototype.close = function() {
+	  this._clearFn.call(window, this._id);
+	};
+
+	// Does not start the time, just sets up the members needed.
+	exports.enroll = function(item, msecs) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = msecs;
+	};
+
+	exports.unenroll = function(item) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = -1;
+	};
+
+	exports._unrefActive = exports.active = function(item) {
+	  clearTimeout(item._idleTimeoutId);
+
+	  var msecs = item._idleTimeout;
+	  if (msecs >= 0) {
+	    item._idleTimeoutId = setTimeout(function onTimeout() {
+	      if (item._onTimeout)
+	        item._onTimeout();
+	    }, msecs);
+	  }
+	};
+
+	// That's not how node.js implements it but the exposed api is the same.
+	exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
+	  var id = nextImmediateId++;
+	  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+
+	  immediateIds[id] = true;
+
+	  nextTick(function onNextTick() {
+	    if (immediateIds[id]) {
+	      // fn.call() is faster so we optimize for the common use-case
+	      // @see http://jsperf.com/call-apply-segu
+	      if (args) {
+	        fn.apply(null, args);
+	      } else {
+	        fn.call(null);
+	      }
+	      // Prevent ids from leaking
+	      exports.clearImmediate(id);
+	    }
+	  });
+
+	  return id;
+	};
+
+	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
+	  delete immediateIds[id];
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(284).setImmediate, __webpack_require__(284).clearImmediate))
+
+/***/ },
+/* 285 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * @jsx React.DOM
 	 */
 	'use strict';
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var Rating = React.createFactory(__webpack_require__(282));
+	var Rating = React.createFactory(__webpack_require__(286));
 	var Select = React.createFactory(__webpack_require__(187));
 
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 
 	var ReportPage = React.createClass({
 	  displayName: 'Report',
@@ -58235,7 +59727,7 @@
 
 
 /***/ },
-/* 282 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*! react-rating - 0.0.13 | (c) 2015, 2015  dreyescat | MIT | https://github.com/dreyescat/react-rating */
@@ -58562,7 +60054,7 @@
 	;
 
 /***/ },
-/* 283 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -58575,8 +60067,8 @@
 	var Select = React.createFactory(__webpack_require__(187));
 	var ProjectApis = __webpack_require__(172).ProjectApis;
 	var UserApis = __webpack_require__(172).UserApis;
-	var ProjectActions = __webpack_require__(284);
-	var ProjectStore = __webpack_require__(285);
+	var ProjectActions = __webpack_require__(281);
+	var ProjectStore = __webpack_require__(282);
 	var UserActions = __webpack_require__(185);
 	var UserStore = __webpack_require__(169);
 
@@ -58594,12 +60086,7 @@
 	      model: {},
 	      projectList: [],
 	      userOptions: [],
-	      userOptionsType: [
-	      { value: '561fd827b668ae030085a6d6', label: 'Tam Pham' },
-	      { value: '5621fe76bb87350300195ce0', label: 'Tan Nguyen' },
-	      { value: '5621d55a6d7edd0300e0417b', label: 'Giang Strider' },
-	      { value: '562261c643ecfd0300b15f5a', label: 'Nguyễn Văn Sơn' }
-	    ]
+	      userOptionsType: []
 	    };
 	  },
 
@@ -58645,7 +60132,6 @@
 	      }
 	    });
 	    this.setState({projectList: pList});
-	    // window.location.hash = 'project';
 	  },
 
 	  _onGetAllFail: function(data) {
@@ -58653,7 +60139,6 @@
 	  },
 
 	  _onGetAllUserSuccess: function(data) {
-	    console.log('_onGetAllUserSuccess', data);
 	    this.setState({userOptions: data.data});
 	    this.passValueUser(data.data);
 	  },
@@ -58669,7 +60154,6 @@
 	        value: item._id
 	      };
 	    });
-	    console.log('passValueUser', list);
 	    this.setState({userOptionsType: list});
 	  },
 
@@ -58693,7 +60177,6 @@
 	    var model = this.state.model;
 	    model[e.target.name] = e.target.value;
 	    this.setState({model: model});
-	    console.log(model);
 	  },
 
 	  onSelectChangedMaster: function(e) {
@@ -58702,9 +60185,10 @@
 	    this.setState({model: model});
 	  },
 
-	  onSelectChangedMember: function(data) {
+	  onSelectChangedMember: function(data, listUser) {
 	    var model = this.state.model;
-	    model._user = data;
+	    model._user = listUser;
+	    console.log(listUser);
 	    this.setState({model: model});
 	  },
 
@@ -58791,164 +60275,7 @@
 
 
 /***/ },
-/* 284 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Route Action
-	 */
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(158);
-	var ActionTypes = __webpack_require__(162);
-
-	var Actions = {
-
-	  create: function(data) {
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.CreateProject,
-	      data: data
-	    });
-	  },
-
-	  all: function(){
-	    AppDispatcher.dispatch({
-	      actionType: ActionTypes.All
-	    });
-	  }
-
-	};
-
-	module.exports = Actions;
-
-
-/***/ },
-/* 285 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * ToDo Store
-	 */
-	'use strict';
-
-	/**
-	 * Libraries
-	 */
-	var AppDispatcher = __webpack_require__(158);
-	var EventEmitter = __webpack_require__(170).EventEmitter;
-	var assign = __webpack_require__(13);
-	var Actions = __webpack_require__(162);
-	var Events = __webpack_require__(171);
-	var ProjectApis = __webpack_require__(172).ProjectApis;
-	var UProjectApis = __webpack_require__(172).UProjectApis;
-
-	/**
-	 * Variables
-	 */
-	var DEBUG = false;
-	var _name = 'ProjectStore';
-
-	/**
-	 * Store Start
-	 */
-	var ProjectStore = assign({}, EventEmitter.prototype, {
-	  // listener events zone
-	  addListenerOnCreateSuccess: function(callback, context) {
-	    this.on(Events.CreateProjectSuccess, callback, context);
-	  },
-	  rmvListenerOnCreateSuccess: function(context) {
-	    this.removeListener(Events.CreateProjectSuccess, context);
-	  },
-	  addListenerOnCreateFail: function(callback, context) {
-	    this.on(Events.CreateProjectFail, callback, context);
-	  },
-	  rmvListenerOnCreateFail: function(context) {
-	    this.removeListener(Events.CreateProjectFail, context);
-	  },
-
-	  addListenerGetAllProjectSuccess: function(callback, context) {
-	    this.on(Events.GetAllProjectSuccess, callback, context);
-	  },
-	  rmvListenerGetAllProjectSuccess: function(context) {
-	    this.removeListener(Events.GetAllProjectSuccess, context);
-	  },
-	  addListenerGetAllProjectFail: function(callback, context) {
-	    this.on(Events.GetAllProjectFail, callback, context);
-	  },
-	  rmvListenerGetAllProjectFail: function(context) {
-	    this.removeListener(Events.GetAllProjectFail, context);
-	  },
-
-	  // functions
-	  create: function(data) {
-
-	    UProjectApis.create(data);
-
-	    ProjectApis.create(data).then(
-	    function(body) {
-	      this.emit(Events.CreateProjectSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.CreateProjectFail, err);
-	    }.bind(this));
-	  },
-
-	  all: function() {
-
-	    ProjectApis.all().then(
-	    function(body) {
-	      this.emit(Events.GetAllProjectSuccess, body);
-	    }.bind(this),
-	    function(err) {
-	      this.emit(Events.GetAllProjectFail, err);
-	    }.bind(this));
-	  }
-	});
-
-	/**
-	 * Integrated with Dispatcher
-	 */
-	AppDispatcher.register(function(payload) {
-
-	  var action = payload.actionType;
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':Dispatch-Begin --- ' + action);
-	    console.log('     Payload:');
-	    console.log(payload);
-	  }
-
-	  // Route Logic
-	  switch (action) {
-	    case Actions.CreateProject:
-	      ProjectStore.create(payload.data);
-	      break;
-
-	    case Actions.All:
-	      ProjectStore.all(payload.data);
-	      break;
-
-	    default:
-	      if (DEBUG) {
-	        console.log('[x] ' + _name + ':actionType --- NOT MATCH');
-	      }
-	      return true;
-	  }
-
-	  // If action was responded to, emit change event
-	  // UserStore.emitChange();
-
-	  if (DEBUG) {
-	    console.log('[*] ' + _name + ':emitChange ---');
-	  }
-
-	  return true;
-	});
-
-	module.exports = ProjectStore;
-
-/***/ },
-/* 286 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59037,7 +60364,7 @@
 
 
 /***/ },
-/* 287 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59047,9 +60374,9 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(288);
+	var CommonMixins = __webpack_require__(290);
 	var UserActions = __webpack_require__(185);
-	var NotificationActions = __webpack_require__(289);
+	var NotificationActions = __webpack_require__(291);
 	var UserStore = __webpack_require__(169);
 
 	var LoginPage = React.createClass({
@@ -59141,7 +60468,7 @@
 
 
 /***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -59163,7 +60490,7 @@
 
 
 /***/ },
-/* 289 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59189,7 +60516,7 @@
 
 
 /***/ },
-/* 290 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59199,9 +60526,9 @@
 
 	var React = __webpack_require__(1);
 	var DefaultLayout = React.createFactory(__webpack_require__(165));
-	var CommonMixins = __webpack_require__(288);
+	var CommonMixins = __webpack_require__(290);
 	var UserActions = __webpack_require__(185);
-	var NotificationActions = __webpack_require__(289);
+	var NotificationActions = __webpack_require__(291);
 	var UserStore = __webpack_require__(169);
 
 	var LoginPage = React.createClass({

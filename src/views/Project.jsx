@@ -103,15 +103,13 @@ var ProjectPage = React.createClass({
 
     var pList = this.state.projectList;
     ProjectActions.create(this.state.model);
-    pList.push({
-      name: this.state.model.name
-      //leader: "Giang"
-    });
 
     this.setState({
       projectList: pList,
       model: { name: '' }
     });
+
+    ProjectActions.all();
   },
 
   onChange: function(e) {

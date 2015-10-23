@@ -80,11 +80,11 @@ var ReportPage = React.createClass({
     // map for usage data
     var data2 = data.map(function(item) {
       var newItem = lodash.clone(item);
-      if (newItem._project) {
-        newItem._project = newItem._project._id;
-        newItem.id = newItem._id;
-        newItem.estimation = newItem.estimation.toString();
-      }
+      // parse data for view
+      newItem.id = newItem._id;
+      newItem._project = newItem._project && newItem._project._id;
+      newItem.estimation = newItem.estimation && newItem.estimation.toString();
+      // return the new one
       return newItem;
     });
     console.log('_onFindTaskSuccess', data2);

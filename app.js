@@ -60169,11 +60169,6 @@
 
 	  _onGetAllSuccess: function(data) {
 	    var pList = data.data;
-	    pList.forEach(function(item) {
-	      if (!item._scrumMaster) {
-	        item._scrumMaster = {};
-	      }
-	    });
 	    this.setState({projectList: pList});
 	  },
 
@@ -60192,7 +60187,6 @@
 
 	  _onGetAllUserProjectSuccess: function(data){
 	    this.setState({userProject: data.data});
-	    console.log(data.data);
 	  },
 
 	  _onGetGetAllUserProjectFail: function(data){
@@ -60215,12 +60209,7 @@
 	    var list = pList.filter(function(item){
 	      return item._project._id == projectId;
 	    });
-	/*
-	    var list = async.filter(pList, function(item, callback){
-	      return item._project._id == projectId;
-	      callback(true);
-	    });
-	*/
+
 	    this.setState({userProjectList: list});
 	    console.log(list);
 	  },
@@ -60332,8 +60321,8 @@
 	            )
 	          )
 	        ), 
-	        React.DOM.div({className: "col-sm-4"}, 
-
+	        React.DOM.div({className: "col-sm-offset-8 col-sm-4"}, 
+	          React.DOM.h3(null, "Project Detail"), 
 	          React.DOM.table({className: "table table-striped"}, 
 	            React.DOM.tbody(null, 
 	              this.state.userProjectList.map(function(item, index){

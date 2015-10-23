@@ -19,6 +19,12 @@ var Actions = {
     AppDispatcher.dispatch({
       actionType: ActionTypes.All
     });
+  },
+
+  getAllUserProjects: function(){
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.getAllUserProjects
+    });
   }
 
 };

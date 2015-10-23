@@ -52,6 +52,19 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
     this.removeListener(Events.GetAllProjectFail, context);
   },
 
+  addListenerGetAllUserProjectSuccess: function(callback, context) {
+    this.on(Events.GetAllUserProjectSuccess, callback, context);
+  },
+  rmvListenerGetAllUserProjectSuccess: function(context) {
+    this.removeListener(Events.GetAllUserProjectSuccess, context);
+  },
+  addListenerGetAllUserProjectFail: function(callback, context) {
+    this.on(Events.GetAllUserProjectFail, callback, context);
+  },
+  rmvListenerGetAllUserProjectFail: function(context) {
+    this.removeListener(Events.GetAllUserProjectFail, context);
+  },
+
   // functions
   create: function(data) {
   // data must be include 2 part
@@ -59,7 +72,7 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
   // data.uproject is []
     ProjectApis.create(data).then(function(projectData){
       async.each(data._user, function(user, callback){
-        UProjectApis.create({_project: projectData.data._id});
+        UProjectApis.create({_project: projectData.data._id, _user: user.value});
         callback();
       }, function(err){
         console.log(err);
@@ -69,11 +82,7 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
     function(err){
       this.emit(Events.GetAllProjectFail, err);
     }.bind(this));
-
 },
-
-
-
 
   all: function() {
 
@@ -83,6 +92,16 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
     }.bind(this),
     function(err) {
       this.emit(Events.GetAllProjectFail, err);
+    }.bind(this));
+  },
+
+  getAllUserProjects: function(){
+    UProjectApis.all().then(
+    function(body) {
+      this.emit(Events.GetAllUserProjectSuccess, body);
+    }.bind(this),
+    function(err) {
+      this.emit(Events.GetAllUserProjectFail, err);
     }.bind(this));
   }
 });
@@ -108,6 +127,10 @@ AppDispatcher.register(function(payload) {
 
     case Actions.All:
       ProjectStore.all(payload.data);
+      break;
+
+    case Actions.getAllUserProjects:
+      ProjectStore.getAllUserProjects(payload.data);
       break;
 
     default:

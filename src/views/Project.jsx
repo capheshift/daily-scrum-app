@@ -12,6 +12,7 @@ var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
 var UserActions = require('../actions/UserActions');
 var UserStore = require('../stores/UserStore');
+var async = require('async');
 
 var ProjectPage = React.createClass({
   displayName: 'Project',
@@ -26,6 +27,7 @@ var ProjectPage = React.createClass({
       return {
       model: {},
       projectList: [],
+      userProjectList: [],
       userOptions: [],
       userOptionsType: []
     };
@@ -34,6 +36,7 @@ var ProjectPage = React.createClass({
   componentDidMount: function() {
     ProjectActions.all();
     UserActions.getAllUsers();
+    ProjectActions.getAllUserProjects();
 
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -43,6 +46,9 @@ var ProjectPage = React.createClass({
 
     UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
     UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
+
+    ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
+    ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
   },
 
   componentWillUnmount: function() {
@@ -54,6 +60,9 @@ var ProjectPage = React.createClass({
 
     UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
     UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
+
+    ProjectStore.rmvListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess);
+    ProjectStore.rmvListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail);
   },
 
   _onCreateSuccess: function(data) {
@@ -65,7 +74,6 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllSuccess: function(data) {
-    console.log('_onGetAllSuccess', data);
     var pList = data.data;
     pList.forEach(function(item) {
       if (!item._scrumMaster) {
@@ -88,6 +96,15 @@ var ProjectPage = React.createClass({
     console.log('data fail', data);
   },
 
+  _onGetAllUserProjectSuccess: function(data){
+    this.setState({userProjectList: data.data});
+    console.log(data.data);
+  },
+
+  _onGetGetAllUserProjectFail: function(data){
+
+  },
+
   passValueUser: function(data){
     var list = data.map(function(item){
       return {
@@ -96,6 +113,23 @@ var ProjectPage = React.createClass({
       };
     });
     this.setState({userOptionsType: list});
+  },
+
+  onDetailProjectClicked: function(projectId){
+    var pList = this.state.userProjectList;
+    pList.forEach(function(item) {
+      if (!item._project) {
+        item._project = {};
+      }
+      if (!item._user) {
+        item._user = {};
+      }
+    });
+    var list = pList.filter(function(item){
+      return item._project._id == projectId;
+    });
+    this.setState({userProjectList: list});
+    console.log(list);
   },
 
   onCreateProjectClicked: function(e) {
@@ -127,7 +161,6 @@ var ProjectPage = React.createClass({
   onSelectChangedMember: function(data, listUser) {
     var model = this.state.model;
     model._user = listUser;
-    console.log(listUser);
     this.setState({model: model});
   },
 
@@ -156,10 +189,10 @@ var ProjectPage = React.createClass({
                     <th scope="row">{index + 1}</th>
                     <td>{item.name}</td>
                     <td>{item._scrumMaster.fullName}</td>
-                    <td><a href="">Detail</a></td>
+                    <td><a className="btn btn-primary" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
                   </tr>
                 );
-              })}
+              }.bind(this))}
             </tbody>
           </table>
         </div>
@@ -204,6 +237,22 @@ var ProjectPage = React.createClass({
 
             </fieldset>
           </form>
+        </div>
+        <div className="col-sm-4">
+
+          <table className="table table-striped">
+            <tbody>
+              {this.state.userProjectList.map(function(item, index){
+                return (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{item._user.fullName}</td>
+                  </tr>
+                );
+              })
+              }
+            </tbody>
+          </table>
         </div>
       </div>
     );

@@ -76,11 +76,6 @@ var ProjectPage = React.createClass({
 
   _onGetAllSuccess: function(data) {
     var pList = data.data;
-    pList.forEach(function(item) {
-      if (!item._scrumMaster) {
-        item._scrumMaster = {};
-      }
-    });
     this.setState({projectList: pList});
   },
 
@@ -99,7 +94,6 @@ var ProjectPage = React.createClass({
 
   _onGetAllUserProjectSuccess: function(data){
     this.setState({userProject: data.data});
-    console.log(data.data);
   },
 
   _onGetGetAllUserProjectFail: function(data){
@@ -122,12 +116,7 @@ var ProjectPage = React.createClass({
     var list = pList.filter(function(item){
       return item._project._id == projectId;
     });
-/*
-    var list = async.filter(pList, function(item, callback){
-      return item._project._id == projectId;
-      callback(true);
-    });
-*/
+
     this.setState({userProjectList: list});
     console.log(list);
   },
@@ -239,8 +228,8 @@ var ProjectPage = React.createClass({
             </fieldset>
           </form>
         </div>
-        <div className="col-sm-4">
-
+        <div className="col-sm-offset-8 col-sm-4">
+          <h3>Project Detail</h3>
           <table className="table table-striped">
             <tbody>
               {this.state.userProjectList.map(function(item, index){

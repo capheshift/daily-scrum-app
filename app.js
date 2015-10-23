@@ -21605,7 +21605,9 @@
 	  SET_CURRENT_ROUTE: null,
 
 	  TASK_NEW: null,
-	  TASK_UPDATE: null
+	  TASK_UPDATE: null,
+
+	  getAllUserProjects: null
 	});
 
 
@@ -22693,7 +22695,10 @@
 	  NewTaskSuccess: null,
 	  NewTaskFail: null,
 	  UpdateTaskSuccess: null,
-	  UpdateTaskFail: null
+	  UpdateTaskFail: null,
+
+	  GetAllUserProjectSuccess: null,
+	  GetAllUserProjectFail: null
 	});
 
 
@@ -58063,6 +58068,12 @@
 	    AppDispatcher.dispatch({
 	      actionType: ActionTypes.All
 	    });
+	  },
+
+	  getAllUserProjects: function(){
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.getAllUserProjects
+	    });
 	  }
 
 	};
@@ -58128,6 +58139,19 @@
 	    this.removeListener(Events.GetAllProjectFail, context);
 	  },
 
+	  addListenerGetAllUserProjectSuccess: function(callback, context) {
+	    this.on(Events.GetAllUserProjectSuccess, callback, context);
+	  },
+	  rmvListenerGetAllUserProjectSuccess: function(context) {
+	    this.removeListener(Events.GetAllUserProjectSuccess, context);
+	  },
+	  addListenerGetAllUserProjectFail: function(callback, context) {
+	    this.on(Events.GetAllUserProjectFail, callback, context);
+	  },
+	  rmvListenerGetAllUserProjectFail: function(context) {
+	    this.removeListener(Events.GetAllUserProjectFail, context);
+	  },
+
 	  // functions
 	  create: function(data) {
 	  // data must be include 2 part
@@ -58135,7 +58159,7 @@
 	  // data.uproject is []
 	    ProjectApis.create(data).then(function(projectData){
 	      async.each(data._user, function(user, callback){
-	        UProjectApis.create({_project: projectData.data._id});
+	        UProjectApis.create({_project: projectData.data._id, _user: user.value});
 	        callback();
 	      }, function(err){
 	        console.log(err);
@@ -58145,11 +58169,7 @@
 	    function(err){
 	      this.emit(Events.GetAllProjectFail, err);
 	    }.bind(this));
-
 	},
-
-
-
 
 	  all: function() {
 
@@ -58159,6 +58179,16 @@
 	    }.bind(this),
 	    function(err) {
 	      this.emit(Events.GetAllProjectFail, err);
+	    }.bind(this));
+	  },
+
+	  getAllUserProjects: function(){
+	    UProjectApis.all().then(
+	    function(body) {
+	      this.emit(Events.GetAllUserProjectSuccess, body);
+	    }.bind(this),
+	    function(err) {
+	      this.emit(Events.GetAllUserProjectFail, err);
 	    }.bind(this));
 	  }
 	});
@@ -58184,6 +58214,10 @@
 
 	    case Actions.All:
 	      ProjectStore.all(payload.data);
+	      break;
+
+	    case Actions.getAllUserProjects:
+	      ProjectStore.getAllUserProjects(payload.data);
 	      break;
 
 	    default:
@@ -60071,6 +60105,7 @@
 	var ProjectStore = __webpack_require__(282);
 	var UserActions = __webpack_require__(185);
 	var UserStore = __webpack_require__(169);
+	var async = __webpack_require__(283);
 
 	var ProjectPage = React.createClass({
 	  displayName: 'Project',
@@ -60085,6 +60120,7 @@
 	      return {
 	      model: {},
 	      projectList: [],
+	      userProjectList: [],
 	      userOptions: [],
 	      userOptionsType: []
 	    };
@@ -60093,6 +60129,7 @@
 	  componentDidMount: function() {
 	    ProjectActions.all();
 	    UserActions.getAllUsers();
+	    ProjectActions.getAllUserProjects();
 
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -60102,6 +60139,9 @@
 
 	    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
 	    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
+
+	    ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
+	    ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
 	  },
 
 	  componentWillUnmount: function() {
@@ -60113,6 +60153,9 @@
 
 	    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
 	    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
+
+	    ProjectStore.rmvListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess);
+	    ProjectStore.rmvListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail);
 	  },
 
 	  _onCreateSuccess: function(data) {
@@ -60124,7 +60167,6 @@
 	  },
 
 	  _onGetAllSuccess: function(data) {
-	    console.log('_onGetAllSuccess', data);
 	    var pList = data.data;
 	    pList.forEach(function(item) {
 	      if (!item._scrumMaster) {
@@ -60147,6 +60189,15 @@
 	    console.log('data fail', data);
 	  },
 
+	  _onGetAllUserProjectSuccess: function(data){
+	    this.setState({userProjectList: data.data});
+	    console.log(data.data);
+	  },
+
+	  _onGetGetAllUserProjectFail: function(data){
+
+	  },
+
 	  passValueUser: function(data){
 	    var list = data.map(function(item){
 	      return {
@@ -60155,6 +60206,23 @@
 	      };
 	    });
 	    this.setState({userOptionsType: list});
+	  },
+
+	  onDetailProjectClicked: function(projectId){
+	    var pList = this.state.userProjectList;
+	    pList.forEach(function(item) {
+	      if (!item._project) {
+	        item._project = {};
+	      }
+	      if (!item._user) {
+	        item._user = {};
+	      }
+	    });
+	    var list = pList.filter(function(item){
+	      return item._project._id == projectId;
+	    });
+	    this.setState({userProjectList: list});
+	    console.log(list);
 	  },
 
 	  onCreateProjectClicked: function(e) {
@@ -60186,7 +60254,6 @@
 	  onSelectChangedMember: function(data, listUser) {
 	    var model = this.state.model;
 	    model._user = listUser;
-	    console.log(listUser);
 	    this.setState({model: model});
 	  },
 
@@ -60215,10 +60282,10 @@
 	                    React.DOM.th({scope: "row"}, index + 1), 
 	                    React.DOM.td(null, item.name), 
 	                    React.DOM.td(null, item._scrumMaster.fullName), 
-	                    React.DOM.td(null, React.DOM.a({href: ""}, "Detail"))
+	                    React.DOM.td(null, React.DOM.a({className: "btn btn-primary", onClick: this.onDetailProjectClicked.bind(this, item._id)}, "Detail"))
 	                  )
 	                );
-	              })
+	              }.bind(this))
 	            )
 	          )
 	        ), 
@@ -60261,6 +60328,22 @@
 	                )
 	              )
 
+	            )
+	          )
+	        ), 
+	        React.DOM.div({className: "col-sm-4"}, 
+
+	          React.DOM.table({className: "table table-striped"}, 
+	            React.DOM.tbody(null, 
+	              this.state.userProjectList.map(function(item, index){
+	                return (
+	                  React.DOM.tr(null, 
+	                    React.DOM.td(null, index + 1), 
+	                    React.DOM.td(null, item._user.fullName)
+	                  )
+	                );
+	              })
+	              
 	            )
 	          )
 	        )

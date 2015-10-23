@@ -77,10 +77,10 @@ var ProjectStore = assign({}, EventEmitter.prototype, {
       }, function(err){
         console.log(err);
       });
-      this.emit(Events.GetAllProjectSuccess, projectData);
+      this.emit(Events.CreateProjectSuccess, projectData);
     }.bind(this),
     function(err){
-      this.emit(Events.GetAllProjectFail, err);
+      this.emit(Events.CreateProjectFail, err);
     }.bind(this));
 },
 

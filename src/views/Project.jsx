@@ -75,7 +75,13 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllSuccess: function(data) {
+    console.log('_onGetAllSuccess', data);
     var pList = data.data;
+    pList.forEach(function(item) {
+      if (!item._scrumMaster) {
+        item._scrumMaster = {};
+      }
+    });
     this.setState({projectList: pList});
   },
 
@@ -113,8 +119,10 @@ var ProjectPage = React.createClass({
   onDetailProjectClicked: function(projectId){
     var pList = this.state.userProject;
 
-    var list = pList.filter(function(item){
-      return item._project._id == projectId;
+    var list = pList.filter(function(item) {
+      // return false when project was not defined
+      if (!item._project) { return false; }
+      return (item._project._id === projectId);
     });
 
     this.setState({userProjectList: list});

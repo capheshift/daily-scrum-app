@@ -21645,7 +21645,10 @@
 	  TASK_UPDATE: null,
 	  TASK_FIND: null,
 
-	  getAllUserProjects: null
+	  getAllUserProjects: null,
+
+	  REQUEST_START: null,
+	  REQUEST_END: null
 
 	});
 
@@ -22839,7 +22842,10 @@
 	  GetAllUserProjectFail: null,
 
 	  FindTaskSuccess: null,
-	  FindTaskFail: null
+	  FindTaskFail: null,
+
+	  REQUEST_START: null,
+	  REQUEST_END: null
 
 	});
 
@@ -45358,9 +45364,36 @@
 	    this.removeListener(Events.Notification, context);
 	  },
 
+	  addListenerOnStartRequest: function(callback, context) {
+	    this.on(Events.REQUEST_START, callback, context);
+	  },
+	  rmvListenerOnStartRequest: function(context) {
+	    this.removeListener(Events.REQUEST_START, context);
+	  },
+
+	  addListenerOnEndRequest: function(callback, context) {
+	    this.on(Events.REQUEST_END, callback, context);
+	  },
+	  rmvListenerOnEndRequest: function(context) {
+	    this.removeListener(Events.REQUEST_END, context);
+	  },
+
+
 	  notification: function(data) {
 	    setTimeout(function() {
 	      this.emit(Events.Notification, data);
+	    }.bind(this), 0);
+	  },
+
+	  startRequest: function(data) {
+	    setTimeout(function() {
+	      this.emit(Events.REQUEST_START, data);
+	    }.bind(this), 0);
+	  },
+
+	  endRequest: function(data) {
+	    setTimeout(function() {
+	      this.emit(Events.REQUEST_END, data);
 	    }.bind(this), 0);
 	  }
 	});
@@ -45382,6 +45415,14 @@
 	  switch (action) {
 	    case Actions.Notification:
 	      Store.notification(payload.data);
+	      break;
+
+	    case Actions.REQUEST_START:
+	      Store.startRequest(payload.data);
+	      break;
+
+	    case Actions.REQUEST_END:
+	      Store.endRequest(payload.data);
 	      break;
 
 	    default:
@@ -60913,6 +60954,20 @@
 	  notification: function(data) {
 	    AppDispatcher.dispatch({
 	      actionType: ActionTypes.Notification,
+	      data: data
+	    });
+	  },
+
+	  startRequest: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.REQUEST_START,
+	      data: data
+	    });
+	  },
+
+	  endRequest: function(data) {
+	    AppDispatcher.dispatch({
+	      actionType: ActionTypes.REQUEST_END,
 	      data: data
 	    });
 	  }

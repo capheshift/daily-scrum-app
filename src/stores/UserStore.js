@@ -117,9 +117,11 @@ var UserStore = assign({}, EventEmitter.prototype, {
   },
 
   getAllUsers: function() {
-    UserApis.all().then(function(data) {
+    UserApis.all().then(
+    function(data) {
       this.emit(Events.GetAllUsersSuccess, data);
-    }.bind(this), function(err) {
+    }.bind(this),
+    function(err) {
       this.emit(Events.GetAllUsersFail, err);
     }.bind(this));
   }

@@ -42,19 +42,19 @@ var DefaultLayout = React.createClass({
   _onStartRequest: function(data) {
     var amount = this.amountOfRequests;
     amount++;
+    this.amountOfRequests = amount;
     if (amount === 1) {
       this.setState({
         isLoading: true
       });
     }
-    this.amountOfRequests = amount;
   },
 
   _onEndRequest: function(data) {
     var amount = this.amountOfRequests;
     amount--;
     this.amountOfRequests = amount;
-    if (amount === 1) {
+    if (amount === 0) {
       this.setState({
         isLoading: false
       });

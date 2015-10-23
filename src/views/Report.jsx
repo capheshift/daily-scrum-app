@@ -195,26 +195,32 @@ var ReportPage = React.createClass({
   },
 
   render: function() {
-    var userListRender = this.state.userList.map(function(item) {
-      return (
-        <div className="day-block">
-          <p className="username-title">{item.fullName}</p>
-          <ul className="daily-list">
-            {this.renderUserTask(this.state.taskList, item._id)}
-            {/*<li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="pull-right">
-                  <Rating />
+    var userListRender = (
+      <div className="col-sm-12 day-block"></div>
+    );
+
+    if (this.state.userList.length) {
+      userListRender = this.state.userList.map(function(item) {
+        return (
+          <div className="col-sm-12 day-block">
+            <p className="username-title">{item.fullName}</p>
+            <ul className="daily-list">
+              {this.renderUserTask(this.state.taskList, item._id)}
+              {/*<li className="row daily-item">
+                <div className="col-sm-5">
+                  <div className="pull-right">
+                    <Rating />
+                  </div>
                 </div>
-              </div>
-            </li>*/}
-          </ul>
-        </div>
-      );
-    }.bind(this));
+              </li>*/}
+            </ul>
+          </div>
+        );
+      }.bind(this));
+    }
 
     return (
-      <div>
+      <div className="row">
         {/*<div className="row">
           <div className="col-sm-5">
             <h4>CHOOSE PROJECT</h4>
@@ -222,8 +228,10 @@ var ReportPage = React.createClass({
               options={projectOptions} onChange={this.onSelectChanged} />
           </div>
         </div>*/}
-
-        <h4 className="header-title">REPORT/TODAY</h4>
+        <div className="col-sm-12">
+          <h4>REPORT/TODAY</h4>
+        </div>
+        {/*<h4 className="header-title">REPORT/TODAY</h4>*/}
         {userListRender}
       </div>
     );

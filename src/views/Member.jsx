@@ -24,12 +24,13 @@ var MemberPage = React.createClass({
   },
 
   componentWillMount: function() {
-    UserActions.getAllUsers();
   },
 
   componentDidMount: function() {
     UserStore.addListenerOnGetAllUsersSuccess(this.onGetAllUsersSuccess, this);
     UserStore.addListenerOnGetAllUsersFail(this.onGetAllUsersFail, this);
+
+    UserActions.getAllUsers();
   },
 
   componentWillUnmount: function() {

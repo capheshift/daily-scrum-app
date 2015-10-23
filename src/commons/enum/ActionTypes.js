@@ -18,6 +18,8 @@ module.exports = keyMirror({
 
   TASK_NEW: null,
   TASK_UPDATE: null,
+  TASK_FIND: null,
 
   getAllUserProjects: null
+
 });

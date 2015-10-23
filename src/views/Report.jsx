@@ -3,6 +3,8 @@
  */
 'use strict';
 
+var moment = require('moment');
+var lodash = require('lodash');
 var React = require('react');
 var DefaultLayout = React.createFactory(require('./layouts/Default'));
 var Rating = React.createFactory(require('react-rating'));
@@ -10,6 +12,10 @@ var Select = React.createFactory(require('react-select'));
 
 var ProjectActions = require('../actions/ProjectActions');
 var ProjectStore = require('../stores/ProjectStore');
+var TaskActions = require('../actions/TaskActions');
+var TaskStore = require('../stores/TaskStore');
+var UserActions = require('../actions/UserActions');
+var UserStore = require('../stores/UserStore');
 
 var ReportPage = React.createClass({
   displayName: 'Report',
@@ -22,7 +28,9 @@ var ReportPage = React.createClass({
 
   getInitialState: function() {
     return {
-      projectList: []
+      projectList: [],
+      taskList: [],
+      userList: []
     };
   },
 
@@ -30,12 +38,61 @@ var ReportPage = React.createClass({
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
 
+    TaskStore.addListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
+
+    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
+    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
+
+    TaskActions.find({
+      q: { date: moment().format('YYYYMMDD') },
+      l: {}
+    });
     ProjectActions.all();
+    UserActions.getAllUsers();
   },
 
   componentWillUnmount: function() {
     ProjectStore.rmvListenerGetAllProjectSuccess(this._onGetAllProjectSuccess);
     ProjectStore.rmvListenerGetAllProjectFail(this._onGetAllProjectFail);
+
+    TaskStore.rmvListenerOnFindTaskSuccess(this._onFindTaskSuccess, this);
+    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
+
+    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
+    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
+  },
+
+  _onGetAllUserSuccess: function(body) {
+    console.log('_onGetAllUserSuccess', body);
+    this.setState({
+      userList: body.data
+    });
+  },
+
+  _onGetAllUserFail: function(err) {
+  },
+
+  /**
+   * function for handle data of task
+   */
+  _onFindTaskSuccess: function(data) {
+    // map for usage data
+    var data2 = data.map(function(item) {
+      var newItem = lodash.clone(item);
+      // parse data for view
+      newItem.id = newItem._id;
+      newItem._project = newItem._project && newItem._project._id;
+      newItem.estimation = newItem.estimation && newItem.estimation.toString();
+      // return the new one
+      return newItem;
+    });
+    console.log('_onFindTaskSuccess', data2);
+    this.setState({
+      taskList: data2
+    });
+  },
+  _onFindTaskFail: function(data) {
   },
 
   _onGetAllProjectSuccess: function(body) {
@@ -57,7 +114,8 @@ var ReportPage = React.createClass({
     console.log('onSelectChanged');
   },
 
-  render: function() {
+  renderUserTask: function(arr, userId) {
+    console.log('renderUserTask', arr, userId);
     var projectOptions = this.state.projectList;
     var timeRangeOptions = [
       { value: '0.5', label: '30 mins' },
@@ -77,125 +135,96 @@ var ReportPage = React.createClass({
       { value: '7.5', label: '7 hours 30 mins' },
       { value: '8', label: '8 hours' },
     ];
+    var filterUserList = lodash.filter(arr, function(item) {
+      return (item._user._id === userId);
+    });
+    var item = {};
+    var renderList = (
+      <li className="daily-item row" key={item.id}>
+        <div className="col-sm-5">
+          <div className="input-group">
+            <span className="input-group-addon">
+              <input type="checkbox" checked={item.isCompleted} />
+            </span>
+            <input className="form-control" id="prependedcheckbox"
+              placeholder="your task" type="text"
+              ref="content" name="content"
+              value={item.content} />
+          </div>
+        </div>
+        <div className="col-sm-2">
+          <Select name="_project" clearable={false} value={item._project}
+            options={projectOptions} />
+        </div>
+        <div className="col-sm-2">
+          <Select name="estimation" clearable={false}
+            value={item.estimation} options={timeRangeOptions} />
+        </div>
+      </li>
+    );
+
+    if (filterUserList.length > 0) {
+      renderList = filterUserList.map(function(item, i) {
+        return (
+          <li className="daily-item row" key={item.id}>
+            <div className="col-sm-5">
+              <div className="input-group">
+                <span className="input-group-addon">
+                  <input type="checkbox" checked={item.isCompleted} />
+                </span>
+                <input className="form-control" id="prependedcheckbox"
+                  placeholder="your task" type="text"
+                  ref="content" name="content"
+                  value={item.content} />
+              </div>
+            </div>
+            <div className="col-sm-2">
+              <Select name="_project" clearable={false} value={item._project}
+                options={projectOptions} />
+            </div>
+            <div className="col-sm-2">
+              <Select name="estimation" clearable={false}
+                value={item.estimation} options={timeRangeOptions} />
+            </div>
+          </li>
+        )
+      }.bind(this));
+    }
+
+    return renderList;
+  },
+
+  render: function() {
+    var userListRender = this.state.userList.map(function(item) {
+      return (
+        <div className="day-block">
+          <p className="username-title">{item.fullName}</p>
+          <ul className="daily-list">
+            {this.renderUserTask(this.state.taskList, item._id)}
+            {/*<li className="row daily-item">
+              <div className="col-sm-5">
+                <div className="pull-right">
+                  <Rating />
+                </div>
+              </div>
+            </li>*/}
+          </ul>
+        </div>
+      );
+    }.bind(this));
 
     return (
       <div>
-        <div className="row">
+        {/*<div className="row">
           <div className="col-sm-5">
             <h4>CHOOSE PROJECT</h4>
             <Select name="form-field-name" value="nafoods" clearable={false}
               options={projectOptions} onChange={this.onSelectChanged} />
           </div>
-        </div>
+        </div>*/}
 
         <h4 className="header-title">REPORT/TODAY</h4>
-        <div className="day-block">
-          <p>PHẠM MINH TÂM</p>
-          <ul className="daily-list">
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="input-group">
-                  <span className="input-group-addon"> <input type="checkbox" /></span>
-                  <input className="form-control" id="prependedcheckbox"
-                    name="prependedcheckbox" placeholder="your task" type="text"
-                    value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
-                </div>
-              </div>
-              <div className="col-sm-2">
-                <Select name="project" clearable={false} value='vib' options={projectOptions} />
-              </div>
-              <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='4' options={timeRangeOptions} />
-              </div>
-            </li>
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="input-group">
-                  <span className="input-group-addon"> <input type="checkbox" /></span>
-                  <input className="form-control" id="prependedcheckbox"
-                    name="prependedcheckbox" placeholder="your task" type="text"
-                    value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
-                </div>
-              </div>
-              <div className="col-sm-2">
-                <Select name="project" clearable={false} value='vib' options={projectOptions} />
-              </div>
-              <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='3.5' options={timeRangeOptions} />
-              </div>
-            </li>
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="pull-right">
-                  <Rating />
-                </div>
-              </div>
-              <div className="col-sm-4">
-                <span className="pull-right">Total: 7.5 hours</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div className="day-block">
-          <p>NGUYỄN DUY TÂN</p>
-          <ul className="daily-list">
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="input-group">
-                  <span className="input-group-addon"> <input type="checkbox" /></span>
-                  <input className="form-control" id="prependedcheckbox"
-                    name="prependedcheckbox" placeholder="your task" type="text"
-                    value="Nếu biết tình như thế, chẳng lớn lên làm gì" />
-                </div>
-              </div>
-              <div className="col-sm-2">
-                <Select name="project" clearable={false} value='' options={projectOptions} />
-              </div>
-              <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='' options={timeRangeOptions} />
-              </div>
-            </li>
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="input-group">
-                  <span className="input-group-addon"> <input type="checkbox" checked /></span>
-                  <input className="form-control" id="prependedcheckbox"
-                    name="prependedcheckbox" placeholder="your task" type="text"
-                    value="Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ" />
-                </div>
-              </div>
-              <div className="col-sm-2">
-                <Select name="project" clearable={false} value='' options={projectOptions} />
-              </div>
-              <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='' options={timeRangeOptions} />
-              </div>
-            </li>
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="input-group">
-                  <span className="input-group-addon"> <input type="checkbox" checked /></span>
-                  <input className="form-control" id="prependedcheckbox"
-                    name="prependedcheckbox" placeholder="your task" type="text"
-                    value="Ai bảo say sưa là khổ" />
-                </div>
-              </div>
-              <div className="col-sm-2">
-                <Select name="project" clearable={false} value='' options={projectOptions} />
-              </div>
-              <div className="col-sm-2">
-                <Select name="estimation" clearable={false} value='' options={timeRangeOptions} />
-              </div>
-            </li>
-            <li className="row daily-item">
-              <div className="col-sm-5">
-                <div className="pull-right">
-                  <Rating />
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        {userListRender}
       </div>
     );
   }

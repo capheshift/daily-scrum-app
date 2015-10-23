@@ -73,7 +73,22 @@ var router = new Router({
 });
 
 router.configure({
-  html5history: false
+  html5history: false,
+  before: function() {
+    var currentRoute = this.getRoute()[0];
+    if (currentRoute === 'register') {
+      return true;
+    }
+
+    // check auth before access data
+    var token = window.localStorage.getItem('token');
+    if (!token) {
+      var page = React.createFactory(require('./views/Login'));
+      router.setRoute('/login');
+      render('login', page);
+      return false;
+    }
+  }
 }).init('/');
 
 // Register Main Application Dispatcher

@@ -34,5 +34,9 @@ module.exports = keyMirror({
   UpdateTaskFail: null,
 
   GetAllUserProjectSuccess: null,
-  GetAllUserProjectFail: null
+  GetAllUserProjectFail: null,
+
+  FindTaskSuccess: null,
+  FindTaskFail: null
+
 });

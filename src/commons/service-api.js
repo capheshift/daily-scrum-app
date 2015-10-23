@@ -5,6 +5,7 @@ var _ = require('lodash');
 var Promise = require('promise');
 var config = require('../config');
 var apiList, result = {};
+var NotificationActions = require('../actions/NotificationActions');
 
 // define list of api
 apiList = [
@@ -51,6 +52,10 @@ $.each(apiList, function(index, item) {
    */
   result[item.nspace][item.name] = function(data, params) {
     return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        NotificationActions.startRequest({});
+      }, 0);
+
       var realPath = '';
       var token = window.localStorage.getItem('token');
       var headers = {
@@ -71,7 +76,6 @@ $.each(apiList, function(index, item) {
       }
 
       console.log('service', data, params, realPath);
-
       $.ajax({
         url: config.apiPath + realPath,
         type: item.method,
@@ -82,9 +86,11 @@ $.each(apiList, function(index, item) {
         crossDomain: true,
         dataType: 'json',
         success: function(data) {
+          NotificationActions.endRequest({});
           resolve(data);
         },
         error: function(err) {
+          NotificationActions.endRequest({});
           reject(err);
         }
       });

@@ -48,19 +48,21 @@ var Store = assign({}, EventEmitter.prototype, {
   notification: function(data) {
     setTimeout(function() {
       this.emit(Events.Notification, data);
-    }.bind(this), 0);
+    }.bind(this), 1);
   },
 
   startRequest: function(data) {
+    console.log('startRequest', data);
     setTimeout(function() {
       this.emit(Events.REQUEST_START, data);
-    }.bind(this), 0);
+    }.bind(this), 1);
   },
 
   endRequest: function(data) {
+    console.log('endRequest', data);
     setTimeout(function() {
       this.emit(Events.REQUEST_END, data);
-    }.bind(this), 0);
+    }.bind(this), 200);
   }
 });
 

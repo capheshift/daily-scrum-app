@@ -22113,19 +22113,19 @@
 	  _onStartRequest: function(data) {
 	    var amount = this.amountOfRequests;
 	    amount++;
+	    this.amountOfRequests = amount;
 	    if (amount === 1) {
 	      this.setState({
 	        isLoading: true
 	      });
 	    }
-	    this.amountOfRequests = amount;
 	  },
 
 	  _onEndRequest: function(data) {
 	    var amount = this.amountOfRequests;
 	    amount--;
 	    this.amountOfRequests = amount;
-	    if (amount === 1) {
+	    if (amount === 0) {
 	      this.setState({
 	        isLoading: false
 	      });
@@ -22470,9 +22470,11 @@
 	  },
 
 	  getAllUsers: function() {
-	    UserApis.all().then(function(data) {
+	    UserApis.all().then(
+	    function(data) {
 	      this.emit(Events.GetAllUsersSuccess, data);
-	    }.bind(this), function(err) {
+	    }.bind(this),
+	    function(err) {
 	      this.emit(Events.GetAllUsersFail, err);
 	    }.bind(this));
 	  }
@@ -60294,26 +60296,32 @@
 	  },
 
 	  render: function() {
-	    var userListRender = this.state.userList.map(function(item) {
-	      return (
-	        React.DOM.div({className: "day-block"}, 
-	          React.DOM.p({className: "username-title"}, item.fullName), 
-	          React.DOM.ul({className: "daily-list"}, 
-	            this.renderUserTask(this.state.taskList, item._id)
-	            /*<li className="row daily-item">
-	              <div className="col-sm-5">
-	                <div className="pull-right">
-	                  <Rating />
+	    var userListRender = (
+	      React.DOM.div({className: "col-sm-12 day-block"})
+	    );
+
+	    if (this.state.userList.length) {
+	      userListRender = this.state.userList.map(function(item) {
+	        return (
+	          React.DOM.div({className: "col-sm-12 day-block"}, 
+	            React.DOM.p({className: "username-title"}, item.fullName), 
+	            React.DOM.ul({className: "daily-list"}, 
+	              this.renderUserTask(this.state.taskList, item._id)
+	              /*<li className="row daily-item">
+	                <div className="col-sm-5">
+	                  <div className="pull-right">
+	                    <Rating />
+	                  </div>
 	                </div>
-	              </div>
-	            </li>*/
+	              </li>*/
+	            )
 	          )
-	        )
-	      );
-	    }.bind(this));
+	        );
+	      }.bind(this));
+	    }
 
 	    return (
-	      React.DOM.div(null, 
+	      React.DOM.div({className: "row"}, 
 	        /*<div className="row">
 	          <div className="col-sm-5">
 	            <h4>CHOOSE PROJECT</h4>
@@ -60321,8 +60329,10 @@
 	              options={projectOptions} onChange={this.onSelectChanged} />
 	          </div>
 	        </div>*/
-
-	        React.DOM.h4({className: "header-title"}, "REPORT/TODAY"), 
+	        React.DOM.div({className: "col-sm-12"}, 
+	          React.DOM.h4(null, "REPORT/TODAY")
+	        ), 
+	        /*<h4 className="header-title">REPORT/TODAY</h4>*/
 	        userListRender
 	      )
 	    );
@@ -60955,12 +60965,13 @@
 	  },
 
 	  componentWillMount: function() {
-	    UserActions.getAllUsers();
 	  },
 
 	  componentDidMount: function() {
 	    UserStore.addListenerOnGetAllUsersSuccess(this.onGetAllUsersSuccess, this);
 	    UserStore.addListenerOnGetAllUsersFail(this.onGetAllUsersFail, this);
+
+	    UserActions.getAllUsers();
 	  },
 
 	  componentWillUnmount: function() {

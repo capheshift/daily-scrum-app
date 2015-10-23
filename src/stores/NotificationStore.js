@@ -30,9 +30,36 @@ var Store = assign({}, EventEmitter.prototype, {
     this.removeListener(Events.Notification, context);
   },
 
+  addListenerOnStartRequest: function(callback, context) {
+    this.on(Events.REQUEST_START, callback, context);
+  },
+  rmvListenerOnStartRequest: function(context) {
+    this.removeListener(Events.REQUEST_START, context);
+  },
+
+  addListenerOnEndRequest: function(callback, context) {
+    this.on(Events.REQUEST_END, callback, context);
+  },
+  rmvListenerOnEndRequest: function(context) {
+    this.removeListener(Events.REQUEST_END, context);
+  },
+
+
   notification: function(data) {
     setTimeout(function() {
       this.emit(Events.Notification, data);
+    }.bind(this), 0);
+  },
+
+  startRequest: function(data) {
+    setTimeout(function() {
+      this.emit(Events.REQUEST_START, data);
+    }.bind(this), 0);
+  },
+
+  endRequest: function(data) {
+    setTimeout(function() {
+      this.emit(Events.REQUEST_END, data);
     }.bind(this), 0);
   }
 });
@@ -54,6 +81,14 @@ AppDispatcher.register(function(payload) {
   switch (action) {
     case Actions.Notification:
       Store.notification(payload.data);
+      break;
+
+    case Actions.REQUEST_START:
+      Store.startRequest(payload.data);
+      break;
+
+    case Actions.REQUEST_END:
+      Store.endRequest(payload.data);
       break;
 
     default:

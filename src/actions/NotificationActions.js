@@ -13,6 +13,20 @@ var Actions = {
       actionType: ActionTypes.Notification,
       data: data
     });
+  },
+
+  startRequest: function(data) {
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.REQUEST_START,
+      data: data
+    });
+  },
+
+  endRequest: function(data) {
+    AppDispatcher.dispatch({
+      actionType: ActionTypes.REQUEST_END,
+      data: data
+    });
   }
 
 };

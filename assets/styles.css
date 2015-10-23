@@ -269,6 +269,14 @@
   to {
     -webkit-transform: rotate(1turn); } }
 
+.__hidden {
+  display: none !important; }
+
+.loader-wrapper {
+  position: fixed;
+  top: 60px;
+  left: 15px; }
+
 ul {
   padding: 0; }
 

@@ -60120,6 +60120,7 @@
 	      return {
 	      model: {},
 	      projectList: [],
+	      userProject: [],
 	      userProjectList: [],
 	      userOptions: [],
 	      userOptionsType: []
@@ -60190,7 +60191,7 @@
 	  },
 
 	  _onGetAllUserProjectSuccess: function(data){
-	    this.setState({userProjectList: data.data});
+	    this.setState({userProject: data.data});
 	    console.log(data.data);
 	  },
 
@@ -60209,18 +60210,17 @@
 	  },
 
 	  onDetailProjectClicked: function(projectId){
-	    var pList = this.state.userProjectList;
-	    pList.forEach(function(item) {
-	      if (!item._project) {
-	        item._project = {};
-	      }
-	      if (!item._user) {
-	        item._user = {};
-	      }
-	    });
+	    var pList = this.state.userProject;
+
 	    var list = pList.filter(function(item){
 	      return item._project._id == projectId;
 	    });
+	/*
+	    var list = async.filter(pList, function(item, callback){
+	      return item._project._id == projectId;
+	      callback(true);
+	    });
+	*/
 	    this.setState({userProjectList: list});
 	    console.log(list);
 	  },
@@ -60237,6 +60237,7 @@
 	    });
 
 	    ProjectActions.all();
+	    ProjectActions.getAllUserProjects();
 	  },
 
 	  onChange: function(e) {

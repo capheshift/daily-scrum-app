@@ -27,6 +27,7 @@ var ProjectPage = React.createClass({
       return {
       model: {},
       projectList: [],
+      userProject: [],
       userProjectList: [],
       userOptions: [],
       userOptionsType: []
@@ -97,7 +98,7 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllUserProjectSuccess: function(data){
-    this.setState({userProjectList: data.data});
+    this.setState({userProject: data.data});
     console.log(data.data);
   },
 
@@ -116,18 +117,17 @@ var ProjectPage = React.createClass({
   },
 
   onDetailProjectClicked: function(projectId){
-    var pList = this.state.userProjectList;
-    pList.forEach(function(item) {
-      if (!item._project) {
-        item._project = {};
-      }
-      if (!item._user) {
-        item._user = {};
-      }
-    });
+    var pList = this.state.userProject;
+
     var list = pList.filter(function(item){
       return item._project._id == projectId;
     });
+/*
+    var list = async.filter(pList, function(item, callback){
+      return item._project._id == projectId;
+      callback(true);
+    });
+*/
     this.setState({userProjectList: list});
     console.log(list);
   },
@@ -144,6 +144,7 @@ var ProjectPage = React.createClass({
     });
 
     ProjectActions.all();
+    ProjectActions.getAllUserProjects();
   },
 
   onChange: function(e) {

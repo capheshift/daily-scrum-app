@@ -50,6 +50,7 @@ var DailyPage = React.createClass({
     dateList.push({
       displayName: m.format('MMM DD ddd') + ' - TOMORROW',
       value: m.format('YYYYMMDD'),
+      momentValue: m,
       index: 2
     });
     taskList.push({
@@ -99,7 +100,21 @@ var DailyPage = React.createClass({
     var dateList = this.state.dateList;
     var currentUser = this.currentUser;
 
-    dateList.forEach(function(item) {
+    for (var i = 0; i < dateList.length; i++) {
+      var item = dateList[i];
+      var index = i;
+      var totalOfCurrent = lodash.filter(taskList, { date: item.value }).length;
+
+      if (totalOfCurrent > 0 && (index === (dateList.length - 1))) {
+        var m = item.momentValue.add(1, 'days');
+        dateList.push({
+          displayName: m.format('MMM DD ddd'),
+          value: m.format('YYYYMMDD'),
+          momentValue: m,
+          index: item.index
+        });
+      }
+
       taskList.push({
         _user: currentUser,
         id: Guid.raw(),
@@ -107,6 +122,10 @@ var DailyPage = React.createClass({
         isCompleted: false,
         content: ''
       });
+    }
+
+    this.setState({
+      dateList: dateList
     });
 
     return taskList;
@@ -114,7 +133,7 @@ var DailyPage = React.createClass({
 
   _onFindTaskSuccess: function(data) {
     console.log('_onFindTaskSuccess', data);
-    var data2 = data.map(function(item) {
+    var taskList = data.map(function(item) {
       var newItem = lodash.clone(item);
       // parse data for view
       newItem.id = newItem._id;
@@ -124,11 +143,11 @@ var DailyPage = React.createClass({
       return newItem;
     });
 
-    data2 = this.addEmptyTask(data2);
-    console.log('_onFindTaskSuccess', data2);
+    taskList = this.addEmptyTask(taskList);
+    console.log('_onFindTaskSuccess', taskList);
 
     this.setState({
-      taskList: data2
+      taskList: taskList
     });
   },
 

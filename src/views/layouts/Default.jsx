@@ -6,7 +6,7 @@
 var React = require('react');
 var Navbar = React.createFactory(require('../components/Navbar'));
 var NotificationStore = require('../../stores/NotificationStore');
-var Loader = React.createFactory(require('halogen/BounceLoader'));
+var Loader = React.createFactory(require('halogen/ClipLoader'));
 
 var DefaultLayout = React.createClass({
   displayName: 'Default.jsx',
@@ -65,7 +65,7 @@ var DefaultLayout = React.createClass({
     return (
       <div>
         <div className={"loader-wrapper " + (this.state.isLoading?'':'__hidden')}>
-          <Loader color="#b92b27" size="30px" margin="4px" />
+          <Loader color="#85a39f" size="30px" margin="4px" />
         </div>
         {Navbar({uri: this.props.uri})}
         <div className="container" style={{marginTop:'20px', marginBottom:'50px'}}>

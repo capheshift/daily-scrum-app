@@ -1,3 +1,6 @@
+// capheshift.github.io 2015
+// @author: Tw
+
 'use strict';
 
 var $ = require('jquery');

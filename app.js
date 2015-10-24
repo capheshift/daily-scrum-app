@@ -21748,6 +21748,7 @@
 	    dateList.push({
 	      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
 	      value: m.format('YYYYMMDD'),
+	      momentValue: m,
 	      index: 2
 	    });
 	    taskList.push({
@@ -21797,7 +21798,21 @@
 	    var dateList = this.state.dateList;
 	    var currentUser = this.currentUser;
 
-	    dateList.forEach(function(item) {
+	    for (var i = 0; i < dateList.length; i++) {
+	      var item = dateList[i];
+	      var index = i;
+	      var totalOfCurrent = lodash.filter(taskList, { date: item.value }).length;
+
+	      if (totalOfCurrent > 0 && (index === (dateList.length - 1))) {
+	        var m = item.momentValue.add(1, 'days');
+	        dateList.push({
+	          displayName: m.format('MMM DD ddd'),
+	          value: m.format('YYYYMMDD'),
+	          momentValue: m,
+	          index: item.index
+	        });
+	      }
+
 	      taskList.push({
 	        _user: currentUser,
 	        id: Guid.raw(),
@@ -21805,6 +21820,10 @@
 	        isCompleted: false,
 	        content: ''
 	      });
+	    }
+
+	    this.setState({
+	      dateList: dateList
 	    });
 
 	    return taskList;
@@ -21812,7 +21831,7 @@
 
 	  _onFindTaskSuccess: function(data) {
 	    console.log('_onFindTaskSuccess', data);
-	    var data2 = data.map(function(item) {
+	    var taskList = data.map(function(item) {
 	      var newItem = lodash.clone(item);
 	      // parse data for view
 	      newItem.id = newItem._id;
@@ -21822,11 +21841,11 @@
 	      return newItem;
 	    });
 
-	    data2 = this.addEmptyTask(data2);
-	    console.log('_onFindTaskSuccess', data2);
+	    taskList = this.addEmptyTask(taskList);
+	    console.log('_onFindTaskSuccess', taskList);
 
 	    this.setState({
-	      taskList: data2
+	      taskList: taskList
 	    });
 	  },
 
@@ -22104,7 +22123,7 @@
 	var React = __webpack_require__(1);
 	var Navbar = React.createFactory(__webpack_require__(166));
 	var NotificationStore = __webpack_require__(187);
-	var Loader = React.createFactory(__webpack_require__(188));
+	var Loader = React.createFactory(__webpack_require__(301));
 
 	var DefaultLayout = React.createClass({
 	  displayName: 'Default.jsx',
@@ -22163,7 +22182,7 @@
 	    return (
 	      React.DOM.div(null, 
 	        React.DOM.div({className: "loader-wrapper " + (this.state.isLoading?'':'__hidden')}, 
-	          Loader({color: "#b92b27", size: "30px", margin: "4px"})
+	          Loader({color: "#85a39f", size: "30px", margin: "4px"})
 	        ), 
 	        Navbar({uri: this.props.uri}), 
 	        React.DOM.div({className: "container", style: {marginTop:'20px', marginBottom:'50px'}}, 
@@ -22919,6 +22938,9 @@
 /***/ },
 /* 172 */
 /***/ function(module, exports, __webpack_require__) {
+
+	// capheshift.github.io 2015
+	// @author: Tw
 
 	'use strict';
 
@@ -45560,130 +45582,7 @@
 
 
 /***/ },
-/* 188 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var assign = __webpack_require__(189);
-	var insertKeyframesRule = __webpack_require__(191);
-
-	/**
-	 * @type {Object}
-	 */
-	var keyframes = {
-	    '0%, 100%': {
-	        transform: 'scale(0)'
-	    },
-	    '50%': {
-	        transform: 'scale(1.0)'
-	    }
-	};
-
-	/**
-	 * @type {String}
-	 */
-	var animationName = insertKeyframesRule(keyframes);
-
-	var Loader = React.createClass({displayName: "Loader",
-	    /**
-	     * @type {Object}
-	     */
-	    propTypes: {
-	        loading: React.PropTypes.bool,
-	        color: React.PropTypes.string,
-	        size: React.PropTypes.string
-	    },
-
-	    /**
-	     * @return {Object}
-	     */
-	    getDefaultProps: function() {
-	        return {
-	            loading: true,
-	            color: '#ffffff',
-	            size: '60px'
-	        };
-	    },
-
-	    /**
-	     * @return {Object}
-	     */
-	    getBallStyle: function() {
-	        return {
-	            backgroundColor: this.props.color,
-	            width: this.props.size,
-	            height: this.props.size,
-	            borderRadius: '100%',
-	            opacity: 0.6,
-	            position: 'absolute',
-	            top: 0,
-	            left: 0
-	        };
-	    },
-
-	    /**
-	     * @param  {Number} i
-	     * @return {Object}
-	     */
-	    getAnimationStyle: function(i) {
-	        var animation = [animationName, '2s', i==1? '1s': '0s', 'infinite', 'ease-in-out'].join(' ');
-	        var animationFillMode = 'both';
-
-	        return {
-	            animation: animation,
-	            animationFillMode: animationFillMode
-	        };
-	    },
-
-	    /**
-	     * @param  {Number} i
-	     * @return {Object}
-	     */
-	    getStyle: function(i) {
-	        if (i) {
-	            return assign(
-	                this.getBallStyle(i),
-	                this.getAnimationStyle(i)
-	            );
-	        }
-
-	        return assign(
-	            {
-	                width: this.props.size,
-	                height: this.props.size,
-	                position: 'relative'
-	            }
-	        );
-	    },
-
-	    /**
-	     * @param  {Boolean} loading
-	     * @return {ReactComponent || null}
-	     */
-	    renderLoader: function(loading) {
-	        if (loading) {
-	            return (
-	                React.createElement("div", {id: this.props.id, className: this.props.className}, 
-	                    React.createElement("div", {style: this.getStyle()}, 
-	                        React.createElement("div", {style: this.getStyle(1)}), 
-	                        React.createElement("div", {style: this.getStyle(2)})
-	                    )
-	                )
-	            );
-	        }
-
-	        return null;
-	    },
-	    
-	    render: function() {
-	        return this.renderLoader(this.props.loading);
-	    }
-	});
-
-	module.exports = Loader;
-
-
-/***/ },
+/* 188 */,
 /* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -61454,6 +61353,122 @@
 	});
 
 	module.exports = LoginPage;
+
+
+/***/ },
+/* 301 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var assign = __webpack_require__(189);
+	var insertKeyframesRule = __webpack_require__(191);
+
+	/**
+	 * @type {Object}
+	 */
+	var keyframes = {
+	    '0%': {
+	        transform: 'rotate(0deg) scale(1)'
+	    },
+	    '50%': {
+	        transform: 'rotate(180deg) scale(0.8)'
+	    },
+	    '100%': {
+	        transform: 'rotate(360deg) scale(1)'
+	    }
+	};
+
+	/**
+	 * @type {String}
+	 */
+	var animationName = insertKeyframesRule(keyframes);
+
+	var Loader = React.createClass({displayName: "Loader",
+	    /**
+	     * @type {Object}
+	     */
+	    propTypes: {
+	        loading: React.PropTypes.bool,
+	        color: React.PropTypes.string,
+	        size: React.PropTypes.string
+	    },
+
+	    /**
+	     * @return {Object}
+	     */
+	    getDefaultProps: function() {
+	        return {
+	            loading: true,
+	            color: '#ffffff',
+	            size: '35px'
+	        };
+	    },
+
+	    /**
+	     * @return {Object}
+	     */
+	    getBallStyle: function() {
+	        return {
+	            width: this.props.size,
+	            height: this.props.size,
+	            border: '2px solid',
+	            borderColor: this.props.color,
+	            borderBottomColor: 'transparent',
+	            borderRadius: '100%',
+	            background: 'transparent !important'
+	        };
+	    },
+
+	    /**
+	     * @param  {Number} i
+	     * @return {Object}
+	     */
+	    getAnimationStyle: function(i) {
+	        var animation = [animationName, '0.75s', '0s', 'infinite', 'linear'].join(' ');
+	        var animationFillMode = 'both';
+
+	        return {
+	            animation: animation,
+	            animationFillMode: animationFillMode
+	        };
+	    },
+
+	    /**
+	     * @param  {Number} i
+	     * @return {Object}
+	     */
+	    getStyle: function(i) {
+	        return assign(
+	            this.getBallStyle(i),
+	            this.getAnimationStyle(i),
+	            {
+	                display: 'inline-block'
+	            }
+	        );
+	    },
+
+	    /**
+	     * @param  {Boolean} loading
+	     * @return {ReactComponent || null}
+	     */
+	    renderLoader: function(loading) {
+	        if (loading) {
+	            return (
+	                React.createElement("div", {id: this.props.id, className: this.props.className}, 
+	                    React.createElement("div", {style: this.getStyle()})
+	                )
+	            );
+	        }
+
+	        return null;
+	    },
+
+	    render: function() {
+	        return this.renderLoader(this.props.loading);
+	    }
+	});
+
+	module.exports = Loader;
 
 
 /***/ }

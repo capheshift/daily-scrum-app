@@ -141,7 +141,7 @@ var ReportPage = React.createClass({
     var item = {};
     var renderList = (
       <li className="daily-item row" key={item.id}>
-        <div className="col-sm-5">
+        <div className="col-sm-6">
           <div className="input-group">
             <span className="input-group-addon">
               <input type="checkbox" checked={item.isCompleted} />
@@ -167,7 +167,7 @@ var ReportPage = React.createClass({
       renderList = filterUserList.map(function(item, i) {
         return (
           <li className="daily-item row" key={item.id}>
-            <div className="col-sm-5">
+            <div className="col-sm-6">
               <div className="input-group">
                 <span className="input-group-addon">
                   <input type="checkbox" checked={item.isCompleted} />
@@ -207,7 +207,7 @@ var ReportPage = React.createClass({
             <ul className="daily-list">
               {this.renderUserTask(this.state.taskList, item._id)}
               {/*<li className="row daily-item">
-                <div className="col-sm-5">
+                <div className="col-sm-6">
                   <div className="pull-right">
                     <Rating />
                   </div>
@@ -231,7 +231,6 @@ var ReportPage = React.createClass({
         <div className="col-sm-12">
           <h4>REPORT/TODAY</h4>
         </div>
-        {/*<h4 className="header-title">REPORT/TODAY</h4>*/}
         {userListRender}
       </div>
     );

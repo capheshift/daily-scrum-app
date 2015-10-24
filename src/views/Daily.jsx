@@ -265,6 +265,7 @@ var DailyPage = React.createClass({
     // below is a trick, it should be get data from e.target.checked
     // currItem[e.target.isCompleted] = e.target.checked;
     currItem.isCompleted = !currItem.isCompleted;
+    currItem.isEdited = true;
 
     this.setState({
       taskList: nList
@@ -275,6 +276,7 @@ var DailyPage = React.createClass({
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
     currItem[e.target.name] = e.target.value;
+    currItem.isEdited = true;
 
     this.setState({
       taskList: nList
@@ -290,6 +292,7 @@ var DailyPage = React.createClass({
     currItem.estimation = newValue;
     // update total time
     currDate.totalTime = this.getTotalTime(nList, currItem);
+    currItem.isEdited = true;
 
     this.setState({
       taskList: nList,
@@ -302,6 +305,18 @@ var DailyPage = React.createClass({
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
     currItem._project = newValue;
+    currItem.isEdited = true;
+
+    this.setState({
+      taskList: nList
+    });
+  },
+
+  onUpdateTaskClicked: function(id, e) {
+    var nList = this.state.taskList;
+    var currItem = this.findItem(nList, id);
+    currItem.isEdited = false;
+    console.log('onUpdateTaskClicked', currItem);
 
     this.setState({
       taskList: nList
@@ -337,7 +352,7 @@ var DailyPage = React.createClass({
     var renderList = filterTask.map(function(item, i) {
       return (
         <li className="daily-item row" key={item.id}>
-          <div className="col-sm-5">
+          <div className="col-sm-6">
             <div className="input-group">
               <span className="input-group-addon">
                 <input type="checkbox" checked={item.isCompleted}
@@ -359,6 +374,10 @@ var DailyPage = React.createClass({
               value={item.estimation} options={timeRangeOptions}
               onChange={this.onEstimateChanged.bind(null, item.id)} />
           </div>
+          <div className="col-sm-2">
+            <a href="javascript:;" className={"btn btn-link " + (item.isEdited?'':'hidden')}
+              onClick={this.onUpdateTaskClicked.bind(null, item.id)}>Update</a>
+          </div>
         </li>
       )
     }.bind(this));
@@ -367,9 +386,9 @@ var DailyPage = React.createClass({
       <ul className="daily-list">
         {renderList}
         <li className="daily-item row">
-          <div className="col-sm-9">
+          <div className="col-sm-10">
             <button className="btn btn-sm btn-default"
-              onClick={this.newTaskOnClicked.bind(null, dateItem)}>save task</button>
+              onClick={this.newTaskOnClicked.bind(null, dateItem)}>Save task</button>
 
             <span className="pull-right">
               Total: { dateItem.totalTime || 0 } hours

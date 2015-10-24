@@ -21963,6 +21963,7 @@
 	    // below is a trick, it should be get data from e.target.checked
 	    // currItem[e.target.isCompleted] = e.target.checked;
 	    currItem.isCompleted = !currItem.isCompleted;
+	    currItem.isEdited = true;
 
 	    this.setState({
 	      taskList: nList
@@ -21973,6 +21974,7 @@
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem[e.target.name] = e.target.value;
+	    currItem.isEdited = true;
 
 	    this.setState({
 	      taskList: nList
@@ -21988,6 +21990,7 @@
 	    currItem.estimation = newValue;
 	    // update total time
 	    currDate.totalTime = this.getTotalTime(nList, currItem);
+	    currItem.isEdited = true;
 
 	    this.setState({
 	      taskList: nList,
@@ -22000,6 +22003,18 @@
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem._project = newValue;
+	    currItem.isEdited = true;
+
+	    this.setState({
+	      taskList: nList
+	    });
+	  },
+
+	  onUpdateTaskClicked: function(id, e) {
+	    var nList = this.state.taskList;
+	    var currItem = this.findItem(nList, id);
+	    currItem.isEdited = false;
+	    console.log('onUpdateTaskClicked', currItem);
 
 	    this.setState({
 	      taskList: nList
@@ -22035,7 +22050,7 @@
 	    var renderList = filterTask.map(function(item, i) {
 	      return (
 	        React.DOM.li({className: "daily-item row", key: item.id}, 
-	          React.DOM.div({className: "col-sm-5"}, 
+	          React.DOM.div({className: "col-sm-6"}, 
 	            React.DOM.div({className: "input-group"}, 
 	              React.DOM.span({className: "input-group-addon"}, 
 	                React.DOM.input({type: "checkbox", checked: item.isCompleted, 
@@ -22056,6 +22071,10 @@
 	            Select({name: "estimation", clearable: false, 
 	              value: item.estimation, options: timeRangeOptions, 
 	              onChange: this.onEstimateChanged.bind(null, item.id)})
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.a({href: "javascript:;", className: "btn btn-link " + (item.isEdited?'':'hidden'), 
+	              onClick: this.onUpdateTaskClicked.bind(null, item.id)}, "Update")
 	          )
 	        )
 	      )
@@ -22065,9 +22084,9 @@
 	      React.DOM.ul({className: "daily-list"}, 
 	        renderList, 
 	        React.DOM.li({className: "daily-item row"}, 
-	          React.DOM.div({className: "col-sm-9"}, 
+	          React.DOM.div({className: "col-sm-10"}, 
 	            React.DOM.button({className: "btn btn-sm btn-default", 
-	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "save task"), 
+	              onClick: this.newTaskOnClicked.bind(null, dateItem)}, "Save task"), 
 
 	            React.DOM.span({className: "pull-right"}, 
 	              "Total: ",  dateItem.totalTime || 0, " hours"
@@ -60331,7 +60350,7 @@
 	    var item = {};
 	    var renderList = (
 	      React.DOM.li({className: "daily-item row", key: item.id}, 
-	        React.DOM.div({className: "col-sm-5"}, 
+	        React.DOM.div({className: "col-sm-6"}, 
 	          React.DOM.div({className: "input-group"}, 
 	            React.DOM.span({className: "input-group-addon"}, 
 	              React.DOM.input({type: "checkbox", checked: item.isCompleted})
@@ -60357,7 +60376,7 @@
 	      renderList = filterUserList.map(function(item, i) {
 	        return (
 	          React.DOM.li({className: "daily-item row", key: item.id}, 
-	            React.DOM.div({className: "col-sm-5"}, 
+	            React.DOM.div({className: "col-sm-6"}, 
 	              React.DOM.div({className: "input-group"}, 
 	                React.DOM.span({className: "input-group-addon"}, 
 	                  React.DOM.input({type: "checkbox", checked: item.isCompleted})
@@ -60397,7 +60416,7 @@
 	            React.DOM.ul({className: "daily-list"}, 
 	              this.renderUserTask(this.state.taskList, item._id)
 	              /*<li className="row daily-item">
-	                <div className="col-sm-5">
+	                <div className="col-sm-6">
 	                  <div className="pull-right">
 	                    <Rating />
 	                  </div>
@@ -60421,7 +60440,6 @@
 	        React.DOM.div({className: "col-sm-12"}, 
 	          React.DOM.h4(null, "REPORT/TODAY")
 	        ), 
-	        /*<h4 className="header-title">REPORT/TODAY</h4>*/
 	        userListRender
 	      )
 	    );
@@ -60951,7 +60969,7 @@
 	                    React.DOM.th({scope: "row"}, index + 1), 
 	                    React.DOM.td(null, item.name), 
 	                    React.DOM.td(null, item._scrumMaster.fullName), 
-	                    React.DOM.td(null, React.DOM.a({className: "btn btn-primary", onClick: this.onDetailProjectClicked.bind(this, item._id)}, "Detail"))
+	                    React.DOM.td(null, React.DOM.a({className: "", onClick: this.onDetailProjectClicked.bind(this, item._id)}, "Detail"))
 	                  )
 	                );
 	              }.bind(this))
@@ -60998,9 +61016,8 @@
 	              )
 
 	            )
-	          )
-	        ), 
-	        React.DOM.div({className: "col-sm-offset-8 col-sm-4"}, 
+	          ), 
+
 	          React.DOM.h3(null, "Project Detail"), 
 	          React.DOM.table({className: "table table-striped"}, 
 	            React.DOM.tbody(null, 

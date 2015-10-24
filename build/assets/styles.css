@@ -300,7 +300,7 @@ li {
   margin-top: 10px; }
 
 .day-block {
-  margin-top: 15px; }
+  margin-bottom: 30px; }
   .day-block::first-child {
     margin-top: 0; }
   .day-block .day-title {

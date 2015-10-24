@@ -187,7 +187,7 @@ var ProjectPage = React.createClass({
                     <th scope="row">{index + 1}</th>
                     <td>{item.name}</td>
                     <td>{item._scrumMaster.fullName}</td>
-                    <td><a className="btn btn-primary" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
+                    <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
                   </tr>
                 );
               }.bind(this))}
@@ -235,8 +235,7 @@ var ProjectPage = React.createClass({
 
             </fieldset>
           </form>
-        </div>
-        <div className="col-sm-offset-8 col-sm-4">
+
           <h3>Project Detail</h3>
           <table className="table table-striped">
             <tbody>

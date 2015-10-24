@@ -21963,7 +21963,9 @@
 	    // below is a trick, it should be get data from e.target.checked
 	    // currItem[e.target.isCompleted] = e.target.checked;
 	    currItem.isCompleted = !currItem.isCompleted;
-	    currItem.isEdited = true;
+	    if (currItem._id) {
+	      currItem.isEdited = true;
+	    }
 
 	    this.setState({
 	      taskList: nList
@@ -21974,7 +21976,9 @@
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem[e.target.name] = e.target.value;
-	    currItem.isEdited = true;
+	    if (currItem._id) {
+	      currItem.isEdited = true;
+	    }
 
 	    this.setState({
 	      taskList: nList
@@ -21990,7 +21994,9 @@
 	    currItem.estimation = newValue;
 	    // update total time
 	    currDate.totalTime = this.getTotalTime(nList, currItem);
-	    currItem.isEdited = true;
+	    if (currItem._id) {
+	      currItem.isEdited = true;
+	    }
 
 	    this.setState({
 	      taskList: nList,
@@ -22003,7 +22009,9 @@
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
 	    currItem._project = newValue;
-	    currItem.isEdited = true;
+	    if (currItem._id) {
+	      currItem.isEdited = true;
+	    }
 
 	    this.setState({
 	      taskList: nList
@@ -22013,8 +22021,14 @@
 	  onUpdateTaskClicked: function(id, e) {
 	    var nList = this.state.taskList;
 	    var currItem = this.findItem(nList, id);
+	    var model = lodash.clone(currItem);
 	    currItem.isEdited = false;
-	    console.log('onUpdateTaskClicked', currItem);
+
+	    model._user = model._user && model._user._id;
+	    // model._project = model._project && model._project._id;
+	    // send action to update modal
+	    console.log('onUpdateTaskClicked', currItem, currItem);
+	    TaskActions.updateTask(model);
 
 	    this.setState({
 	      taskList: nList
@@ -60135,7 +60149,9 @@
 	  },
 
 	  updateTask: function(data) {
-	    TaskApis.update(data, {}).then(
+	    var _id = data._id;
+	    delete data._id;
+	    TaskApis.update(data, {_id: _id}).then(
 	    function(body) {
 	      this.emit(Events.UpdateTaskSuccess, body);
 	    }.bind(this),

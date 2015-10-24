@@ -77,7 +77,9 @@ var TaskStore = assign({}, EventEmitter.prototype, {
   },
 
   updateTask: function(data) {
-    TaskApis.update(data, {}).then(
+    var _id = data._id;
+    delete data._id;
+    TaskApis.update(data, {_id: _id}).then(
     function(body) {
       this.emit(Events.UpdateTaskSuccess, body);
     }.bind(this),

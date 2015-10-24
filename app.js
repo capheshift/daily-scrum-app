@@ -21793,6 +21793,23 @@
 	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
 	  },
 
+	  addEmptyTask: function(taskList) {
+	    var dateList = this.state.dateList;
+	    var currentUser = this.currentUser;
+
+	    dateList.forEach(function(item) {
+	      taskList.push({
+	        _user: currentUser,
+	        id: Guid.raw(),
+	        date: item.value,
+	        isCompleted: false,
+	        content: ''
+	      });
+	    });
+
+	    return taskList;
+	  },
+
 	  _onFindTaskSuccess: function(data) {
 	    console.log('_onFindTaskSuccess', data);
 	    var data2 = data.map(function(item) {
@@ -21804,6 +21821,8 @@
 	      // return the new one
 	      return newItem;
 	    });
+
+	    data2 = this.addEmptyTask(data2);
 	    console.log('_onFindTaskSuccess', data2);
 
 	    this.setState({
@@ -21865,6 +21884,14 @@
 	        value: m.format('YYYYMMDD'),
 	        index: dateItem.index + 1,
 	        totalTime: 0
+	      });
+
+	      newTaskList.push({
+	        _user: this.currentUser,
+	        id: Guid.raw(),
+	        date: m.format('YYYYMMDD'),
+	        isCompleted: false,
+	        content: ''
 	      });
 	    }
 

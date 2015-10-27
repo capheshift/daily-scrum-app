@@ -34,6 +34,14 @@ var ReportPage = React.createClass({
     };
   },
 
+  getTotalTime: function(arr) {
+    var total = 0;
+    arr.forEach(function(item) {
+      total += parseFloat(item.estimation) || 0;
+    });
+    return total;
+  },
+
   componentDidMount: function() {
     ProjectStore.addListenerGetAllProjectSuccess(this._onGetAllProjectSuccess, this);
     ProjectStore.addListenerGetAllProjectFail(this._onGetAllProjectFail, this);
@@ -201,18 +209,28 @@ var ReportPage = React.createClass({
 
     if (this.state.userList.length) {
       userListRender = this.state.userList.map(function(item) {
+        var taskByUser = this.state.taskList.filter(function(task) {
+          return (task._user._id === item._id);
+        });
+        var totalTime = this.getTotalTime(taskByUser);
+
         return (
           <div className="col-sm-12 day-block">
             <p className="username-title">{item.fullName}</p>
             <ul className="daily-list">
               {this.renderUserTask(this.state.taskList, item._id)}
-              {/*<li className="row daily-item">
+              <li className="row daily-item">
                 <div className="col-sm-6">
-                  <div className="pull-right">
+                  {/*<div className="pull-right">
                     <Rating />
-                  </div>
+                  </div>*/}
                 </div>
-              </li>*/}
+                <div className="col-sm-4">
+                  <span className="pull-right">
+                    Total: { totalTime || 0 } hours
+                  </span>
+                </div>
+              </li>
             </ul>
           </div>
         );

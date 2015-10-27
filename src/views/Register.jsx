@@ -42,6 +42,7 @@ var LoginPage = React.createClass({
   },
   _onRegisterFail: function(data) {
     console.log('_onRegisterFail', data);
+    alert(data.message);
   },
 
   register: function(e) {

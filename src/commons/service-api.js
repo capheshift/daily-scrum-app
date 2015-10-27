@@ -90,7 +90,11 @@ $.each(apiList, function(index, item) {
         dataType: 'json',
         success: function(data) {
           NotificationActions.endRequest({});
-          resolve(data);
+          if (data.success) {
+            resolve(data);
+          } else {
+            reject(data);
+          }
         },
         error: function(err) {
           NotificationActions.endRequest({});

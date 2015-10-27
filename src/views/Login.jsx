@@ -41,6 +41,7 @@ var LoginPage = React.createClass({
   },
   _onLoginFail: function(data) {
     console.log('_onLoginFail', data);
+    alert(data.message);
   },
 
   login: function(e) {

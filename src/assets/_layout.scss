@@ -1,4 +1,6 @@
 
+$gray01: #fbfbfb;
+
 .__hidden {
   display: none !important;
 }
@@ -7,4 +9,25 @@
   position: fixed;
   top: 60px;
   left: 15px;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  cursor: default;
+  background-color: $gray01;
+}
+
+fieldset[disabled] input[type=checkbox],
+fieldset[disabled] input[type=radio],
+input[type=checkbox].disabled,
+input[type=checkbox][disabled],
+input[type=radio].disabled,
+input[type=radio][disabled] {
+  cursor: default;
+  background-color: $gray01;
+}
+
+.input-group-addon {
+  background-color: $gray01;
 }

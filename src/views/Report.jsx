@@ -152,20 +152,20 @@ var ReportPage = React.createClass({
         <div className="col-sm-6">
           <div className="input-group">
             <span className="input-group-addon">
-              <input type="checkbox" checked={item.isCompleted} />
+              <input type="checkbox" checked={item.isCompleted} disabled />
             </span>
             <input className="form-control" id="prependedcheckbox"
-              placeholder="your task" type="text"
+              placeholder="your task" type="text" disabled
               ref="content" name="content"
               value={item.content} />
           </div>
         </div>
         <div className="col-sm-2">
-          <Select name="_project" clearable={false} value={item._project}
+          <Select name="_project" clearable={false} disabled={true} value={item._project}
             options={projectOptions} />
         </div>
         <div className="col-sm-2">
-          <Select name="estimation" clearable={false}
+          <Select name="estimation" clearable={false} disabled={true}
             value={item.estimation} options={timeRangeOptions} />
         </div>
       </li>
@@ -178,20 +178,20 @@ var ReportPage = React.createClass({
             <div className="col-sm-6">
               <div className="input-group">
                 <span className="input-group-addon">
-                  <input type="checkbox" checked={item.isCompleted} />
+                  <input type="checkbox" checked={item.isCompleted} disabled />
                 </span>
                 <input className="form-control" id="prependedcheckbox"
-                  placeholder="your task" type="text"
+                  placeholder="your task" type="text" disabled
                   ref="content" name="content"
                   value={item.content} />
               </div>
             </div>
             <div className="col-sm-2">
-              <Select name="_project" clearable={false} value={item._project}
+              <Select name="_project" clearable={false} disabled={true} value={item._project}
                 options={projectOptions} />
             </div>
             <div className="col-sm-2">
-              <Select name="estimation" clearable={false}
+              <Select name="estimation" clearable={false} disabled={true}
                 value={item.estimation} options={timeRangeOptions} />
             </div>
           </li>

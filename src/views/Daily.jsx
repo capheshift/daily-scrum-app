@@ -104,6 +104,8 @@ var DailyPage = React.createClass({
       var item = dateList[i];
       var index = i;
       var totalOfCurrent = lodash.filter(taskList, { date: item.value }).length;
+      // get total time
+      item.totalTime = this.getTotalTime(taskList, item.value);
 
       if (totalOfCurrent > 0 && (index === (dateList.length - 1))) {
         var m = item.momentValue.add(1, 'days');
@@ -144,7 +146,6 @@ var DailyPage = React.createClass({
     });
 
     taskList = this.addEmptyTask(taskList);
-    console.log('_onFindTaskSuccess', taskList);
 
     this.setState({
       taskList: taskList
@@ -169,7 +170,6 @@ var DailyPage = React.createClass({
         label: item.name
       };
     });
-    console.log('_onGetAllProjectSuccess', pList);
     this.setState({
       projectList: pList
     });
@@ -246,9 +246,9 @@ var DailyPage = React.createClass({
    * @param  {[type]} item [a task item]
    * @return {[type]}      [description]
    */
-  getTotalTime: function(arr, item) {
-    var filterTask = lodash.filter(arr, {date: item.date});
+  getTotalTime: function(arr, dateStr) {
     var total = 0;
+    var filterTask = lodash.filter(arr, {date: dateStr});
 
     for (var i = 0; i < filterTask.length; i++) {
       total += parseFloat(filterTask[i].estimation) || 0;
@@ -257,13 +257,11 @@ var DailyPage = React.createClass({
     return total;
   },
 
-
   onCheckChanged: function(id, e) {
     console.log('onCheckChanged', id, e);
     var nList = this.state.taskList;
     var currItem = this.findItem(nList, id);
     // below is a trick, it should be get data from e.target.checked
-    // currItem[e.target.isCompleted] = e.target.checked;
     currItem.isCompleted = !currItem.isCompleted;
     if (currItem._id) {
       currItem.isEdited = true;
@@ -295,7 +293,7 @@ var DailyPage = React.createClass({
 
     currItem.estimation = newValue;
     // update total time
-    currDate.totalTime = this.getTotalTime(nList, currItem);
+    currDate.totalTime = this.getTotalTime(nList, currItem.date);
     if (currItem._id) {
       currItem.isEdited = true;
     }
@@ -327,9 +325,7 @@ var DailyPage = React.createClass({
     currItem.isEdited = false;
 
     model._user = model._user && model._user._id;
-    // model._project = model._project && model._project._id;
     // send action to update modal
-    console.log('onUpdateTaskClicked', currItem, currItem);
     TaskActions.updateTask(model);
 
     this.setState({

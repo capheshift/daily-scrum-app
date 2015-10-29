@@ -131,15 +131,19 @@ var ProjectPage = React.createClass({
 
   onCreateProjectClicked: function(e) {
     e.preventDefault();
-
     var pList = this.state.projectList;
-    ProjectActions.create(this.state.model);
+    var model = this.state.model;
 
+    if (model.name === null || model.name.length <= 0) {
+      alert('Project name is required !');
+      return;
+    }
+
+    ProjectActions.create(model);
     this.setState({
       projectList: pList,
       model: { name: '' }
     });
-
     ProjectActions.all();
     ProjectActions.getAllUserProjects();
   },

@@ -269,6 +269,9 @@
   to {
     -webkit-transform: rotate(1turn); } }
 
+p {
+  margin-bottom: 5px; }
+
 .__hidden {
   display: none !important; }
 
@@ -348,6 +351,12 @@ li {
 
 .form-horizontal .control-label {
   text-align: left; }
+
+.project-item {
+  border: 1px solid whitesmoke;
+  border-radius: 2px;
+  padding: 0 15px;
+  margin-bottom: 15px; }
 
 .username-title {
   font-weight: bold; }

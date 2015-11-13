@@ -61105,87 +61105,100 @@
 	          React.DOM.h4(null, "PROJECT")
 	        ), 
 
-	        React.DOM.div({className: "col-sm-8"}, 
-	          React.DOM.table({className: "table table-striped"}, 
-	            React.DOM.thead(null, 
-	              React.DOM.tr(null, 
-	                React.DOM.th(null, "#"), 
-	                React.DOM.th(null, "Project Name"), 
-	                React.DOM.th(null, "Leader"), 
-	                React.DOM.th(null)
+	        this.state.projectList.map(function(item, index) {
+	          return (
+	            React.DOM.div({className: "col-sm-4"}, 
+	              React.DOM.div({className: "project-item"}, 
+	                React.DOM.h4(null, item.name), 
+	                React.DOM.p(null, "Total: 468 hours"), 
+	                React.DOM.p(null, "Scrum master: ", item._scrumMaster.fullName), 
+	                React.DOM.p(null, "Team members: 5")
+	                /*<p>Team members:</p>*/
 	              )
-	            ), 
-	            React.DOM.tbody(null, 
-	              this.state.projectList.map(function(item, index) {
+	            )
+	          );
+	        })
+
+	        /*<div className="col-sm-8">
+	          <table className="table table-striped">
+	            <thead>
+	              <tr>
+	                <th>#</th>
+	                <th>Project Name</th>
+	                <th>Leader</th>
+	                <th></th>
+	              </tr>
+	            </thead>
+	            <tbody>
+	              {this.state.projectList.map(function(item, index) {
 	                return (
-	                  React.DOM.tr(null, 
-	                    React.DOM.th({scope: "row"}, index + 1), 
-	                    React.DOM.td(null, item.name), 
-	                    React.DOM.td(null, item._scrumMaster.fullName), 
-	                    React.DOM.td(null, React.DOM.a({className: "", onClick: this.onDetailProjectClicked.bind(this, item._id)}, "Detail"))
-	                  )
+	                  <tr>
+	                    <th scope="row">{index + 1}</th>
+	                    <td>{item.name}</td>
+	                    <td>{item._scrumMaster.fullName}</td>
+	                    <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
+	                  </tr>
 	                );
-	              }.bind(this))
-	            )
-	          )
-	        ), 
+	              }.bind(this))}
+	            </tbody>
+	          </table>
+	        </div>
+	        <div className="col-sm-4 ">
+	          <form className="form-horizontal">
+	            <fieldset>
+	              <div className="form-group">
+	                <label className="col-sm-12 control-label" for="textinput">Project</label>
+	                <div className="col-sm-12">
+	                  <input id="textinput" name="name" type="text" placeholder="name of project"
+	                    className="form-control input-md"
+	                    value={this.state.model.name} onChange={this.onChange} />
+	                </div>
+	              </div>
 
-	        React.DOM.div({className: "col-sm-4 "}, 
-	          React.DOM.form({className: "form-horizontal"}, 
-	            React.DOM.fieldset(null, 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
-	                    className: "form-control input-md", 
-	                    value: this.state.model.name, onChange: this.onChange})
-	                )
-	              ), 
+	              <div className="form-group">
+	                <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
+	                <div className="col-sm-12">
+	                  <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
+	                    options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
+	                </div>
+	              </div>
 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: this.state.model._scrumMaster, clearable: false, 
-	                    options: this.state.userOptionsType, onChange: this.onSelectChangedMaster})
-	                )
-	              ), 
+	              <div className="form-group">
+	                <label className="col-sm-12 control-label" for="textinput">Team Members</label>
+	                <div className="col-sm-12">
+	                  <Select name="form-field-name" value={this.state.model._user}
+	                    multi={true} clearable={true}
+	                    options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
+	                </div>
+	              </div>
 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
-	                React.DOM.div({className: "col-sm-12"}, 
-	                  Select({name: "form-field-name", value: this.state.model._user, 
-	                    multi: true, clearable: true, 
-	                    options: this.state.userOptionsType, onChange: this.onSelectChangedMember})
-	                )
-	              ), 
+	              <div className="form-group">
+	                <label className="col-sm-12 control-label" for="button1id"></label>
+	                <div className="col-md-12">
+	                  <button id="button1id" name="button1id"
+	                    className="btn btn-success pull-right"
+	                    onClick={this.onCreateProjectClicked}>Create project</button>
+	                </div>
+	              </div>
 
-	              React.DOM.div({className: "form-group"}, 
-	                React.DOM.label({className: "col-sm-12 control-label", for: "button1id"}), 
-	                React.DOM.div({className: "col-md-12"}, 
-	                  React.DOM.button({id: "button1id", name: "button1id", 
-	                    className: "btn btn-success pull-right", 
-	                    onClick: this.onCreateProjectClicked}, "Create project")
-	                )
-	              )
+	            </fieldset>
+	          </form>
 
-	            )
-	          ), 
-
-	          React.DOM.h3(null, "Project Detail"), 
-	          React.DOM.table({className: "table table-striped"}, 
-	            React.DOM.tbody(null, 
-	              this.state.userProjectList.map(function(item, index){
+	          <h3>Project Detail</h3>
+	          <table className="table table-striped">
+	            <tbody>
+	              {this.state.userProjectList.map(function(item, index){
 	                return (
-	                  React.DOM.tr(null, 
-	                    React.DOM.td(null, index + 1), 
-	                    React.DOM.td(null, item._user.fullName)
-	                  )
+	                  <tr>
+	                    <td>{index + 1}</td>
+	                    <td>{item._user.fullName}</td>
+	                  </tr>
 	                );
 	              })
-	              
-	            )
-	          )
-	        )
+	              }
+	            </tbody>
+	          </table>
+	        </div>*/
 	      )
 	    );
 	  }

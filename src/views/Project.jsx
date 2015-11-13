@@ -174,7 +174,21 @@ var ProjectPage = React.createClass({
           <h4>PROJECT</h4>
         </div>
 
-        <div className="col-sm-8">
+        {this.state.projectList.map(function(item, index) {
+          return (
+            <div className="col-sm-4">
+              <div className="project-item">
+                <h4>{item.name}</h4>
+                <p>Total: 468 hours</p>
+                <p>Scrum master: {item._scrumMaster.fullName}</p>
+                <p>Team members: 5</p>
+                {/*<p>Team members:</p>*/}
+              </div>
+            </div>
+          );
+        })}
+
+        {/*<div className="col-sm-8">
           <table className="table table-striped">
             <thead>
               <tr>
@@ -198,7 +212,6 @@ var ProjectPage = React.createClass({
             </tbody>
           </table>
         </div>
-
         <div className="col-sm-4 ">
           <form className="form-horizontal">
             <fieldset>
@@ -254,7 +267,7 @@ var ProjectPage = React.createClass({
               }
             </tbody>
           </table>
-        </div>
+        </div>*/}
       </div>
     );
   }

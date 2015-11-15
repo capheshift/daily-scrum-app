@@ -430,8 +430,8 @@ var DailyPage = React.createClass({
 
   render: function() {
     return (
-      <div className="">
-        <h4>DAILY <small>The more you plan, the better you success !</small></h4>
+      <div>
+        <h3 className="title-label">DAILY <small>The more you plan, the better you success!</small></h3>
 
         {this.renderDateList()}
       </div>

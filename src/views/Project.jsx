@@ -169,105 +169,112 @@ var ProjectPage = React.createClass({
   render: function() {
 
     return (
-      <div className="row">
-        <div className="col-sm-12">
-          <h4>PROJECT</h4>
+      <div>
+        <div className="row">
+          <div className="col-sm-8">
+            <h3 className="title-label">PROJECT</h3>
+          </div>
+          <div className="col-sm-4">
+            <button className="btn btn-success pull-right">New Project</button>
+          </div>
         </div>
 
-        {this.state.projectList.map(function(item, index) {
-          return (
-            <div className="col-sm-4">
-              <div className="project-item">
-                <h4>{item.name}</h4>
-                <p>Total: 468 hours</p>
-                <p>Scrum master: {item._scrumMaster.fullName}</p>
-                <p>Team members: 5</p>
-                {/*<p>Team members:</p>*/}
+        <div className="row">
+          {this.state.projectList.map(function(item, index) {
+            return (
+              <div className="col-sm-4">
+                <div className="project-item">
+                  <h4>{item.name}</h4>
+                  <p>Total: 468 hours</p>
+                  <p>Scrum master: {item._scrumMaster.fullName}</p>
+                  <p>Team members: 5</p>
+                  {/*<p>Team members:</p>*/}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
 
-        {/*<div className="col-sm-8">
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Project Name</th>
-                <th>Leader</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.projectList.map(function(item, index) {
-                return (
-                  <tr>
-                    <th scope="row">{index + 1}</th>
-                    <td>{item.name}</td>
-                    <td>{item._scrumMaster.fullName}</td>
-                    <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
-                  </tr>
-                );
-              }.bind(this))}
-            </tbody>
-          </table>
+          {/*<div className="col-sm-8">
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Project Name</th>
+                  <th>Leader</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.projectList.map(function(item, index) {
+                  return (
+                    <tr>
+                      <th scope="row">{index + 1}</th>
+                      <td>{item.name}</td>
+                      <td>{item._scrumMaster.fullName}</td>
+                      <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
+                    </tr>
+                  );
+                }.bind(this))}
+              </tbody>
+            </table>
+          </div>
+          <div className="col-sm-4 ">
+            <form className="form-horizontal">
+              <fieldset>
+                <div className="form-group">
+                  <label className="col-sm-12 control-label" for="textinput">Project</label>
+                  <div className="col-sm-12">
+                    <input id="textinput" name="name" type="text" placeholder="name of project"
+                      className="form-control input-md"
+                      value={this.state.model.name} onChange={this.onChange} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
+                  <div className="col-sm-12">
+                    <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
+                      options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="col-sm-12 control-label" for="textinput">Team Members</label>
+                  <div className="col-sm-12">
+                    <Select name="form-field-name" value={this.state.model._user}
+                      multi={true} clearable={true}
+                      options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="col-sm-12 control-label" for="button1id"></label>
+                  <div className="col-md-12">
+                    <button id="button1id" name="button1id"
+                      className="btn btn-success pull-right"
+                      onClick={this.onCreateProjectClicked}>Create project</button>
+                  </div>
+                </div>
+
+              </fieldset>
+            </form>
+
+            <h3>Project Detail</h3>
+            <table className="table table-striped">
+              <tbody>
+                {this.state.userProjectList.map(function(item, index){
+                  return (
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>{item._user.fullName}</td>
+                    </tr>
+                  );
+                })
+                }
+              </tbody>
+            </table>
+          </div>*/}
         </div>
-        <div className="col-sm-4 ">
-          <form className="form-horizontal">
-            <fieldset>
-              <div className="form-group">
-                <label className="col-sm-12 control-label" for="textinput">Project</label>
-                <div className="col-sm-12">
-                  <input id="textinput" name="name" type="text" placeholder="name of project"
-                    className="form-control input-md"
-                    value={this.state.model.name} onChange={this.onChange} />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
-                <div className="col-sm-12">
-                  <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
-                    options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="col-sm-12 control-label" for="textinput">Team Members</label>
-                <div className="col-sm-12">
-                  <Select name="form-field-name" value={this.state.model._user}
-                    multi={true} clearable={true}
-                    options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="col-sm-12 control-label" for="button1id"></label>
-                <div className="col-md-12">
-                  <button id="button1id" name="button1id"
-                    className="btn btn-success pull-right"
-                    onClick={this.onCreateProjectClicked}>Create project</button>
-                </div>
-              </div>
-
-            </fieldset>
-          </form>
-
-          <h3>Project Detail</h3>
-          <table className="table table-striped">
-            <tbody>
-              {this.state.userProjectList.map(function(item, index){
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{item._user.fullName}</td>
-                  </tr>
-                );
-              })
-              }
-            </tbody>
-          </table>
-        </div>*/}
       </div>
     );
   }

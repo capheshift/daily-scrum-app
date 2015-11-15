@@ -247,7 +247,7 @@ var ReportPage = React.createClass({
           </div>
         </div>*/}
         <div className="col-sm-12">
-          <h4>REPORT/TODAY</h4>
+          <h3 className="title-label">REPORT/TODAY</h3>
         </div>
         {userListRender}
       </div>

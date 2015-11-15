@@ -67,11 +67,13 @@ var ProjectPage = React.createClass({
   },
 
   _onCreateSuccess: function(data) {
-    window.location.hash = 'project';
+    // window.location.hash = 'project';
+    $('.js-modal').modal('hide');
   },
 
   _onCreateFail: function(data) {
     console.log('_onCreateFail', data);
+    $('.js-modal').modal('hide');
   },
 
   _onGetAllSuccess: function(data) {
@@ -100,10 +102,11 @@ var ProjectPage = React.createClass({
 
   _onGetAllUserProjectSuccess: function(data){
     this.setState({userProject: data.data});
+    // $('.js-modal').model('hide');
   },
 
   _onGetGetAllUserProjectFail: function(data){
-
+    // $('.js-modal').model('hide');
   },
 
   passValueUser: function(data){
@@ -166,6 +169,13 @@ var ProjectPage = React.createClass({
     this.setState({model: model});
   },
 
+  onNewProjectClicked: function() {
+    console.log('onNewProjectClicked');
+    $('.js-modal').modal({
+      backdrop: 'static'
+    });
+  },
+
   render: function() {
 
     return (
@@ -175,7 +185,7 @@ var ProjectPage = React.createClass({
             <h3 className="title-label">PROJECT</h3>
           </div>
           <div className="col-sm-4">
-            <button className="btn btn-success pull-right">New Project</button>
+            <button className="btn btn-success pull-right" onClick={this.onNewProjectClicked}>New Project</button>
           </div>
         </div>
 
@@ -274,6 +284,53 @@ var ProjectPage = React.createClass({
               </tbody>
             </table>
           </div>*/}
+        </div>
+
+        <div className="modal fade js-modal">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 className="modal-title">New Project</h4>
+              </div>
+              <div className="modal-body">
+                <form className="form-horizontal">
+                  <fieldset>
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Project</label>
+                      <div className="col-sm-12">
+                        <input id="textinput" name="name" type="text" placeholder="name of project"
+                          className="form-control input-md"
+                          value={this.state.model.name} onChange={this.onChange} />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
+                      <div className="col-sm-12">
+                        <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
+                          options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Team Members</label>
+                      <div className="col-sm-12">
+                        <Select name="form-field-name" value={this.state.model._user}
+                          multi={true} clearable={true}
+                          options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button id="button1id" name="button1id"
+                  className="btn btn-success pull-right"
+                  onClick={this.onCreateProjectClicked}>Create project</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

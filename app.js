@@ -60998,11 +60998,13 @@
 	  },
 
 	  _onCreateSuccess: function(data) {
-	    window.location.hash = 'project';
+	    // window.location.hash = 'project';
+	    $('.js-modal').modal('hide');
 	  },
 
 	  _onCreateFail: function(data) {
 	    console.log('_onCreateFail', data);
+	    $('.js-modal').modal('hide');
 	  },
 
 	  _onGetAllSuccess: function(data) {
@@ -61031,10 +61033,11 @@
 
 	  _onGetAllUserProjectSuccess: function(data){
 	    this.setState({userProject: data.data});
+	    // $('.js-modal').model('hide');
 	  },
 
 	  _onGetGetAllUserProjectFail: function(data){
-
+	    // $('.js-modal').model('hide');
 	  },
 
 	  passValueUser: function(data){
@@ -61097,6 +61100,13 @@
 	    this.setState({model: model});
 	  },
 
+	  onNewProjectClicked: function() {
+	    console.log('onNewProjectClicked');
+	    $('.js-modal').modal({
+	      backdrop: 'static'
+	    });
+	  },
+
 	  render: function() {
 
 	    return (
@@ -61106,7 +61116,7 @@
 	            React.DOM.h3({className: "title-label"}, "PROJECT")
 	          ), 
 	          React.DOM.div({className: "col-sm-4"}, 
-	            React.DOM.button({className: "btn btn-success pull-right"}, "New Project")
+	            React.DOM.button({className: "btn btn-success pull-right", onClick: this.onNewProjectClicked}, "New Project")
 	          )
 	        ), 
 
@@ -61205,6 +61215,53 @@
 	              </tbody>
 	            </table>
 	          </div>*/
+	        ), 
+
+	        React.DOM.div({className: "modal fade js-modal"}, 
+	          React.DOM.div({className: "modal-dialog"}, 
+	            React.DOM.div({className: "modal-content"}, 
+	              React.DOM.div({className: "modal-header"}, 
+	                React.DOM.button({type: "button", className: "close", 'data-dismiss': "modal", 'aria-label': "Close"}, React.DOM.span({'aria-hidden': "true"}, "×")), 
+	                React.DOM.h4({className: "modal-title"}, "New Project")
+	              ), 
+	              React.DOM.div({className: "modal-body"}, 
+	                React.DOM.form({className: "form-horizontal"}, 
+	                  React.DOM.fieldset(null, 
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
+	                          className: "form-control input-md", 
+	                          value: this.state.model.name, onChange: this.onChange})
+	                      )
+	                    ), 
+
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        Select({name: "form-field-name", value: this.state.model._scrumMaster, clearable: false, 
+	                          options: this.state.userOptionsType, onChange: this.onSelectChangedMaster})
+	                      )
+	                    ), 
+
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        Select({name: "form-field-name", value: this.state.model._user, 
+	                          multi: true, clearable: true, 
+	                          options: this.state.userOptionsType, onChange: this.onSelectChangedMember})
+	                      )
+	                    )
+	                  )
+	                )
+	              ), 
+	              React.DOM.div({className: "modal-footer"}, 
+	                React.DOM.button({id: "button1id", name: "button1id", 
+	                  className: "btn btn-success pull-right", 
+	                  onClick: this.onCreateProjectClicked}, "Create project")
+	              )
+	            )
+	          )
 	        )
 	      )
 	    );

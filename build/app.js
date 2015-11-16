@@ -21666,8 +21666,8 @@
 	var CFG = {
 	  // Paint Area for this application
 	  container: document.getElementById('app'),
-	  apiPath: 'http://daily-scrum-api.herokuapp.com',
-	  // apiPath: 'http://localhost:3000',
+	  // apiPath: 'http://daily-scrum-api.herokuapp.com',
+	  apiPath: 'http://localhost:3000',
 
 	  estimateList: [
 	    { value: '0.5', label: '30 mins' },
@@ -61128,7 +61128,7 @@
 	                  React.DOM.h4(null, item.name), 
 	                  React.DOM.p(null, "Total: 468 hours"), 
 	                  React.DOM.p(null, "Scrum master: ", item._scrumMaster.fullName), 
-	                  React.DOM.p(null, "Team members: 5")
+	                  React.DOM.p(null, "Team members: ", item.members.length)
 	                  /*<p>Team members:</p>*/
 	                )
 	              )

@@ -197,7 +197,7 @@ var ProjectPage = React.createClass({
                   <h4>{item.name}</h4>
                   <p>Total: 468 hours</p>
                   <p>Scrum master: {item._scrumMaster.fullName}</p>
-                  <p>Team members: 5</p>
+                  <p>Team members: {item.members.length}</p>
                   {/*<p>Team members:</p>*/}
                 </div>
               </div>

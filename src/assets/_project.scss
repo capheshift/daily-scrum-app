@@ -1,4 +1,13 @@
 
+@import 'variables';
+
 .form-horizontal .control-label {
   text-align: left;
+}
+
+.project-item {
+  border: 1px solid whitesmoke;
+  border-radius: 2px;
+  padding: 0 $gutter;
+  margin-bottom: $gutter;
 }

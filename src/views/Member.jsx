@@ -73,7 +73,7 @@ var MemberPage = React.createClass({
     return (
       <div className="row">
         <div className="col-sm-12">
-          <h4>MEMBER</h4>
+          <h3 className="title-label">MEMBER</h3>
         </div>
         {members}
       </div>

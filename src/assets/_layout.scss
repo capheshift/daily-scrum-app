@@ -1,8 +1,22 @@
+@import 'variables';
 
 $gray01: #fbfbfb;
 
+h1, h2, h3, h4, h5, h6 {
+  margin: $gutter 0;
+}
+
+p {
+  margin-bottom: 5px;
+}
+
 .__hidden {
   display: none !important;
+}
+
+.title-label {
+  margin-top: 0;
+  line-height: $line-height;
 }
 
 .loader-wrapper {

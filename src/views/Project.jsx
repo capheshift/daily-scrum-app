@@ -263,12 +263,16 @@ var ProjectPage = React.createClass({
           {this.state.projectList.map(function(item, index) {
             return (
               <div className="col-sm-4">
-                <div className="project-item" onClick={this.onProjectClicked.bind(null, item)}>
-                  <h4>{item.name}</h4>
+                <div className="project-item">
+                  <h4>
+                    {item.name}
+                    <a href="javascript:;" onClick={this.onProjectClicked.bind(null, item)}>
+                      <i className="glyphicon glyphicon-th pull-right"></i>
+                    </a>
+                  </h4>
                   <p>Total: 468 hours</p>
                   <p>Scrum master: {item._scrumMaster.fullName}</p>
                   <p>Team members: {item.members ? item.members.length : 0}</p>
-                  {/*<p>Team members:</p>*/}
                 </div>
               </div>
             );

@@ -61194,12 +61194,16 @@
 	          this.state.projectList.map(function(item, index) {
 	            return (
 	              React.DOM.div({className: "col-sm-4"}, 
-	                React.DOM.div({className: "project-item", onClick: this.onProjectClicked.bind(null, item)}, 
-	                  React.DOM.h4(null, item.name), 
+	                React.DOM.div({className: "project-item"}, 
+	                  React.DOM.h4(null, 
+	                    item.name, 
+	                    React.DOM.a({href: "javascript:;", onClick: this.onProjectClicked.bind(null, item)}, 
+	                      React.DOM.i({className: "glyphicon glyphicon-th pull-right"})
+	                    )
+	                  ), 
 	                  React.DOM.p(null, "Total: 468 hours"), 
 	                  React.DOM.p(null, "Scrum master: ", item._scrumMaster.fullName), 
 	                  React.DOM.p(null, "Team members: ", item.members ? item.members.length : 0)
-	                  /*<p>Team members:</p>*/
 	                )
 	              )
 	            );

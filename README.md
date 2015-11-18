@@ -1,4 +1,6 @@
 # daily-scrum
+
+[![Join the chat at https://gitter.im/capheshift/daily-scrum-app](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/capheshift/daily-scrum-app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Là dự án quản lý công việc hằng ngày, phát triển để đáp ứng nhu cầu daily-scrum, đồng thời thêm một số công cụ thống kê, để đánh giá khối lượng công việc của từng thành viên.
 
 ### React, Flux with Router Boilerplate

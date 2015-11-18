@@ -25,6 +25,15 @@ p {
   left: 15px;
 }
 
+.glyphicon {
+  color: black;
+  opacity: 0.3;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {

@@ -198,7 +198,9 @@ var ProjectPage = React.createClass({
   },
 
   render: function() {
-    var projectDetail = '';
+    var projectDetail = (
+      <div className="modal fade js-project-modal"></div>
+    );
     if (this.state.selectedProject._scrumMaster) {
       projectDetail = (
         <div className="modal fade js-project-modal">
@@ -267,7 +269,7 @@ var ProjectPage = React.createClass({
                   <h4>
                     {item.name}
                     <a href="javascript:;" onClick={this.onProjectClicked.bind(null, item)}>
-                      <i className="glyphicon glyphicon-th pull-right"></i>
+                      <i className="glyphicon glyphicon-bookmark pull-right"></i>
                     </a>
                   </h4>
                   <p>Total: 468 hours</p>

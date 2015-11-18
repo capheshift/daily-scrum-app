@@ -61129,7 +61129,9 @@
 	  },
 
 	  render: function() {
-	    var projectDetail = '';
+	    var projectDetail = (
+	      React.DOM.div({className: "modal fade js-project-modal"})
+	    );
 	    if (this.state.selectedProject._scrumMaster) {
 	      projectDetail = (
 	        React.DOM.div({className: "modal fade js-project-modal"}, 
@@ -61198,7 +61200,7 @@
 	                  React.DOM.h4(null, 
 	                    item.name, 
 	                    React.DOM.a({href: "javascript:;", onClick: this.onProjectClicked.bind(null, item)}, 
-	                      React.DOM.i({className: "glyphicon glyphicon-th pull-right"})
+	                      React.DOM.i({className: "glyphicon glyphicon-bookmark pull-right"})
 	                    )
 	                  ), 
 	                  React.DOM.p(null, "Total: 468 hours"), 

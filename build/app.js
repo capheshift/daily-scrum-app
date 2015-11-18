@@ -60955,7 +60955,8 @@
 	  },
 
 	  getInitialState: function() {
-	      return {
+	    return {
+	      selectedProject: {},
 	      model: {},
 	      projectList: [],
 	      userProject: [],
@@ -61023,6 +61024,7 @@
 	  },
 
 	  _onGetAllUserSuccess: function(data) {
+	    console.log('_onGetAllUserSuccess', data.data);
 	    this.setState({userOptions: data.data});
 	    this.passValueUser(data.data);
 	  },
@@ -61095,6 +61097,7 @@
 	  },
 
 	  onSelectChangedMember: function(data, listUser) {
+	    console.log('onSelectChangedMember', data, listUser);
 	    var model = this.state.model;
 	    model._user = listUser;
 	    this.setState({model: model});
@@ -61107,7 +61110,74 @@
 	    });
 	  },
 
+	  onProjectClicked: function(item) {
+	    var memberList = item.members.map(function(m) {
+	      return {
+	        label: m._user.fullName,
+	        value: m._user._id
+	      };
+	    });
+
+	    item.memberList = memberList;
+	    this.setState({
+	      selectedProject: item
+	    });
+
+	    $('.js-project-modal').modal({
+	      backdrop: 'static'
+	    });
+	  },
+
 	  render: function() {
+	    var projectDetail = '';
+	    if (this.state.selectedProject._scrumMaster) {
+	      projectDetail = (
+	        React.DOM.div({className: "modal fade js-project-modal"}, 
+	          React.DOM.div({className: "modal-dialog"}, 
+	            React.DOM.div({className: "modal-content"}, 
+	              React.DOM.div({className: "modal-header"}, 
+	                React.DOM.button({type: "button", className: "close", 'data-dismiss': "modal", 'aria-label': "Close"}, React.DOM.span({'aria-hidden': "true"}, "×")), 
+	                React.DOM.h4({className: "modal-title"}, "Project details")
+	              ), 
+	              React.DOM.div({className: "modal-body"}, 
+	                React.DOM.form({className: "form-horizontal"}, 
+	                  React.DOM.fieldset(null, 
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Project"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        React.DOM.input({id: "textinput", name: "name", type: "text", placeholder: "name of project", 
+	                          className: "form-control input-md", disabled: true, 
+	                          value: this.state.selectedProject.name})
+	                      )
+	                    ), 
+
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Scrum Master"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        Select({name: "form-field-name", 
+	                          clearable: false, disabled: false, 
+	                          value: this.state.selectedProject._scrumMaster._id, 
+	                          options: this.state.userOptionsType})
+	                      )
+	                    ), 
+
+	                    React.DOM.div({className: "form-group"}, 
+	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
+	                      React.DOM.div({className: "col-sm-12"}, 
+	                        Select({name: "form-field-name", value: this.state.selectedProject.memberList, 
+	                          multi: true, clearable: true, 
+	                          options: this.state.userOptionsType, onChange: this.onSelectChangedMember})
+	                      )
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+
 
 	    return (
 	      React.DOM.div(null, 
@@ -61124,7 +61194,7 @@
 	          this.state.projectList.map(function(item, index) {
 	            return (
 	              React.DOM.div({className: "col-sm-4"}, 
-	                React.DOM.div({className: "project-item"}, 
+	                React.DOM.div({className: "project-item", onClick: this.onProjectClicked.bind(null, item)}, 
 	                  React.DOM.h4(null, item.name), 
 	                  React.DOM.p(null, "Total: 468 hours"), 
 	                  React.DOM.p(null, "Scrum master: ", item._scrumMaster.fullName), 
@@ -61133,89 +61203,10 @@
 	                )
 	              )
 	            );
-	          })
-
-	          /*<div className="col-sm-8">
-	            <table className="table table-striped">
-	              <thead>
-	                <tr>
-	                  <th>#</th>
-	                  <th>Project Name</th>
-	                  <th>Leader</th>
-	                  <th></th>
-	                </tr>
-	              </thead>
-	              <tbody>
-	                {this.state.projectList.map(function(item, index) {
-	                  return (
-	                    <tr>
-	                      <th scope="row">{index + 1}</th>
-	                      <td>{item.name}</td>
-	                      <td>{item._scrumMaster.fullName}</td>
-	                      <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
-	                    </tr>
-	                  );
-	                }.bind(this))}
-	              </tbody>
-	            </table>
-	          </div>
-	          <div className="col-sm-4 ">
-	            <form className="form-horizontal">
-	              <fieldset>
-	                <div className="form-group">
-	                  <label className="col-sm-12 control-label" for="textinput">Project</label>
-	                  <div className="col-sm-12">
-	                    <input id="textinput" name="name" type="text" placeholder="name of project"
-	                      className="form-control input-md"
-	                      value={this.state.model.name} onChange={this.onChange} />
-	                  </div>
-	                </div>
-
-	                <div className="form-group">
-	                  <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
-	                  <div className="col-sm-12">
-	                    <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
-	                      options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
-	                  </div>
-	                </div>
-
-	                <div className="form-group">
-	                  <label className="col-sm-12 control-label" for="textinput">Team Members</label>
-	                  <div className="col-sm-12">
-	                    <Select name="form-field-name" value={this.state.model._user}
-	                      multi={true} clearable={true}
-	                      options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
-	                  </div>
-	                </div>
-
-	                <div className="form-group">
-	                  <label className="col-sm-12 control-label" for="button1id"></label>
-	                  <div className="col-md-12">
-	                    <button id="button1id" name="button1id"
-	                      className="btn btn-success pull-right"
-	                      onClick={this.onCreateProjectClicked}>Create project</button>
-	                  </div>
-	                </div>
-
-	              </fieldset>
-	            </form>
-
-	            <h3>Project Detail</h3>
-	            <table className="table table-striped">
-	              <tbody>
-	                {this.state.userProjectList.map(function(item, index){
-	                  return (
-	                    <tr>
-	                      <td>{index + 1}</td>
-	                      <td>{item._user.fullName}</td>
-	                    </tr>
-	                  );
-	                })
-	                }
-	              </tbody>
-	            </table>
-	          </div>*/
+	          }.bind(this))
 	        ), 
+
+	        projectDetail, 
 
 	        React.DOM.div({className: "modal fade js-modal"}, 
 	          React.DOM.div({className: "modal-dialog"}, 
@@ -61263,6 +61254,7 @@
 	            )
 	          )
 	        )
+
 	      )
 	    );
 	  }

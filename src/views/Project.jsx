@@ -24,7 +24,8 @@ var ProjectPage = React.createClass({
   },
 
   getInitialState: function() {
-      return {
+    return {
+      selectedProject: {},
       model: {},
       projectList: [],
       userProject: [],
@@ -92,6 +93,7 @@ var ProjectPage = React.createClass({
   },
 
   _onGetAllUserSuccess: function(data) {
+    console.log('_onGetAllUserSuccess', data.data);
     this.setState({userOptions: data.data});
     this.passValueUser(data.data);
   },
@@ -164,6 +166,7 @@ var ProjectPage = React.createClass({
   },
 
   onSelectChangedMember: function(data, listUser) {
+    console.log('onSelectChangedMember', data, listUser);
     var model = this.state.model;
     model._user = listUser;
     this.setState({model: model});
@@ -176,7 +179,74 @@ var ProjectPage = React.createClass({
     });
   },
 
+  onProjectClicked: function(item) {
+    var memberList = item.members.map(function(m) {
+      return {
+        label: m._user.fullName,
+        value: m._user._id
+      };
+    });
+
+    item.memberList = memberList;
+    this.setState({
+      selectedProject: item
+    });
+
+    $('.js-project-modal').modal({
+      backdrop: 'static'
+    });
+  },
+
   render: function() {
+    var projectDetail = '';
+    if (this.state.selectedProject._scrumMaster) {
+      projectDetail = (
+        <div className="modal fade js-project-modal">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 className="modal-title">Project details</h4>
+              </div>
+              <div className="modal-body">
+                <form className="form-horizontal">
+                  <fieldset>
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Project</label>
+                      <div className="col-sm-12">
+                        <input id="textinput" name="name" type="text" placeholder="name of project"
+                          className="form-control input-md" disabled
+                          value={this.state.selectedProject.name} />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
+                      <div className="col-sm-12">
+                        <Select name="form-field-name"
+                          clearable={false} disabled={false}
+                          value={this.state.selectedProject._scrumMaster._id}
+                          options={this.state.userOptionsType} />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="col-sm-12 control-label" for="textinput">Team Members</label>
+                      <div className="col-sm-12">
+                        <Select name="form-field-name" value={this.state.selectedProject.memberList}
+                          multi={true} clearable={true}
+                          options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
 
     return (
       <div>
@@ -193,7 +263,7 @@ var ProjectPage = React.createClass({
           {this.state.projectList.map(function(item, index) {
             return (
               <div className="col-sm-4">
-                <div className="project-item">
+                <div className="project-item" onClick={this.onProjectClicked.bind(null, item)}>
                   <h4>{item.name}</h4>
                   <p>Total: 468 hours</p>
                   <p>Scrum master: {item._scrumMaster.fullName}</p>
@@ -202,89 +272,10 @@ var ProjectPage = React.createClass({
                 </div>
               </div>
             );
-          })}
-
-          {/*<div className="col-sm-8">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Project Name</th>
-                  <th>Leader</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.projectList.map(function(item, index) {
-                  return (
-                    <tr>
-                      <th scope="row">{index + 1}</th>
-                      <td>{item.name}</td>
-                      <td>{item._scrumMaster.fullName}</td>
-                      <td><a className="" onClick={this.onDetailProjectClicked.bind(this, item._id)}>Detail</a></td>
-                    </tr>
-                  );
-                }.bind(this))}
-              </tbody>
-            </table>
-          </div>
-          <div className="col-sm-4 ">
-            <form className="form-horizontal">
-              <fieldset>
-                <div className="form-group">
-                  <label className="col-sm-12 control-label" for="textinput">Project</label>
-                  <div className="col-sm-12">
-                    <input id="textinput" name="name" type="text" placeholder="name of project"
-                      className="form-control input-md"
-                      value={this.state.model.name} onChange={this.onChange} />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="col-sm-12 control-label" for="textinput">Scrum Master</label>
-                  <div className="col-sm-12">
-                    <Select name="form-field-name" value={this.state.model._scrumMaster} clearable={false}
-                      options={this.state.userOptionsType} onChange={this.onSelectChangedMaster} />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="col-sm-12 control-label" for="textinput">Team Members</label>
-                  <div className="col-sm-12">
-                    <Select name="form-field-name" value={this.state.model._user}
-                      multi={true} clearable={true}
-                      options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="col-sm-12 control-label" for="button1id"></label>
-                  <div className="col-md-12">
-                    <button id="button1id" name="button1id"
-                      className="btn btn-success pull-right"
-                      onClick={this.onCreateProjectClicked}>Create project</button>
-                  </div>
-                </div>
-
-              </fieldset>
-            </form>
-
-            <h3>Project Detail</h3>
-            <table className="table table-striped">
-              <tbody>
-                {this.state.userProjectList.map(function(item, index){
-                  return (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{item._user.fullName}</td>
-                    </tr>
-                  );
-                })
-                }
-              </tbody>
-            </table>
-          </div>*/}
+          }.bind(this))}
         </div>
+
+        {projectDetail}
 
         <div className="modal fade js-modal">
           <div className="modal-dialog">
@@ -332,6 +323,7 @@ var ProjectPage = React.createClass({
             </div>
           </div>
         </div>
+
       </div>
     );
   }

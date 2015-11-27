@@ -21666,8 +21666,8 @@
 	var CFG = {
 	  // Paint Area for this application
 	  container: document.getElementById('app'),
-	  apiPath: 'http://daily-scrum-api.herokuapp.com',
-	  // apiPath: 'http://localhost:3000',
+	  // apiPath: 'http://daily-scrum-api.herokuapp.com',
+	  apiPath: 'http://localhost:5000',
 
 	  estimateList: [
 	    { value: '0.5', label: '30 mins' },
@@ -22983,33 +22983,34 @@
 	// define list of api
 	apiList = [
 	  // users
-	  { nspace: 'UserApis', name: 'register', path: '/users/signup', method: 'POST' },
-	  { nspace: 'UserApis', name: 'login', path: '/users/login', method: 'POST' },
-	  { nspace: 'UserApis', name: 'logout', path: '/users/logout', method: 'POST' },
-	  { nspace: 'UserApis', name: 'getById', path: '/users/${_id}/detail', method: 'GET' },
-	  { nspace: 'UserApis', name: 'find', path: '/users/find?q=${q}&l=${l}', method: 'GET' },
-	  { nspace: 'UserApis', name: 'all', path: '/users/all', method: 'GET' },
+	  { nspace: 'UserApis', name: 'register', path: '/api/user/signup', method: 'POST' },
+	  { nspace: 'UserApis', name: 'logout', path: '/api/user/logout', method: 'POST' },
+	  { nspace: 'UserApis', name: 'login', path: '/api/user/login', method: 'POST' },
+	  { nspace: 'UserApis', name: 'getById', path: '/api/user/${_id}/detail', method: 'GET' },
+	  { nspace: 'UserApis', name: 'find', path: '/api/user/find?q=${q}&l=${l}', method: 'GET' },
+	  { nspace: 'UserApis', name: 'all', path: '/api/user/all', method: 'GET' },
 	  // task
-	  { nspace: 'TaskApis', name: 'all', path: '/tasks/all', method: 'GET' },
-	  { nspace: 'TaskApis', name: 'find', path: '/tasks/find?q=${q}&l=${l}', method: 'GET' },
-	  { nspace: 'TaskApis', name: 'detail', path: '/tasks/${_id}/all', method: 'GET' },
-	  { nspace: 'TaskApis', name: 'create', path: '/tasks/', method: 'POST' },
-	  { nspace: 'TaskApis', name: 'update', path: '/tasks/${_id}', method: 'PUT' },
-	  { nspace: 'TaskApis', name: 'delete', path: '/tasks/${_id}', method: 'DELETE' },
+	  { nspace: 'TaskApis', name: 'all', path: '/api/task/all', method: 'GET' },
+	  { nspace: 'TaskApis', name: 'find', path: '/api/task/find?q=${q}&l=${l}', method: 'GET' },
+	  { nspace: 'TaskApis', name: 'detail', path: '/api/task/${_id}/all', method: 'GET' },
+	  { nspace: 'TaskApis', name: 'create', path: '/api/task/', method: 'POST' },
+	  { nspace: 'TaskApis', name: 'update', path: '/api/task/${_id}', method: 'PUT' },
+	  { nspace: 'TaskApis', name: 'delete', path: '/api/task/${_id}', method: 'DELETE' },
 	  // project
-	  { nspace: 'ProjectApis', name: 'all', path: '/projects/all', method: 'GET' },
-	  { nspace: 'ProjectApis', name: 'find', path: '/projects/find?q=${q}&l=${l}', method: 'GET' },
-	  { nspace: 'ProjectApis', name: 'detail', path: '/projects/${_id}/all', method: 'GET' },
-	  { nspace: 'ProjectApis', name: 'create', path: '/projects/', method: 'POST' },
-	  { nspace: 'ProjectApis', name: 'update', path: '/projects/${_id}', method: 'PUT' },
-	  { nspace: 'ProjectApis', name: 'delete', path: '/projects/${_id}', method: 'DELETE' },
+	  { nspace: 'ProjectApis', name: 'all', path: '/api/project/all', method: 'GET' },
+	  { nspace: 'ProjectApis', name: 'find', path: '/api/project/find?q=${q}&l=${l}', method: 'GET' },
+	  { nspace: 'ProjectApis', name: 'detail', path: '/api/project/${_id}/all', method: 'GET' },
+	  { nspace: 'ProjectApis', name: 'create', path: '/api/project/', method: 'POST' },
+	  { nspace: 'ProjectApis', name: 'update', path: '/api/project/${_id}', method: 'PUT' },
+	  { nspace: 'ProjectApis', name: 'delete', path: '/api/project/${_id}', method: 'DELETE' },
+
 	  // user-project
-	  { nspace: 'UProjectApis', name: 'all', path: '/user-project/all', method: 'GET' },
-	  { nspace: 'UProjectApis', name: 'find', path: '/user-project/find?q=${q}&l=${l}', method: 'GET' },
-	  { nspace: 'UProjectApis', name: 'detail', path: '/user-project/${_id}/all', method: 'GET' },
-	  { nspace: 'UProjectApis', name: 'create', path: '/user-project/', method: 'POST' },
-	  { nspace: 'UProjectApis', name: 'update', path: '/user-project/${_id}', method: 'PUT' },
-	  { nspace: 'UProjectApis', name: 'delete', path: '/user-project/${_id}', method: 'DELETE' },
+	  // { nspace: 'UProjectApis', name: 'all', path: '/api/user-project/all', method: 'GET' },
+	  // { nspace: 'UProjectApis', name: 'find', path: '/api/user-project/find?q=${q}&l=${l}', method: 'GET' },
+	  // { nspace: 'UProjectApis', name: 'detail', path: '/api/user-project/${_id}/all', method: 'GET' },
+	  // { nspace: 'UProjectApis', name: 'create', path: '/api/user-project/', method: 'POST' },
+	  // { nspace: 'UProjectApis', name: 'update', path: '/api/user-project/${_id}', method: 'PUT' },
+	  // { nspace: 'UProjectApis', name: 'delete', path: '/api/user-project/${_id}', method: 'DELETE' },
 	];
 
 	// create functions with each api link

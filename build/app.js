@@ -60970,7 +60970,7 @@
 	  componentDidMount: function() {
 	    ProjectActions.all();
 	    UserActions.getAllUsers();
-	    ProjectActions.getAllUserProjects();
+	    // ProjectActions.getAllUserProjects();
 
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -60981,8 +60981,8 @@
 	    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
 	    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
 
-	    ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
-	    ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
+	    // ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
+	    // ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
 	  },
 
 	  componentWillUnmount: function() {
@@ -61015,6 +61015,8 @@
 	    pList.forEach(function(item) {
 	      if (!item._scrumMaster) {
 	        item._scrumMaster = {};
+	      } else {
+	        // item._scrumMaster.fullName = item._scrumMaster.name.first + ' ' + item._scrumMaster.name.last;
 	      }
 	    });
 	    this.setState({projectList: pList});
@@ -61026,8 +61028,17 @@
 
 	  _onGetAllUserSuccess: function(data) {
 	    console.log('_onGetAllUserSuccess', data.data);
-	    this.setState({userOptions: data.data});
-	    this.passValueUser(data.data);
+	    var userList = data.data.map(function(u) {
+	      // u.fullName = u.name.first + u.name.last;
+	      return u;
+	    });
+
+	    this.setState({
+	      userOptions: userList
+	    });
+
+	    // this.setState({userOptionsType: });
+	    this.passValueUser(userList);
 	  },
 
 	  _onGetAllUserFail: function(data) {
@@ -61112,10 +61123,11 @@
 	  },
 
 	  onProjectClicked: function(item) {
-	    var memberList = item.members.map(function(m) {
+	    console.log('onProjectClicked', item);
+	    var memberList = item.members.map(function(u) {
 	      return {
-	        label: m._user.fullName,
-	        value: m._user._id
+	        label: u.fullName,
+	        value: u._id
 	      };
 	    });
 
@@ -61180,7 +61192,6 @@
 	        )
 	      );
 	    }
-
 
 	    return (
 	      React.DOM.div(null, 
@@ -61315,7 +61326,11 @@
 	  },
 
 	  onGetAllUsersSuccess: function(response) {
-	    this.setState({members: response.data});
+	    var memberList = response.data.map(function(u) {
+	      // u.fullName = u.name.first + ' ' + u.name.last;
+	      return u;
+	    });
+	    this.setState({members: memberList});
 	  },
 
 	  onGetAllUsersFail: function(data) {
@@ -61332,19 +61347,18 @@
 	            React.DOM.div({className: "media"}, 
 	              React.DOM.div({className: "media-left"}, 
 	                React.DOM.a({href: "#"}, 
-	                  React.DOM.img({className: "media-object", src: "http://avatars.io/email/" + member.email})
+	                  React.DOM.img({className: "media-object", src: "https://tracker.moodle.org/secure/attachment/30912/f3.png"})
 	                )
 	              ), 
 	              React.DOM.div({className: "media-body"}, 
 	                React.DOM.h4({className: "media-heading"}, member.fullName), 
-	                React.DOM.h5(null, "Javascript Developer")
+	                React.DOM.h5(null, member.titleJob)
 	              )
 	            )
 	          )
 	        );
 	      });
 	    }
-
 
 	    return (
 	      React.DOM.div({className: "row"}, 

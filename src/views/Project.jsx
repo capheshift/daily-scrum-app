@@ -38,7 +38,7 @@ var ProjectPage = React.createClass({
   componentDidMount: function() {
     ProjectActions.all();
     UserActions.getAllUsers();
-    ProjectActions.getAllUserProjects();
+    // ProjectActions.getAllUserProjects();
 
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
@@ -49,8 +49,8 @@ var ProjectPage = React.createClass({
     UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
     UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
 
-    ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
-    ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
+    // ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
+    // ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
   },
 
   componentWillUnmount: function() {
@@ -83,6 +83,8 @@ var ProjectPage = React.createClass({
     pList.forEach(function(item) {
       if (!item._scrumMaster) {
         item._scrumMaster = {};
+      } else {
+        // item._scrumMaster.fullName = item._scrumMaster.name.first + ' ' + item._scrumMaster.name.last;
       }
     });
     this.setState({projectList: pList});
@@ -94,8 +96,17 @@ var ProjectPage = React.createClass({
 
   _onGetAllUserSuccess: function(data) {
     console.log('_onGetAllUserSuccess', data.data);
-    this.setState({userOptions: data.data});
-    this.passValueUser(data.data);
+    var userList = data.data.map(function(u) {
+      // u.fullName = u.name.first + u.name.last;
+      return u;
+    });
+
+    this.setState({
+      userOptions: userList
+    });
+
+    // this.setState({userOptionsType: });
+    this.passValueUser(userList);
   },
 
   _onGetAllUserFail: function(data) {
@@ -180,10 +191,11 @@ var ProjectPage = React.createClass({
   },
 
   onProjectClicked: function(item) {
-    var memberList = item.members.map(function(m) {
+    console.log('onProjectClicked', item);
+    var memberList = item.members.map(function(u) {
       return {
-        label: m._user.fullName,
-        value: m._user._id
+        label: u.fullName,
+        value: u._id
       };
     });
 
@@ -248,7 +260,6 @@ var ProjectPage = React.createClass({
         </div>
       );
     }
-
 
     return (
       <div>

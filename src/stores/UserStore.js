@@ -85,9 +85,9 @@ var UserStore = assign({}, EventEmitter.prototype, {
     function(body) {
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
-      window.localStorage.setItem('fullName', body.data.fullName);
-      window.localStorage.setItem('_id', body.data._id);
-      this.emit(Events.LoginSuccess, body);
+      window.localStorage.setItem('fullName', body.data.user.fullName);
+      window.localStorage.setItem('_id', body.data.user._id);
+      this.emit(Events.LoginSuccess, body.data.user);
     }.bind(this),
     function(err) {
       this.emit(Events.LoginFail, err);
@@ -108,7 +108,8 @@ var UserStore = assign({}, EventEmitter.prototype, {
       console.log('register', body);
       // set token into localstorage
       window.localStorage.setItem('token', body.data.token);
-      window.localStorage.setItem('fullName', body.data.fullName);
+      window.localStorage.setItem('fullName', body.data.user.fullName);
+      window.localStorage.setItem('_id', body.data.user._id);
       this.emit(Events.RegisterSuccess, body);
     }.bind(this),
     function(err) {

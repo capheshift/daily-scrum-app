@@ -7,8 +7,9 @@
 var CFG = {
   // Paint Area for this application
   container: document.getElementById('app'),
-  apiPath: 'http://daily-scrum-api.herokuapp.com',
-  // apiPath: 'http://localhost:3000',
+  // apiPath: 'http://daily-scrum-api.herokuapp.com',
+  // apiPath: 'http://localhost:5000',
+  apiPath: 'http://daily-scrum-keystone.herokuapp.com',
 
   estimateList: [
     { value: '0.5', label: '30 mins' },

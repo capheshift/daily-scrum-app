@@ -36,10 +36,6 @@ var ProjectPage = React.createClass({
   },
 
   componentDidMount: function() {
-    ProjectActions.all();
-    UserActions.getAllUsers();
-    ProjectActions.getAllUserProjects();
-
     ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
     ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
 
@@ -49,8 +45,8 @@ var ProjectPage = React.createClass({
     UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
     UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
 
-    ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
-    ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
+    ProjectActions.all();
+    UserActions.getAllUsers();
   },
 
   componentWillUnmount: function() {
@@ -62,13 +58,9 @@ var ProjectPage = React.createClass({
 
     UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
     UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
-
-    ProjectStore.rmvListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess);
-    ProjectStore.rmvListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail);
   },
 
   _onCreateSuccess: function(data) {
-    // window.location.hash = 'project';
     $('.js-modal').modal('hide');
   },
 
@@ -94,8 +86,15 @@ var ProjectPage = React.createClass({
 
   _onGetAllUserSuccess: function(data) {
     console.log('_onGetAllUserSuccess', data.data);
-    this.setState({userOptions: data.data});
-    this.passValueUser(data.data);
+    var userList = data.data.map(function(u) {
+      return u;
+    });
+
+    this.setState({
+      userOptions: userList
+    });
+
+    this.passValueUser(userList);
   },
 
   _onGetAllUserFail: function(data) {
@@ -104,11 +103,9 @@ var ProjectPage = React.createClass({
 
   _onGetAllUserProjectSuccess: function(data){
     this.setState({userProject: data.data});
-    // $('.js-modal').model('hide');
   },
 
   _onGetGetAllUserProjectFail: function(data){
-    // $('.js-modal').model('hide');
   },
 
   passValueUser: function(data){
@@ -144,13 +141,16 @@ var ProjectPage = React.createClass({
       return;
     }
 
+    model.members = model.members.map(function(m) {
+      return m.value;
+    });
+
     ProjectActions.create(model);
     this.setState({
       projectList: pList,
       model: { name: '' }
     });
     ProjectActions.all();
-    ProjectActions.getAllUserProjects();
   },
 
   onChange: function(e) {
@@ -168,7 +168,7 @@ var ProjectPage = React.createClass({
   onSelectChangedMember: function(data, listUser) {
     console.log('onSelectChangedMember', data, listUser);
     var model = this.state.model;
-    model._user = listUser;
+    model.members = listUser;
     this.setState({model: model});
   },
 
@@ -180,10 +180,11 @@ var ProjectPage = React.createClass({
   },
 
   onProjectClicked: function(item) {
-    var memberList = item.members.map(function(m) {
+    console.log('onProjectClicked', item);
+    var memberList = item.members.map(function(u) {
       return {
-        label: m._user.fullName,
-        value: m._user._id
+        label: u.fullName,
+        value: u._id
       };
     });
 
@@ -249,7 +250,6 @@ var ProjectPage = React.createClass({
       );
     }
 
-
     return (
       <div>
         <div className="row">
@@ -313,7 +313,7 @@ var ProjectPage = React.createClass({
                     <div className="form-group">
                       <label className="col-sm-12 control-label" for="textinput">Team Members</label>
                       <div className="col-sm-12">
-                        <Select name="form-field-name" value={this.state.model._user}
+                        <Select name="form-field-name" value={this.state.model.members}
                           multi={true} clearable={true}
                           options={this.state.userOptionsType} onChange={this.onSelectChangedMember} />
                       </div>

@@ -39,7 +39,10 @@ var MemberPage = React.createClass({
   },
 
   onGetAllUsersSuccess: function(response) {
-    this.setState({members: response.data});
+    var memberList = response.data.map(function(u) {
+      return u;
+    });
+    this.setState({members: memberList});
   },
 
   onGetAllUsersFail: function(data) {
@@ -56,19 +59,18 @@ var MemberPage = React.createClass({
             <div className="media">
               <div className="media-left">
                 <a href="#">
-                  <img className="media-object" src={"http://avatars.io/email/" + member.email} />
+                  <img className="media-object" src="https://tracker.moodle.org/secure/attachment/30912/f3.png" />
                 </a>
               </div>
               <div className="media-body">
                 <h4 className="media-heading">{member.fullName}</h4>
-                <h5>Javascript Developer</h5>
+                <h5>{member.titleJob}</h5>
               </div>
             </div>
           </div>
         );
       });
     }
-
 
     return (
       <div className="row">

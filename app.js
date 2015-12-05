@@ -22263,8 +22263,8 @@
 	    UserStore.rmvListenerOnLogoutSuccess(this._onLogoutSuccess);
 	  },
 
-	  _onLoginSuccess: function(body) {
-	    var fullName = body.data.fullName;
+	  _onLoginSuccess: function(user) {
+	    var fullName = user.fullName;
 	    this.setState({
 	      fullName: fullName
 	    });
@@ -22513,9 +22513,9 @@
 	    function(body) {
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
-	      window.localStorage.setItem('fullName', body.data.fullName);
-	      window.localStorage.setItem('_id', body.data._id);
-	      this.emit(Events.LoginSuccess, body);
+	      window.localStorage.setItem('fullName', body.data.user.fullName);
+	      window.localStorage.setItem('_id', body.data.user._id);
+	      this.emit(Events.LoginSuccess, body.data.user);
 	    }.bind(this),
 	    function(err) {
 	      this.emit(Events.LoginFail, err);
@@ -22536,7 +22536,8 @@
 	      console.log('register', body);
 	      // set token into localstorage
 	      window.localStorage.setItem('token', body.data.token);
-	      window.localStorage.setItem('fullName', body.data.fullName);
+	      window.localStorage.setItem('fullName', body.data.user.fullName);
+	      window.localStorage.setItem('_id', body.data.user._id);
 	      this.emit(Events.RegisterSuccess, body);
 	    }.bind(this),
 	    function(err) {

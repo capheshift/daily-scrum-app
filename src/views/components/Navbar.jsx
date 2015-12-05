@@ -32,8 +32,8 @@ var Navbar = React.createClass({
     UserStore.rmvListenerOnLogoutSuccess(this._onLogoutSuccess);
   },
 
-  _onLoginSuccess: function(body) {
-    var fullName = body.data.fullName;
+  _onLoginSuccess: function(user) {
+    var fullName = user.fullName;
     this.setState({
       fullName: fullName
     });

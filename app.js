@@ -21667,7 +21667,8 @@
 	  // Paint Area for this application
 	  container: document.getElementById('app'),
 	  // apiPath: 'http://daily-scrum-api.herokuapp.com',
-	  apiPath: 'http://localhost:5000',
+	  // apiPath: 'http://localhost:5000',
+	  apiPath: 'http://daily-scrum-keystone.herokuapp.com',
 
 	  estimateList: [
 	    { value: '0.5', label: '30 mins' },
@@ -60969,10 +60970,6 @@
 	  },
 
 	  componentDidMount: function() {
-	    ProjectActions.all();
-	    UserActions.getAllUsers();
-	    // ProjectActions.getAllUserProjects();
-
 	    ProjectStore.addListenerOnCreateSuccess(this._onCreateSuccess, this);
 	    ProjectStore.addListenerOnCreateFail(this._onCreateFail, this);
 
@@ -60982,8 +60979,8 @@
 	    UserStore.addListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess, this);
 	    UserStore.addListenerOnGetAllUsersFail(this._onGetAllUserFail, this);
 
-	    // ProjectStore.addListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess, this);
-	    // ProjectStore.addListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail, this);
+	    ProjectActions.all();
+	    UserActions.getAllUsers();
 	  },
 
 	  componentWillUnmount: function() {
@@ -60995,13 +60992,9 @@
 
 	    UserStore.rmvListenerOnGetAllUsersSuccess(this._onGetAllUserSuccess);
 	    UserStore.rmvListenerOnGetAllUsersFail(this._onGetAllUserFail);
-
-	    ProjectStore.rmvListenerGetAllUserProjectSuccess(this._onGetAllUserProjectSuccess);
-	    ProjectStore.rmvListenerGetAllUserProjectFail(this._onGetGetAllUserProjectFail);
 	  },
 
 	  _onCreateSuccess: function(data) {
-	    // window.location.hash = 'project';
 	    $('.js-modal').modal('hide');
 	  },
 
@@ -61016,8 +61009,6 @@
 	    pList.forEach(function(item) {
 	      if (!item._scrumMaster) {
 	        item._scrumMaster = {};
-	      } else {
-	        // item._scrumMaster.fullName = item._scrumMaster.name.first + ' ' + item._scrumMaster.name.last;
 	      }
 	    });
 	    this.setState({projectList: pList});
@@ -61030,7 +61021,6 @@
 	  _onGetAllUserSuccess: function(data) {
 	    console.log('_onGetAllUserSuccess', data.data);
 	    var userList = data.data.map(function(u) {
-	      // u.fullName = u.name.first + u.name.last;
 	      return u;
 	    });
 
@@ -61038,7 +61028,6 @@
 	      userOptions: userList
 	    });
 
-	    // this.setState({userOptionsType: });
 	    this.passValueUser(userList);
 	  },
 
@@ -61048,11 +61037,9 @@
 
 	  _onGetAllUserProjectSuccess: function(data){
 	    this.setState({userProject: data.data});
-	    // $('.js-modal').model('hide');
 	  },
 
 	  _onGetGetAllUserProjectFail: function(data){
-	    // $('.js-modal').model('hide');
 	  },
 
 	  passValueUser: function(data){
@@ -61088,13 +61075,16 @@
 	      return;
 	    }
 
+	    model.members = model.members.map(function(m) {
+	      return m.value;
+	    });
+
 	    ProjectActions.create(model);
 	    this.setState({
 	      projectList: pList,
 	      model: { name: '' }
 	    });
 	    ProjectActions.all();
-	    ProjectActions.getAllUserProjects();
 	  },
 
 	  onChange: function(e) {
@@ -61112,7 +61102,7 @@
 	  onSelectChangedMember: function(data, listUser) {
 	    console.log('onSelectChangedMember', data, listUser);
 	    var model = this.state.model;
-	    model._user = listUser;
+	    model.members = listUser;
 	    this.setState({model: model});
 	  },
 
@@ -61257,7 +61247,7 @@
 	                    React.DOM.div({className: "form-group"}, 
 	                      React.DOM.label({className: "col-sm-12 control-label", for: "textinput"}, "Team Members"), 
 	                      React.DOM.div({className: "col-sm-12"}, 
-	                        Select({name: "form-field-name", value: this.state.model._user, 
+	                        Select({name: "form-field-name", value: this.state.model.members, 
 	                          multi: true, clearable: true, 
 	                          options: this.state.userOptionsType, onChange: this.onSelectChangedMember})
 	                      )
@@ -61328,7 +61318,6 @@
 
 	  onGetAllUsersSuccess: function(response) {
 	    var memberList = response.data.map(function(u) {
-	      // u.fullName = u.name.first + ' ' + u.name.last;
 	      return u;
 	    });
 	    this.setState({members: memberList});

@@ -40,7 +40,6 @@ var MemberPage = React.createClass({
 
   onGetAllUsersSuccess: function(response) {
     var memberList = response.data.map(function(u) {
-      // u.fullName = u.name.first + ' ' + u.name.last;
       return u;
     });
     this.setState({members: memberList});

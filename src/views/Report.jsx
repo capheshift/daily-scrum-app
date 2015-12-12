@@ -35,7 +35,8 @@ var ReportPage = React.createClass({
       userList: [],
       currentDate: currentDate,
       currentDateStr: currentDate.format('DD/MM/YYYY'),
-      isCurrent: true
+      isCurrent: true,
+      filterProject: null
     };
   },
 
@@ -148,8 +149,9 @@ var ReportPage = React.createClass({
       { value: '7.5', label: '7 hours 30 mins' },
       { value: '8', label: '8 hours' },
     ];
+    var projectId = this.state.filterProject;
     var filterUserList = lodash.filter(arr, function(item) {
-      return (item._user._id === userId);
+      return ((item._user._id === userId) && (item._project === projectId || projectId === null));
     });
     var item = {};
     var renderList = (
@@ -254,6 +256,16 @@ var ReportPage = React.createClass({
     });
   },
 
+  onFilterProjectChanged: function(value) {
+    console.log('onFilterProjectChanged', value);
+    if (!value) {
+      value = null;
+    }
+    this.setState({
+      filterProject: value
+    });
+  },
+
   render: function() {
     var userListRender = (
       <div className="day-block"></div>
@@ -296,8 +308,9 @@ var ReportPage = React.createClass({
             <h3 className="title-label">REPORTS</h3>
           </div>
           <div className="col-sm-2">
-            <Select name="_project" clearable={false}
-              options={this.state.projectList} />
+            <Select name="_project" clearable={true} value={this.state.filterProject}
+              options={this.state.projectList}
+              onChange={this.onFilterProjectChanged} />
           </div>
           <div className="col-sm-2">
             <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"

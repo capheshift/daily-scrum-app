@@ -22284,7 +22284,8 @@
 	      userList: [],
 	      currentDate: currentDate,
 	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: true
+	      isCurrent: true,
+	      filterProject: null
 	    };
 	  },
 
@@ -22397,8 +22398,9 @@
 	      { value: '7.5', label: '7 hours 30 mins' },
 	      { value: '8', label: '8 hours' },
 	    ];
+	    var projectId = this.state.filterProject;
 	    var filterUserList = lodash.filter(arr, function(item) {
-	      return (item._user._id === userId);
+	      return ((item._user._id === userId) && (item._project === projectId || projectId === null));
 	    });
 	    var item = {};
 	    var renderList = (
@@ -22503,6 +22505,16 @@
 	    });
 	  },
 
+	  onFilterProjectChanged: function(value) {
+	    console.log('onFilterProjectChanged', value);
+	    if (!value) {
+	      value = null;
+	    }
+	    this.setState({
+	      filterProject: value
+	    });
+	  },
+
 	  render: function() {
 	    var userListRender = (
 	      React.DOM.div({className: "day-block"})
@@ -22545,8 +22557,9 @@
 	            React.DOM.h3({className: "title-label"}, "REPORTS")
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            Select({name: "_project", clearable: false, 
-	              options: this.state.projectList})
+	            Select({name: "_project", clearable: true, value: this.state.filterProject, 
+	              options: this.state.projectList, 
+	              onChange: this.onFilterProjectChanged})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", type: "text", name: "inputCurrentDate", 

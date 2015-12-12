@@ -15,6 +15,7 @@ var ProjectStore = require('../stores/ProjectStore');
 
 var TaskActions = require('../actions/TaskActions');
 var TaskStore = require('../stores/TaskStore');
+// var DayPicker = React.createFactory(require('react-day-picker'));
 
 var DailyPage = React.createClass({
   displayName: 'Daily',
@@ -28,6 +29,7 @@ var DailyPage = React.createClass({
 
   getInitialState: function() {
     var m = moment(), dateList = [], taskList = [];
+    var currentDate = moment();
     this.currentUser = window.localStorage.getItem('_id');
 
     // create default data
@@ -62,9 +64,13 @@ var DailyPage = React.createClass({
     });
 
     return {
+      oldDateList: dateList,
       dateList: dateList,
       taskList: taskList,
-      projectList: []
+      projectList: [],
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: true
     };
   },
 
@@ -428,11 +434,95 @@ var DailyPage = React.createClass({
     );
   },
 
+  onPrevClicked: function(e) {
+    console.log('onPrevClicked', e);
+    var currentDate = this.state.currentDate.add(-1, 'days');
+    var isCurrent = false;
+    var dateList = [];
+
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+      dateList = this.state.oldDateList;
+    } else {
+      var dateItem = {
+        displayName: currentDate.format('MMM DD ddd'),
+        value: currentDate.format('YYYYMMDD'),
+        momentValue: currentDate,
+        index: parseInt(currentDate.format('YYYYMMDD'))
+      };
+      dateList.push(dateItem);
+    }
+
+    this.setState({
+      dateList: dateList,
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
+    });
+  },
+
+  onNextClicked: function(e) {
+    console.log('onPrevClicked', e);
+    var currentDate = this.state.currentDate.add(1, 'days');
+    var isCurrent = false;
+    var dateList = [];
+
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+      dateList = this.state.oldDateList;
+    } else {
+      var dateItem = {
+        displayName: currentDate.format('MMM DD ddd'),
+        value: currentDate.format('YYYYMMDD'),
+        momentValue: currentDate,
+        index: parseInt(currentDate.format('YYYYMMDD'))
+      };
+      dateList.push(dateItem);
+    }
+
+    this.setState({
+      dateList: dateList,
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
+    });
+  },
+
+  onDateChanged: function(e) {
+    console.log('onDateChanged', e.target.value);
+    this.setState({
+      currentDateStr: e.target.value
+    });
+  },
+
   render: function() {
     return (
       <div>
-        <h3 className="title-label">DAILY <small>The more you plan, the better you success!</small></h3>
-
+        <div className="row">
+          <div className="col-sm-6">
+            <h3 className="title-label">
+              DAILY <small>The more you plan, the better you success!</small>
+            </h3>
+          </div>
+          <div className="col-sm-2">
+            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
+              value={this.state.currentDateStr}
+              onChange={this.onDateChanged} />
+          </div>
+          <div className="col-sm-2">
+            <div className="btn-group btn-group-justified" role="group" aria-label="...">
+              <div className="btn-group" role="group">
+                <button type="button" className="btn btn-success" onClick={this.onPrevClicked}>
+                  <i className="glyphicon _default glyphicon-menu-left"></i> Prev</button>
+              </div>
+              <div className="btn-group" role="group">
+                <button type="button" className="btn btn-success" onClick={this.onNextClicked}>
+                  Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/}
         {this.renderDateList()}
       </div>
     );

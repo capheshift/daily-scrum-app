@@ -54,3 +54,11 @@ input[type=radio][disabled] {
 .input-group-addon {
   background-color: $gray01;
 }
+
+.glyphicon {
+  &._default {
+    color: white;
+    opacity: 1;
+    vertical-align: middle;
+  }
+}

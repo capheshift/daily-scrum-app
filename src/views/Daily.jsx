@@ -102,9 +102,11 @@ var DailyPage = React.createClass({
     TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
   },
 
-  addEmptyTask: function(taskList) {
-    var dateList = this.state.dateList;
+  addEmptyTask: function(taskList, dateList) {
     var currentUser = this.currentUser;
+    if (!dateList) {
+      dateList = this.state.dateList;
+    }
 
     for (var i = 0; i < dateList.length; i++) {
       var item = dateList[i];
@@ -153,6 +155,13 @@ var DailyPage = React.createClass({
 
     taskList = this.addEmptyTask(taskList);
 
+    this.setState({
+      taskList: taskList
+    });
+  },
+
+  _onSelectedDateChanged: function(taskList, dateList) {
+    taskList = this.addEmptyTask(taskList, dateList);
     this.setState({
       taskList: taskList
     });
@@ -453,6 +462,8 @@ var DailyPage = React.createClass({
       dateList.push(dateItem);
     }
 
+    // this._onSelectedDateChanged(this.state.taskList, dateList);
+
     this.setState({
       dateList: dateList,
       currentDate: currentDate,
@@ -480,6 +491,8 @@ var DailyPage = React.createClass({
       dateList.push(dateItem);
     }
 
+    // this._onSelectedDateChanged(this.state.taskList, dateList);
+
     this.setState({
       dateList: dateList,
       currentDate: currentDate,
@@ -500,8 +513,7 @@ var DailyPage = React.createClass({
       <div>
         <div className="row">
           <div className="col-sm-6">
-            <h3 className="title-label">
-              DAILY <small>The more you plan, the better you success!</small>
+            <h3 className="title-label">DAILY <small className={this.state.isCurrent?"":"__hidden"}>/ TODAY</small>
             </h3>
           </div>
           <div className="col-sm-2">

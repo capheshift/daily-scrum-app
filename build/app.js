@@ -21801,9 +21801,11 @@
 	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
 	  },
 
-	  addEmptyTask: function(taskList) {
-	    var dateList = this.state.dateList;
+	  addEmptyTask: function(taskList, dateList) {
 	    var currentUser = this.currentUser;
+	    if (!dateList) {
+	      dateList = this.state.dateList;
+	    }
 
 	    for (var i = 0; i < dateList.length; i++) {
 	      var item = dateList[i];
@@ -21852,6 +21854,13 @@
 
 	    taskList = this.addEmptyTask(taskList);
 
+	    this.setState({
+	      taskList: taskList
+	    });
+	  },
+
+	  _onSelectedDateChanged: function(taskList, dateList) {
+	    taskList = this.addEmptyTask(taskList, dateList);
 	    this.setState({
 	      taskList: taskList
 	    });
@@ -22152,6 +22161,8 @@
 	      dateList.push(dateItem);
 	    }
 
+	    // this._onSelectedDateChanged(this.state.taskList, dateList);
+
 	    this.setState({
 	      dateList: dateList,
 	      currentDate: currentDate,
@@ -22179,6 +22190,8 @@
 	      dateList.push(dateItem);
 	    }
 
+	    // this._onSelectedDateChanged(this.state.taskList, dateList);
+
 	    this.setState({
 	      dateList: dateList,
 	      currentDate: currentDate,
@@ -22199,8 +22212,7 @@
 	      React.DOM.div(null, 
 	        React.DOM.div({className: "row"}, 
 	          React.DOM.div({className: "col-sm-6"}, 
-	            React.DOM.h3({className: "title-label"}, 
-	              "DAILY ", React.DOM.small(null, "The more you plan, the better you success!")
+	            React.DOM.h3({className: "title-label"}, "DAILY ", React.DOM.small({className: this.state.isCurrent?"":"__hidden"}, "/ TODAY")
 	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
@@ -22264,10 +22276,15 @@
 	  },
 
 	  getInitialState: function() {
+	    var currentDate = moment();
+
 	    return {
 	      projectList: [],
 	      taskList: [],
-	      userList: []
+	      userList: [],
+	      currentDate: currentDate,
+	      currentDateStr: currentDate.format('DD/MM/YYYY'),
+	      isCurrent: true
 	    };
 	  },
 
@@ -22439,9 +22456,56 @@
 	    return renderList;
 	  },
 
+	  onPrevClicked: function(e) {
+	    var currentDate = this.state.currentDate.add(-1, 'days');
+	    var isCurrent = false;
+
+	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+	      isCurrent = true;
+	    }
+
+	    TaskActions.find({
+	      q: { date: currentDate.format('YYYYMMDD') },
+	      l: {}
+	    });
+
+	    this.setState({
+	      currentDate: currentDate,
+	      currentDateStr: currentDate.format('DD/MM/YYYY'),
+	      isCurrent: isCurrent
+	    });
+	  },
+
+	  onNextClicked: function(e) {
+	    var currentDate = this.state.currentDate.add(1, 'days');
+	    var isCurrent = false;
+
+	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+	      isCurrent = true;
+	    }
+
+	    TaskActions.find({
+	      q: { date: currentDate.format('YYYYMMDD') },
+	      l: {}
+	    });
+
+	    this.setState({
+	      currentDate: currentDate,
+	      currentDateStr: currentDate.format('DD/MM/YYYY'),
+	      isCurrent: isCurrent
+	    });
+	  },
+
+	  onDateChanged: function(e) {
+	    console.log('onDateChanged', e.target.value);
+	    this.setState({
+	      currentDateStr: e.target.value
+	    });
+	  },
+
 	  render: function() {
 	    var userListRender = (
-	      React.DOM.div({className: "col-sm-12 day-block"})
+	      React.DOM.div({className: "day-block"})
 	    );
 
 	    if (this.state.userList.length) {
@@ -22452,7 +22516,7 @@
 	        var totalTime = this.getTotalTime(taskByUser);
 
 	        return (
-	          React.DOM.div({className: "col-sm-12 day-block"}, 
+	          React.DOM.div({className: "day-block"}, 
 	            React.DOM.p({className: "username-title"}, item.fullName), 
 	            React.DOM.ul({className: "daily-list"}, 
 	              this.renderUserTask(this.state.taskList, item._id), 
@@ -22475,17 +22539,34 @@
 	    }
 
 	    return (
-	      React.DOM.div({className: "row"}, 
-	        /*<div className="row">
-	          <div className="col-sm-5">
-	            <h4>CHOOSE PROJECT</h4>
-	            <Select name="form-field-name" value="nafoods" clearable={false}
-	              options={projectOptions} onChange={this.onSelectChanged} />
-	          </div>
-	        </div>*/
-	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h3({className: "title-label"}, "REPORT/TODAY")
+	      React.DOM.div({className: ""}, 
+	        React.DOM.div({className: "row"}, 
+	          React.DOM.div({className: "col-sm-4"}, 
+	            React.DOM.h3({className: "title-label"}, "REPORTS")
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            Select({name: "_project", clearable: false, 
+	              options: this.state.projectList})
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", type: "text", name: "inputCurrentDate", 
+	              value: this.state.currentDateStr, 
+	              onChange: this.onDateChanged})
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onPrevClicked}, 
+	                  React.DOM.i({className: "glyphicon _default glyphicon-menu-left"}), " Prev")
+	              ), 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onNextClicked}, 
+	                  "Next ", React.DOM.i({className: "glyphicon _default glyphicon-menu-right"}))
+	              )
+	            )
+	          )
 	        ), 
+
 	        userListRender
 	      )
 	    );
@@ -46484,13 +46565,13 @@
 	            Link({ className: 'navbar-item', to: '/daily' }, 'DAILY')
 	          ), 
 	          React.DOM.li({className: this._checkUri('libraries')}, 
-	            Link({ className: 'navbar-item', to: '/report' }, 'REPORT')
+	            Link({ className: 'navbar-item', to: '/report' }, 'REPORTS')
 	          ), 
 	          React.DOM.li({className: this._checkUri('todo')}, 
-	            Link({ className: 'navbar-item', to: '/project' }, 'PROJECT')
+	            Link({ className: 'navbar-item', to: '/project' }, 'PROJECTS')
 	          ), 
 	          React.DOM.li({className: this._checkUri('todo')}, 
-	            Link({ className: 'navbar-item', to: '/member' }, 'MEMBER')
+	            Link({ className: 'navbar-item', to: '/member' }, 'MEMBERS')
 	          )
 	        ), 
 
@@ -47157,7 +47238,7 @@
 	// define list of api
 	apiList = [
 	  // users
-	  { nspace: 'UserApis', name: 'register', path: '/api/user/signup', method: 'POST' },
+	  { nspace: 'UserApis', name: 'register', path: '/api/user/register', method: 'POST' },
 	  { nspace: 'UserApis', name: 'logout', path: '/api/user/logout', method: 'POST' },
 	  { nspace: 'UserApis', name: 'login', path: '/api/user/login', method: 'POST' },
 	  { nspace: 'UserApis', name: 'getById', path: '/api/user/${_id}/detail', method: 'GET' },
@@ -61209,7 +61290,7 @@
 	      React.DOM.div(null, 
 	        React.DOM.div({className: "row"}, 
 	          React.DOM.div({className: "col-sm-8"}, 
-	            React.DOM.h3({className: "title-label"}, "PROJECT")
+	            React.DOM.h3({className: "title-label"}, "PROJECTS")
 	          ), 
 	          React.DOM.div({className: "col-sm-4"}, 
 	            React.DOM.button({className: "btn btn-success pull-right", onClick: this.onNewProjectClicked}, "New Project")
@@ -61374,7 +61455,7 @@
 	    return (
 	      React.DOM.div({className: "row"}, 
 	        React.DOM.div({className: "col-sm-12"}, 
-	          React.DOM.h3({className: "title-label"}, "MEMBER")
+	          React.DOM.h3({className: "title-label"}, "MEMBERS")
 	        ), 
 	        members
 	      )

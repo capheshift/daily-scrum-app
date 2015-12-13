@@ -80,13 +80,13 @@ var Navbar = React.createClass({
             {Link({ className: 'navbar-item', to: '/daily' }, 'DAILY')}
           </li>
           <li className={this._checkUri('libraries')}>
-            {Link({ className: 'navbar-item', to: '/report' }, 'REPORT')}
+            {Link({ className: 'navbar-item', to: '/report' }, 'REPORTS')}
           </li>
           <li className={this._checkUri('todo')}>
-            {Link({ className: 'navbar-item', to: '/project' }, 'PROJECT')}
+            {Link({ className: 'navbar-item', to: '/project' }, 'PROJECTS')}
           </li>
           <li className={this._checkUri('todo')}>
-            {Link({ className: 'navbar-item', to: '/member' }, 'MEMBER')}
+            {Link({ className: 'navbar-item', to: '/member' }, 'MEMBERS')}
           </li>
         </ul>
 

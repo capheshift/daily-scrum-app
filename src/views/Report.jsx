@@ -27,10 +27,16 @@ var ReportPage = React.createClass({
   },
 
   getInitialState: function() {
+    var currentDate = moment();
+
     return {
       projectList: [],
       taskList: [],
-      userList: []
+      userList: [],
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: true,
+      filterProject: null
     };
   },
 
@@ -143,8 +149,9 @@ var ReportPage = React.createClass({
       { value: '7.5', label: '7 hours 30 mins' },
       { value: '8', label: '8 hours' },
     ];
+    var projectId = this.state.filterProject;
     var filterUserList = lodash.filter(arr, function(item) {
-      return (item._user._id === userId);
+      return ((item._user._id === userId) && (item._project === projectId || projectId === null));
     });
     var item = {};
     var renderList = (
@@ -202,9 +209,66 @@ var ReportPage = React.createClass({
     return renderList;
   },
 
+  onPrevClicked: function(e) {
+    var currentDate = this.state.currentDate.add(-1, 'days');
+    var isCurrent = false;
+
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+    }
+
+    TaskActions.find({
+      q: { date: currentDate.format('YYYYMMDD') },
+      l: {}
+    });
+
+    this.setState({
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
+    });
+  },
+
+  onNextClicked: function(e) {
+    var currentDate = this.state.currentDate.add(1, 'days');
+    var isCurrent = false;
+
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+    }
+
+    TaskActions.find({
+      q: { date: currentDate.format('YYYYMMDD') },
+      l: {}
+    });
+
+    this.setState({
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
+    });
+  },
+
+  onDateChanged: function(e) {
+    console.log('onDateChanged', e.target.value);
+    this.setState({
+      currentDateStr: e.target.value
+    });
+  },
+
+  onFilterProjectChanged: function(value) {
+    console.log('onFilterProjectChanged', value);
+    if (!value) {
+      value = null;
+    }
+    this.setState({
+      filterProject: value
+    });
+  },
+
   render: function() {
     var userListRender = (
-      <div className="col-sm-12 day-block"></div>
+      <div className="day-block"></div>
     );
 
     if (this.state.userList.length) {
@@ -215,7 +279,7 @@ var ReportPage = React.createClass({
         var totalTime = this.getTotalTime(taskByUser);
 
         return (
-          <div className="col-sm-12 day-block">
+          <div className="day-block">
             <p className="username-title">{item.fullName}</p>
             <ul className="daily-list">
               {this.renderUserTask(this.state.taskList, item._id)}
@@ -238,17 +302,35 @@ var ReportPage = React.createClass({
     }
 
     return (
-      <div className="row">
-        {/*<div className="row">
-          <div className="col-sm-5">
-            <h4>CHOOSE PROJECT</h4>
-            <Select name="form-field-name" value="nafoods" clearable={false}
-              options={projectOptions} onChange={this.onSelectChanged} />
+      <div className="">
+        <div className="row">
+          <div className="col-sm-4">
+            <h3 className="title-label">REPORTS</h3>
           </div>
-        </div>*/}
-        <div className="col-sm-12">
-          <h3 className="title-label">REPORT/TODAY</h3>
+          <div className="col-sm-2">
+            <Select name="_project" clearable={true} value={this.state.filterProject}
+              options={this.state.projectList}
+              onChange={this.onFilterProjectChanged} />
+          </div>
+          <div className="col-sm-2">
+            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
+              value={this.state.currentDateStr}
+              onChange={this.onDateChanged} />
+          </div>
+          <div className="col-sm-2">
+            <div className="btn-group btn-group-justified" role="group" aria-label="...">
+              <div className="btn-group" role="group">
+                <button type="button" className="btn btn-success" onClick={this.onPrevClicked}>
+                  <i className="glyphicon _default glyphicon-menu-left"></i> Prev</button>
+              </div>
+              <div className="btn-group" role="group">
+                <button type="button" className="btn btn-success" onClick={this.onNextClicked}>
+                  Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
+              </div>
+            </div>
+          </div>
         </div>
+
         {userListRender}
       </div>
     );

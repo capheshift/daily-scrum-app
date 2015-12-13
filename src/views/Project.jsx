@@ -254,7 +254,7 @@ var ProjectPage = React.createClass({
       <div>
         <div className="row">
           <div className="col-sm-8">
-            <h3 className="title-label">PROJECT</h3>
+            <h3 className="title-label">PROJECTS</h3>
           </div>
           <div className="col-sm-4">
             <button className="btn btn-success pull-right" onClick={this.onNewProjectClicked}>New Project</button>

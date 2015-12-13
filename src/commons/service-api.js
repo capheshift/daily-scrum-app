@@ -13,7 +13,7 @@ var NotificationActions = require('../actions/NotificationActions');
 // define list of api
 apiList = [
   // users
-  { nspace: 'UserApis', name: 'register', path: '/api/user/signup', method: 'POST' },
+  { nspace: 'UserApis', name: 'register', path: '/api/user/register', method: 'POST' },
   { nspace: 'UserApis', name: 'logout', path: '/api/user/logout', method: 'POST' },
   { nspace: 'UserApis', name: 'login', path: '/api/user/login', method: 'POST' },
   { nspace: 'UserApis', name: 'getById', path: '/api/user/${_id}/detail', method: 'GET' },

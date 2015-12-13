@@ -22214,24 +22214,24 @@
 	          React.DOM.div({className: "col-sm-6"}, 
 	            React.DOM.h3({className: "title-label"}, "DAILY ", React.DOM.small({className: this.state.isCurrent?"":"__hidden"}, "/ TODAY")
 	            )
-	          ), 
-	          React.DOM.div({className: "col-sm-2"}, 
-	            React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", type: "text", name: "inputCurrentDate", 
-	              value: this.state.currentDateStr, 
-	              onChange: this.onDateChanged})
-	          ), 
-	          React.DOM.div({className: "col-sm-2"}, 
-	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 
-	              React.DOM.div({className: "btn-group", role: "group"}, 
-	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onPrevClicked}, 
-	                  React.DOM.i({className: "glyphicon _default glyphicon-menu-left"}), " Prev")
-	              ), 
-	              React.DOM.div({className: "btn-group", role: "group"}, 
-	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onNextClicked}, 
-	                  "Next ", React.DOM.i({className: "glyphicon _default glyphicon-menu-right"}))
-	              )
-	            )
 	          )
+	          /*<div className="col-sm-2">
+	            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
+	              value={this.state.currentDateStr}
+	              onChange={this.onDateChanged} />
+	          </div>
+	          <div className="col-sm-2">
+	            <div className="btn-group btn-group-justified" role="group" aria-label="...">
+	              <div className="btn-group" role="group">
+	                <button type="button" className="btn btn-success" onClick={this.onPrevClicked}>
+	                  <i className="glyphicon _default glyphicon-menu-left"></i> Prev</button>
+	              </div>
+	              <div className="btn-group" role="group">
+	                <button type="button" className="btn btn-success" onClick={this.onNextClicked}>
+	                  Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
+	              </div>
+	            </div>
+	          </div>*/
 	        ), 
 	        /*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/
 	        this.renderDateList()

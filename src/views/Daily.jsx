@@ -516,7 +516,7 @@ var DailyPage = React.createClass({
             <h3 className="title-label">DAILY <small className={this.state.isCurrent?"":"__hidden"}>/ TODAY</small>
             </h3>
           </div>
-          <div className="col-sm-2">
+          {/*<div className="col-sm-2">
             <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
               value={this.state.currentDateStr}
               onChange={this.onDateChanged} />
@@ -532,7 +532,7 @@ var DailyPage = React.createClass({
                   Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
         {/*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/}
         {this.renderDateList()}

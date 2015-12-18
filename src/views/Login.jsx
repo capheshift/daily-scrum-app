@@ -85,7 +85,7 @@ var LoginPage = React.createClass({
                     onClick={this.login}>
                     Log in
                   </button>
-                  <a href="#/register" className="btn btn-link pull-right">Register</a>
+                  {/*<a href="#/register" className="btn btn-link pull-right">Register</a>*/}
                 </div>
               </div>
             </form>

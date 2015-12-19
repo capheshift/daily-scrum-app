@@ -313,9 +313,13 @@ var ReportPage = React.createClass({
               onChange={this.onFilterProjectChanged} />
           </div>
           <div className="col-sm-2">
-            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
-              value={this.state.currentDateStr}
-              onChange={this.onDateChanged} />
+            <div className="input-group">
+              <span className="input-group-addon" id=""><i className="glyphicon glyphicon-calendar"></i></span>
+              <input className="form-control" placeholder="dd/mm/yyyy"
+                type="text" name="inputCurrentDate"
+                value={this.state.currentDateStr}
+                onChange={this.onDateChanged} />
+            </div>
           </div>
           <div className="col-sm-2">
             <div className="btn-group btn-group-justified" role="group" aria-label="...">

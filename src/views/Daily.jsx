@@ -67,6 +67,7 @@ var DailyPage = React.createClass({
       oldDateList: dateList,
       dateList: dateList,
       taskList: taskList,
+      oldTaskList: [],
       projectList: [],
       currentDate: currentDate,
       currentDateStr: currentDate.format('DD/MM/YYYY'),
@@ -156,7 +157,8 @@ var DailyPage = React.createClass({
     taskList = this.addEmptyTask(taskList);
 
     this.setState({
-      taskList: taskList
+      taskList: taskList,
+      oldTaskList: data
     });
   },
 
@@ -373,8 +375,23 @@ var DailyPage = React.createClass({
       return '';
     }
 
-    var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
-    var renderList = filterTask.map(function(item, i) {
+    var data = [];
+    if (this.state.isCurrent) {
+      data = this.state.taskList;
+    } else {
+      data = this.state.oldTaskList;
+    }
+    var filterTask = lodash.filter(data, {date: dateItem.value});
+    var renderList = [];
+
+    if (this.state.isCurrent) {
+    } else {
+      filterTask.push({
+      });
+      // renderList = [];
+    }
+
+    renderList = filterTask.map(function(item, i) {
       return (
         <li className="daily-item row" key={item.id}>
           <div className="col-sm-6">
@@ -516,10 +533,14 @@ var DailyPage = React.createClass({
             <h3 className="title-label">DAILY <small className={this.state.isCurrent?"":"__hidden"}>/ TODAY</small>
             </h3>
           </div>
-          {/*<div className="col-sm-2">
-            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
-              value={this.state.currentDateStr}
-              onChange={this.onDateChanged} />
+          <div className="col-sm-2">
+            <div className="input-group">
+              <span className="input-group-addon" id=""><i className="glyphicon glyphicon-calendar"></i></span>
+              <input className="form-control" placeholder="dd/mm/yyyy"
+                type="text" name="inputCurrentDate"
+                value={this.state.currentDateStr}
+                onChange={this.onDateChanged} />
+            </div>
           </div>
           <div className="col-sm-2">
             <div className="btn-group btn-group-justified" role="group" aria-label="...">
@@ -532,7 +553,7 @@ var DailyPage = React.createClass({
                   Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
               </div>
             </div>
-          </div>*/}
+          </div>
         </div>
         {/*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/}
         {this.renderDateList()}

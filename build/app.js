@@ -21766,6 +21766,7 @@
 	      oldDateList: dateList,
 	      dateList: dateList,
 	      taskList: taskList,
+	      oldTaskList: [],
 	      projectList: [],
 	      currentDate: currentDate,
 	      currentDateStr: currentDate.format('DD/MM/YYYY'),
@@ -21855,7 +21856,8 @@
 	    taskList = this.addEmptyTask(taskList);
 
 	    this.setState({
-	      taskList: taskList
+	      taskList: taskList,
+	      oldTaskList: data
 	    });
 	  },
 
@@ -22072,8 +22074,23 @@
 	      return '';
 	    }
 
-	    var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
-	    var renderList = filterTask.map(function(item, i) {
+	    var data = [];
+	    if (this.state.isCurrent) {
+	      data = this.state.taskList;
+	    } else {
+	      data = this.state.oldTaskList;
+	    }
+	    var filterTask = lodash.filter(data, {date: dateItem.value});
+	    var renderList = [];
+
+	    if (this.state.isCurrent) {
+	    } else {
+	      filterTask.push({
+	      });
+	      // renderList = [];
+	    }
+
+	    renderList = filterTask.map(function(item, i) {
 	      return (
 	        React.DOM.li({className: "daily-item row", key: item.id}, 
 	          React.DOM.div({className: "col-sm-6"}, 
@@ -22214,24 +22231,28 @@
 	          React.DOM.div({className: "col-sm-6"}, 
 	            React.DOM.h3({className: "title-label"}, "DAILY ", React.DOM.small({className: this.state.isCurrent?"":"__hidden"}, "/ TODAY")
 	            )
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.div({className: "input-group"}, 
+	              React.DOM.span({className: "input-group-addon", id: ""}, React.DOM.i({className: "glyphicon glyphicon-calendar"})), 
+	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
+	                type: "text", name: "inputCurrentDate", 
+	                value: this.state.currentDateStr, 
+	                onChange: this.onDateChanged})
+	            )
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onPrevClicked}, 
+	                  React.DOM.i({className: "glyphicon _default glyphicon-menu-left"}), " Prev")
+	              ), 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onNextClicked}, 
+	                  "Next ", React.DOM.i({className: "glyphicon _default glyphicon-menu-right"}))
+	              )
+	            )
 	          )
-	          /*<div className="col-sm-2">
-	            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
-	              value={this.state.currentDateStr}
-	              onChange={this.onDateChanged} />
-	          </div>
-	          <div className="col-sm-2">
-	            <div className="btn-group btn-group-justified" role="group" aria-label="...">
-	              <div className="btn-group" role="group">
-	                <button type="button" className="btn btn-success" onClick={this.onPrevClicked}>
-	                  <i className="glyphicon _default glyphicon-menu-left"></i> Prev</button>
-	              </div>
-	              <div className="btn-group" role="group">
-	                <button type="button" className="btn btn-success" onClick={this.onNextClicked}>
-	                  Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
-	              </div>
-	            </div>
-	          </div>*/
 	        ), 
 	        /*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/
 	        this.renderDateList()
@@ -22460,7 +22481,7 @@
 
 	var React = __webpack_require__(1);
 	var RouteActions = __webpack_require__(168);
-	var assign = __webpack_require__(13);
+	// var assign = require('react/lib/Object.assign');
 
 	var Link = React.createClass({
 
@@ -60758,9 +60779,13 @@
 	              onChange: this.onFilterProjectChanged})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", type: "text", name: "inputCurrentDate", 
-	              value: this.state.currentDateStr, 
-	              onChange: this.onDateChanged})
+	            React.DOM.div({className: "input-group"}, 
+	              React.DOM.span({className: "input-group-addon", id: ""}, React.DOM.i({className: "glyphicon glyphicon-calendar"})), 
+	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
+	                type: "text", name: "inputCurrentDate", 
+	                value: this.state.currentDateStr, 
+	                onChange: this.onDateChanged})
+	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 

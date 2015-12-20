@@ -21,19 +21,15 @@ var DailyPage = React.createClass({
   displayName: 'Daily',
   currentUser: '',
 
-  getNewDate: function(moment) {
-    return {
-      displayName: moment.format('MMM DD ddd'),
-      value: moment.format('YYYYMMDD'),
-      index: 1
-    };
+  getNewDate: function() {
+    return {};
   },
 
-  getNewTask: function(moment) {
+  getNewTask: function(dateItem) {
     return {
       _user: this.currentUser,
       id: Guid.raw(),
-      date: moment.format('YYYYMMDD'),
+      date: dateItem.value,
       isCompleted: false,
       content: ''
     };
@@ -46,21 +42,50 @@ var DailyPage = React.createClass({
   },
 
   getInitialState: function() {
-    var dateList = [], taskList = [];
+    var m = moment(), dateList = [], taskList = [];
     var currentDate = moment();
     this.currentUser = window.localStorage.getItem('_id');
 
     // create default data
-    dateList.push(this.getNewDate(currentDate));
+    dateList.push({
+      displayName: m.format('MMM DD ddd') + ' - TODAY',
+      value: m.format('YYYYMMDD'),
+      index: 1
+    });
     // add task list for today day
-    taskList.push(this.getNewTask(currentDate));
+    taskList.push({
+      _user: this.currentUser,
+      id: Guid.raw(),
+      date: m.format('YYYYMMDD'),
+      isCompleted: false,
+      content: ''
+    });
+
+    // add
+    m.add(1, 'days');
+    dateList.push({
+      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
+      value: m.format('YYYYMMDD'),
+      momentValue: m,
+      index: 2
+    });
+    taskList.push({
+      _user: this.currentUser,
+      id: Guid.raw(),
+      date: m.format('YYYYMMDD'),
+      isCompleted: false,
+      content: ''
+    });
 
     return {
+      oldDateList: dateList,
       dateList: dateList,
       taskList: taskList,
+      oldTaskList: [],
       projectList: [],
       currentDate: currentDate,
-      currentDateStr: currentDate.format('DD/MM/YYYY')
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: true
     };
   },
 
@@ -75,10 +100,7 @@ var DailyPage = React.createClass({
     TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
 
     TaskActions.find({
-      q: {
-        _user: this.currentUser,
-        date: this.state.currentDate.format('YYYYMMDD')
-      },
+      q: { _user: this.currentUser },
       l: {}
     });
     ProjectActions.all();
@@ -95,10 +117,47 @@ var DailyPage = React.createClass({
     TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
   },
 
+  addEmptyTask: function(taskList, dateList) {
+    var currentUser = this.currentUser;
+    if (!dateList) {
+      dateList = this.state.dateList;
+    }
+
+    for (var i = 0; i < dateList.length; i++) {
+      var item = dateList[i];
+      var index = i;
+      var totalOfCurrent = lodash.filter(taskList, { date: item.value }).length;
+      // get total time
+      item.totalTime = this.getTotalTime(taskList, item.value);
+
+      if (totalOfCurrent > 0 && (index === (dateList.length - 1))) {
+        var m = item.momentValue.add(1, 'days');
+        dateList.push({
+          displayName: m.format('MMM DD ddd'),
+          value: m.format('YYYYMMDD'),
+          momentValue: m,
+          index: item.index
+        });
+      }
+
+      taskList.push({
+        _user: currentUser,
+        id: Guid.raw(),
+        date: item.value,
+        isCompleted: false,
+        content: ''
+      });
+    }
+
+    this.setState({
+      dateList: dateList
+    });
+
+    return taskList;
+  },
+
   _onFindTaskSuccess: function(data) {
     console.log('_onFindTaskSuccess', data);
-
-    var dateList = this.state.dateList;
     var taskList = data.map(function(item) {
       var newItem = lodash.clone(item);
       // parse data for view
@@ -109,14 +168,12 @@ var DailyPage = React.createClass({
       return newItem;
     });
 
-    taskList.push(this.getNewTask(this.state.currentDate));
-    console.log('_onFindTaskSuccess taskList', taskList);
-    dateList[0].totalTime = this.getTotalTime(taskList, this.state.currentDate.format('YYYYMMDD'));
-    console.log('_onFindTaskSuccess', dateList);
+    var oldTaskList = lodash.clone(taskList);
+    taskList = this.addEmptyTask(taskList);
 
     this.setState({
       taskList: taskList,
-      dateList: dateList
+      oldTaskList: oldTaskList
     });
   },
 
@@ -151,7 +208,6 @@ var DailyPage = React.createClass({
   },
 
   _onGetAllProjectFail: function() {
-    alert('Server gets error, please try again later!');
   },
 
   newTaskOnClicked: function(dateItem) {
@@ -161,18 +217,45 @@ var DailyPage = React.createClass({
 
     console.log('newTaskOnClicked', taskItem);
     if (taskItem.content) {
-      TaskActions.newTask(taskItem);
+      // TaskActions.newTask(taskItem);
     } else {
-      alert('Task content is required!');
       return;
     }
 
-    // add empty task at the end
-    var newTaskList;
-    newTaskList = this.state.taskList.concat([this.getNewTask(this.state.currentDate)]);
+    console.log('newTaskOnClicked', dateItem, this.state.taskList);
+    var newDateList, newTaskList;
+
+    newTaskList = this.state.taskList.concat([{
+      _user: this.currentUser,
+      id: Guid.raw(),
+      date: dateItem.value,
+      isCompleted: false,
+      content: ''
+    }]);
+
+    // only add the next day, when click on the last item
+    newDateList = this.state.dateList;
+    if (dateItem.index === newDateList.length) {
+      var m = moment(dateItem.value, 'YYYYMMDD').add(1, 'days');
+      newDateList.push({
+        displayName: m.format('MMM DD ddd'),
+        value: m.format('YYYYMMDD'),
+        index: dateItem.index + 1,
+        totalTime: 0
+      });
+
+      newTaskList.push({
+        _user: this.currentUser,
+        id: Guid.raw(),
+        date: m.format('YYYYMMDD'),
+        isCompleted: false,
+        content: ''
+      });
+    }
 
     this.setState({
-      taskList: newTaskList
+      taskList: newTaskList,
+      dateList: newDateList
     });
   },
 
@@ -201,13 +284,8 @@ var DailyPage = React.createClass({
    * @return {[type]}      [description]
    */
   getTotalTime: function(arr, dateStr) {
-    if (!arr) {
-      arr = this.state.taskList;
-    }
     var total = 0;
     var filterTask = lodash.filter(arr, {date: dateStr});
-    console.log('filterTask', filterTask);
-    console.log('filterTask', arr, dateStr);
 
     for (var i = 0; i < filterTask.length; i++) {
       total += parseFloat(filterTask[i].estimation) || 0;
@@ -293,13 +371,7 @@ var DailyPage = React.createClass({
   },
 
   renderTaskList: function(dateItem) {
-    if (!this.state.taskList) {
-      return '';
-    }
-
     var projectOptions = this.state.projectList;
-    var taskList = this.state.taskList;
-    var renderList = [];
     var timeRangeOptions = [
       { value: '0.5', label: '30 mins' },
       { value: '1', label: '1 hour' },
@@ -319,7 +391,25 @@ var DailyPage = React.createClass({
       { value: '8', label: '8 hours' },
     ];
 
-    renderList = taskList.map(function(item, i) {
+    if (!this.state.taskList) {
+      return '';
+    }
+
+    var data = [];
+    if (this.state.isCurrent) {
+      data = this.state.taskList;
+    } else {
+      data = this.state.oldTaskList;
+    }
+    var filterTask = lodash.filter(data, {date: dateItem.value});
+    var renderList = [];
+
+    if (this.state.isCurrent) {
+    } else {
+      filterTask.push(this.getNewTask(dateItem));
+    }
+
+    renderList = filterTask.map(function(item, i) {
       return (
         <li className="daily-item row" key={item.id}>
           <div className="col-sm-6">
@@ -388,48 +478,62 @@ var DailyPage = React.createClass({
     );
   },
 
-  setNewDate: function(moment) {
-    TaskActions.find({
-      q: {
-        _user: this.currentUser,
-        date: moment.format('YYYYMMDD')
-      },
-      l: {}
-    });
+  onPrevClicked: function(e) {
+    console.log('onPrevClicked', e);
+    var currentDate = this.state.currentDate.add(-1, 'days');
+    var isCurrent = false;
+    var dateList = [];
+
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+      dateList = this.state.oldDateList;
+    } else {
+      var dateItem = {
+        displayName: currentDate.format('MMM DD ddd'),
+        value: currentDate.format('YYYYMMDD'),
+        momentValue: currentDate,
+        index: parseInt(currentDate.format('YYYYMMDD'))
+      };
+      dateList.push(dateItem);
+    }
+
+    // this._onSelectedDateChanged(this.state.taskList, dateList);
 
     this.setState({
-      currentDate: moment,
-      currentDateStr: moment.format('DD/MM/YYYY'),
-      dateList: [this.getNewDate(moment)]
+      dateList: dateList,
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
     });
-  },
-
-  onPrevClicked: function(e) {
-    var currentDate = this.state.currentDate;
-    var prevDate = currentDate.add(-1, 'days');
-    this.setNewDate(prevDate);
   },
 
   onNextClicked: function(e) {
-    var currentDate = this.state.currentDate;
-    var nextDate = currentDate.add(1, 'days');
-    this.setNewDate(nextDate);
-  },
+    console.log('onPrevClicked', e);
+    var currentDate = this.state.currentDate.add(1, 'days');
+    var isCurrent = false;
+    var dateList = [];
 
-  inputDateOnKeyDown: function(e) {
-    if (e.keyCode === 13) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      var dateStr = this.state.currentDateStr;
-      var m = moment(dateStr, 'DD/MM/YYYY');
-
-      if (m == null || !m.isValid()) {
-        alert('Input date is not valid!');
-      } else {
-        this.setNewDate(m);
-      }
+    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
+      isCurrent = true;
+      dateList = this.state.oldDateList;
+    } else {
+      var dateItem = {
+        displayName: currentDate.format('MMM DD ddd'),
+        value: currentDate.format('YYYYMMDD'),
+        momentValue: currentDate,
+        index: parseInt(currentDate.format('YYYYMMDD'))
+      };
+      dateList.push(dateItem);
     }
+
+    // this._onSelectedDateChanged(this.state.taskList, dateList);
+
+    this.setState({
+      dateList: dateList,
+      currentDate: currentDate,
+      currentDateStr: currentDate.format('DD/MM/YYYY'),
+      isCurrent: isCurrent
+    });
   },
 
   onDateChanged: function(e) {
@@ -453,7 +557,6 @@ var DailyPage = React.createClass({
               <input className="form-control" placeholder="dd/mm/yyyy"
                 type="text" name="inputCurrentDate"
                 value={this.state.currentDateStr}
-                onKeyDown={this.inputDateOnKeyDown}
                 onChange={this.onDateChanged} />
             </div>
           </div>
@@ -470,6 +573,7 @@ var DailyPage = React.createClass({
             </div>
           </div>
         </div>
+        {/*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/}
         {this.renderDateList()}
       </div>
     );

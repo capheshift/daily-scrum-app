@@ -35,7 +35,6 @@ var ReportPage = React.createClass({
       userList: [],
       currentDate: currentDate,
       currentDateStr: currentDate.format('DD/MM/YYYY'),
-      isCurrent: true,
       filterProject: null
     };
   },
@@ -209,44 +208,26 @@ var ReportPage = React.createClass({
     return renderList;
   },
 
-  onPrevClicked: function(e) {
-    var currentDate = this.state.currentDate.add(-1, 'days');
-    var isCurrent = false;
-
-    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-      isCurrent = true;
-    }
-
+  setNewDate: function(m) {
     TaskActions.find({
-      q: { date: currentDate.format('YYYYMMDD') },
+      q: { date: m.format('YYYYMMDD') },
       l: {}
     });
 
     this.setState({
-      currentDate: currentDate,
-      currentDateStr: currentDate.format('DD/MM/YYYY'),
-      isCurrent: isCurrent
+      currentDate: m,
+      currentDateStr: m.format('DD/MM/YYYY'),
     });
+  },
+
+  onPrevClicked: function(e) {
+    var currentDate = this.state.currentDate.add(-1, 'days');
+    this.setNewDate(currentDate);
   },
 
   onNextClicked: function(e) {
     var currentDate = this.state.currentDate.add(1, 'days');
-    var isCurrent = false;
-
-    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-      isCurrent = true;
-    }
-
-    TaskActions.find({
-      q: { date: currentDate.format('YYYYMMDD') },
-      l: {}
-    });
-
-    this.setState({
-      currentDate: currentDate,
-      currentDateStr: currentDate.format('DD/MM/YYYY'),
-      isCurrent: isCurrent
-    });
+    this.setNewDate(currentDate);
   },
 
   onDateChanged: function(e) {
@@ -264,6 +245,22 @@ var ReportPage = React.createClass({
     this.setState({
       filterProject: value
     });
+  },
+
+  inputDateOnKeyDown: function(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var dateStr = this.state.currentDateStr;
+      var m = moment(dateStr, 'DD/MM/YYYY');
+
+      if (m == null || !m.isValid()) {
+        alert('Input date is not valid!');
+      } else {
+        this.setNewDate(m);
+      }
+    }
   },
 
   render: function() {
@@ -313,9 +310,14 @@ var ReportPage = React.createClass({
               onChange={this.onFilterProjectChanged} />
           </div>
           <div className="col-sm-2">
-            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
-              value={this.state.currentDateStr}
-              onChange={this.onDateChanged} />
+            <div className="input-group">
+              <span className="input-group-addon" id=""><i className="glyphicon glyphicon-calendar"></i></span>
+              <input className="form-control" placeholder="dd/mm/yyyy"
+                type="text" name="inputCurrentDate"
+                value={this.state.currentDateStr}
+                onKeyDown={this.inputDateOnKeyDown}
+                onChange={this.onDateChanged} />
+            </div>
           </div>
           <div className="col-sm-2">
             <div className="btn-group btn-group-justified" role="group" aria-label="...">

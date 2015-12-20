@@ -21720,6 +21720,24 @@
 	  displayName: 'Daily',
 	  currentUser: '',
 
+	  getNewDate: function(moment) {
+	    return {
+	      displayName: moment.format('MMM DD ddd'),
+	      value: moment.format('YYYYMMDD'),
+	      index: 1
+	    };
+	  },
+
+	  getNewTask: function(moment) {
+	    return {
+	      _user: this.currentUser,
+	      id: Guid.raw(),
+	      date: moment.format('YYYYMMDD'),
+	      isCompleted: false,
+	      content: ''
+	    };
+	  },
+
 	  getDefaultProps: function() {
 	    return {
 	      layout: DefaultLayout
@@ -21727,49 +21745,21 @@
 	  },
 
 	  getInitialState: function() {
-	    var m = moment(), dateList = [], taskList = [];
+	    var dateList = [], taskList = [];
 	    var currentDate = moment();
 	    this.currentUser = window.localStorage.getItem('_id');
 
 	    // create default data
-	    dateList.push({
-	      displayName: m.format('MMM DD ddd') + ' - TODAY',
-	      value: m.format('YYYYMMDD'),
-	      index: 1
-	    });
+	    dateList.push(this.getNewDate(currentDate));
 	    // add task list for today day
-	    taskList.push({
-	      _user: this.currentUser,
-	      id: Guid.raw(),
-	      date: m.format('YYYYMMDD'),
-	      isCompleted: false,
-	      content: ''
-	    });
-
-	    // add
-	    m.add(1, 'days');
-	    dateList.push({
-	      displayName: m.format('MMM DD ddd') + ' - TOMORROW',
-	      value: m.format('YYYYMMDD'),
-	      momentValue: m,
-	      index: 2
-	    });
-	    taskList.push({
-	      _user: this.currentUser,
-	      id: Guid.raw(),
-	      date: m.format('YYYYMMDD'),
-	      isCompleted: false,
-	      content: ''
-	    });
+	    taskList.push(this.getNewTask(currentDate));
 
 	    return {
-	      oldDateList: dateList,
 	      dateList: dateList,
 	      taskList: taskList,
 	      projectList: [],
 	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: true
+	      currentDateStr: currentDate.format('DD/MM/YYYY')
 	    };
 	  },
 
@@ -21784,7 +21774,10 @@
 	    TaskStore.addListenerOnFindTaskFail(this._onFindTaskFail, this);
 
 	    TaskActions.find({
-	      q: { _user: this.currentUser },
+	      q: {
+	        _user: this.currentUser,
+	        date: this.state.currentDate.format('YYYYMMDD')
+	      },
 	      l: {}
 	    });
 	    ProjectActions.all();
@@ -21801,47 +21794,10 @@
 	    TaskStore.rmvListenerOnFindTaskFail(this._onFindTaskFail, this);
 	  },
 
-	  addEmptyTask: function(taskList, dateList) {
-	    var currentUser = this.currentUser;
-	    if (!dateList) {
-	      dateList = this.state.dateList;
-	    }
-
-	    for (var i = 0; i < dateList.length; i++) {
-	      var item = dateList[i];
-	      var index = i;
-	      var totalOfCurrent = lodash.filter(taskList, { date: item.value }).length;
-	      // get total time
-	      item.totalTime = this.getTotalTime(taskList, item.value);
-
-	      if (totalOfCurrent > 0 && (index === (dateList.length - 1))) {
-	        var m = item.momentValue.add(1, 'days');
-	        dateList.push({
-	          displayName: m.format('MMM DD ddd'),
-	          value: m.format('YYYYMMDD'),
-	          momentValue: m,
-	          index: item.index
-	        });
-	      }
-
-	      taskList.push({
-	        _user: currentUser,
-	        id: Guid.raw(),
-	        date: item.value,
-	        isCompleted: false,
-	        content: ''
-	      });
-	    }
-
-	    this.setState({
-	      dateList: dateList
-	    });
-
-	    return taskList;
-	  },
-
 	  _onFindTaskSuccess: function(data) {
 	    console.log('_onFindTaskSuccess', data);
+
+	    var dateList = this.state.dateList;
 	    var taskList = data.map(function(item) {
 	      var newItem = lodash.clone(item);
 	      // parse data for view
@@ -21852,10 +21808,14 @@
 	      return newItem;
 	    });
 
-	    taskList = this.addEmptyTask(taskList);
+	    taskList.push(this.getNewTask(this.state.currentDate));
+	    console.log('_onFindTaskSuccess taskList', taskList);
+	    dateList[0].totalTime = this.getTotalTime(taskList, this.state.currentDate.format('YYYYMMDD'));
+	    console.log('_onFindTaskSuccess', dateList);
 
 	    this.setState({
-	      taskList: taskList
+	      taskList: taskList,
+	      dateList: dateList
 	    });
 	  },
 
@@ -21890,49 +21850,28 @@
 	  },
 
 	  _onGetAllProjectFail: function() {
+	    alert('Server gets error, please try again later!');
 	  },
 
 	  newTaskOnClicked: function(dateItem) {
 	    // save the last task
 	    var filterTaskByDate = lodash.filter(this.state.taskList, {date: dateItem.value});
 	    var taskItem = filterTaskByDate[filterTaskByDate.length - 1];
+
 	    console.log('newTaskOnClicked', taskItem);
-	    TaskActions.newTask(taskItem);
-
-	    console.log('newTaskOnClicked', dateItem, this.state.taskList);
-	    var newDateList, newTaskList;
-
-	    newTaskList = this.state.taskList.concat([{
-	      _user: this.currentUser,
-	      id: Guid.raw(),
-	      date: dateItem.value,
-	      isCompleted: false,
-	      content: ''
-	    }]);
-
-	    // only add the next day, when click on the last item
-	    newDateList = this.state.dateList;
-	    if (dateItem.index === newDateList.length) {
-	      var m = moment(dateItem.value, 'YYYYMMDD').add(1, 'days');
-	      newDateList.push({
-	        displayName: m.format('MMM DD ddd'),
-	        value: m.format('YYYYMMDD'),
-	        index: dateItem.index + 1,
-	        totalTime: 0
-	      });
-
-	      newTaskList.push({
-	        _user: this.currentUser,
-	        id: Guid.raw(),
-	        date: m.format('YYYYMMDD'),
-	        isCompleted: false,
-	        content: ''
-	      });
+	    if (taskItem.content) {
+	      TaskActions.newTask(taskItem);
+	    } else {
+	      alert('Task content is required!');
+	      return;
 	    }
 
+	    // add empty task at the end
+	    var newTaskList;
+	    newTaskList = this.state.taskList.concat([this.getNewTask(this.state.currentDate)]);
+
 	    this.setState({
-	      taskList: newTaskList,
-	      dateList: newDateList
+	      taskList: newTaskList
 	    });
 	  },
 
@@ -21961,8 +21900,13 @@
 	   * @return {[type]}      [description]
 	   */
 	  getTotalTime: function(arr, dateStr) {
+	    if (!arr) {
+	      arr = this.state.taskList;
+	    }
 	    var total = 0;
 	    var filterTask = lodash.filter(arr, {date: dateStr});
+	    console.log('filterTask', filterTask);
+	    console.log('filterTask', arr, dateStr);
 
 	    for (var i = 0; i < filterTask.length; i++) {
 	      total += parseFloat(filterTask[i].estimation) || 0;
@@ -22048,7 +21992,13 @@
 	  },
 
 	  renderTaskList: function(dateItem) {
+	    if (!this.state.taskList) {
+	      return '';
+	    }
+
 	    var projectOptions = this.state.projectList;
+	    var taskList = this.state.taskList;
+	    var renderList = [];
 	    var timeRangeOptions = [
 	      { value: '0.5', label: '30 mins' },
 	      { value: '1', label: '1 hour' },
@@ -22068,12 +22018,7 @@
 	      { value: '8', label: '8 hours' },
 	    ];
 
-	    if (!this.state.taskList) {
-	      return '';
-	    }
-
-	    var filterTask = lodash.filter(this.state.taskList, {date: dateItem.value});
-	    var renderList = filterTask.map(function(item, i) {
+	    renderList = taskList.map(function(item, i) {
 	      return (
 	        React.DOM.li({className: "daily-item row", key: item.id}, 
 	          React.DOM.div({className: "col-sm-6"}, 
@@ -22142,62 +22087,48 @@
 	    );
 	  },
 
-	  onPrevClicked: function(e) {
-	    console.log('onPrevClicked', e);
-	    var currentDate = this.state.currentDate.add(-1, 'days');
-	    var isCurrent = false;
-	    var dateList = [];
-
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	      dateList = this.state.oldDateList;
-	    } else {
-	      var dateItem = {
-	        displayName: currentDate.format('MMM DD ddd'),
-	        value: currentDate.format('YYYYMMDD'),
-	        momentValue: currentDate,
-	        index: parseInt(currentDate.format('YYYYMMDD'))
-	      };
-	      dateList.push(dateItem);
-	    }
-
-	    // this._onSelectedDateChanged(this.state.taskList, dateList);
+	  setNewDate: function(moment) {
+	    TaskActions.find({
+	      q: {
+	        _user: this.currentUser,
+	        date: moment.format('YYYYMMDD')
+	      },
+	      l: {}
+	    });
 
 	    this.setState({
-	      dateList: dateList,
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
+	      currentDate: moment,
+	      currentDateStr: moment.format('DD/MM/YYYY'),
+	      dateList: [this.getNewDate(moment)]
 	    });
 	  },
 
+	  onPrevClicked: function(e) {
+	    var currentDate = this.state.currentDate;
+	    var prevDate = currentDate.add(-1, 'days');
+	    this.setNewDate(prevDate);
+	  },
+
 	  onNextClicked: function(e) {
-	    console.log('onPrevClicked', e);
-	    var currentDate = this.state.currentDate.add(1, 'days');
-	    var isCurrent = false;
-	    var dateList = [];
+	    var currentDate = this.state.currentDate;
+	    var nextDate = currentDate.add(1, 'days');
+	    this.setNewDate(nextDate);
+	  },
 
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	      dateList = this.state.oldDateList;
-	    } else {
-	      var dateItem = {
-	        displayName: currentDate.format('MMM DD ddd'),
-	        value: currentDate.format('YYYYMMDD'),
-	        momentValue: currentDate,
-	        index: parseInt(currentDate.format('YYYYMMDD'))
-	      };
-	      dateList.push(dateItem);
+	  inputDateOnKeyDown: function(e) {
+	    if (e.keyCode === 13) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      var dateStr = this.state.currentDateStr;
+	      var m = moment(dateStr, 'DD/MM/YYYY');
+
+	      if (m == null || !m.isValid()) {
+	        alert('Input date is not valid!');
+	      } else {
+	        this.setNewDate(m);
+	      }
 	    }
-
-	    // this._onSelectedDateChanged(this.state.taskList, dateList);
-
-	    this.setState({
-	      dateList: dateList,
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
-	    });
 	  },
 
 	  onDateChanged: function(e) {
@@ -22214,26 +22145,30 @@
 	          React.DOM.div({className: "col-sm-6"}, 
 	            React.DOM.h3({className: "title-label"}, "DAILY ", React.DOM.small({className: this.state.isCurrent?"":"__hidden"}, "/ TODAY")
 	            )
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.div({className: "input-group"}, 
+	              React.DOM.span({className: "input-group-addon", id: ""}, React.DOM.i({className: "glyphicon glyphicon-calendar"})), 
+	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
+	                type: "text", name: "inputCurrentDate", 
+	                value: this.state.currentDateStr, 
+	                onKeyDown: this.inputDateOnKeyDown, 
+	                onChange: this.onDateChanged})
+	            )
+	          ), 
+	          React.DOM.div({className: "col-sm-2"}, 
+	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onPrevClicked}, 
+	                  React.DOM.i({className: "glyphicon _default glyphicon-menu-left"}), " Prev")
+	              ), 
+	              React.DOM.div({className: "btn-group", role: "group"}, 
+	                React.DOM.button({type: "button", className: "btn btn-success", onClick: this.onNextClicked}, 
+	                  "Next ", React.DOM.i({className: "glyphicon _default glyphicon-menu-right"}))
+	              )
+	            )
 	          )
-	          /*<div className="col-sm-2">
-	            <input className="form-control" placeholder="dd/mm/yyyy" type="text" name="inputCurrentDate"
-	              value={this.state.currentDateStr}
-	              onChange={this.onDateChanged} />
-	          </div>
-	          <div className="col-sm-2">
-	            <div className="btn-group btn-group-justified" role="group" aria-label="...">
-	              <div className="btn-group" role="group">
-	                <button type="button" className="btn btn-success" onClick={this.onPrevClicked}>
-	                  <i className="glyphicon _default glyphicon-menu-left"></i> Prev</button>
-	              </div>
-	              <div className="btn-group" role="group">
-	                <button type="button" className="btn btn-success" onClick={this.onNextClicked}>
-	                  Next <i className="glyphicon _default glyphicon-menu-right"></i></button>
-	              </div>
-	            </div>
-	          </div>*/
 	        ), 
-	        /*<DayPicker initialMonth={new Date(2016, 1)} modifiers={true}/>*/
 	        this.renderDateList()
 	      )
 	    );
@@ -22460,7 +22395,7 @@
 
 	var React = __webpack_require__(1);
 	var RouteActions = __webpack_require__(168);
-	var assign = __webpack_require__(13);
+	// var assign = require('react/lib/Object.assign');
 
 	var Link = React.createClass({
 
@@ -60480,7 +60415,6 @@
 	      userList: [],
 	      currentDate: currentDate,
 	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: true,
 	      filterProject: null
 	    };
 	  },
@@ -60654,44 +60588,26 @@
 	    return renderList;
 	  },
 
-	  onPrevClicked: function(e) {
-	    var currentDate = this.state.currentDate.add(-1, 'days');
-	    var isCurrent = false;
-
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	    }
-
+	  setNewDate: function(m) {
 	    TaskActions.find({
-	      q: { date: currentDate.format('YYYYMMDD') },
+	      q: { date: m.format('YYYYMMDD') },
 	      l: {}
 	    });
 
 	    this.setState({
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
+	      currentDate: m,
+	      currentDateStr: m.format('DD/MM/YYYY'),
 	    });
+	  },
+
+	  onPrevClicked: function(e) {
+	    var currentDate = this.state.currentDate.add(-1, 'days');
+	    this.setNewDate(currentDate);
 	  },
 
 	  onNextClicked: function(e) {
 	    var currentDate = this.state.currentDate.add(1, 'days');
-	    var isCurrent = false;
-
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	    }
-
-	    TaskActions.find({
-	      q: { date: currentDate.format('YYYYMMDD') },
-	      l: {}
-	    });
-
-	    this.setState({
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
-	    });
+	    this.setNewDate(currentDate);
 	  },
 
 	  onDateChanged: function(e) {
@@ -60709,6 +60625,22 @@
 	    this.setState({
 	      filterProject: value
 	    });
+	  },
+
+	  inputDateOnKeyDown: function(e) {
+	    if (e.keyCode === 13) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      var dateStr = this.state.currentDateStr;
+	      var m = moment(dateStr, 'DD/MM/YYYY');
+
+	      if (m == null || !m.isValid()) {
+	        alert('Input date is not valid!');
+	      } else {
+	        this.setNewDate(m);
+	      }
+	    }
 	  },
 
 	  render: function() {
@@ -60758,9 +60690,14 @@
 	              onChange: this.onFilterProjectChanged})
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
-	            React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", type: "text", name: "inputCurrentDate", 
-	              value: this.state.currentDateStr, 
-	              onChange: this.onDateChanged})
+	            React.DOM.div({className: "input-group"}, 
+	              React.DOM.span({className: "input-group-addon", id: ""}, React.DOM.i({className: "glyphicon glyphicon-calendar"})), 
+	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
+	                type: "text", name: "inputCurrentDate", 
+	                value: this.state.currentDateStr, 
+	                onKeyDown: this.inputDateOnKeyDown, 
+	                onChange: this.onDateChanged})
+	            )
 	          ), 
 	          React.DOM.div({className: "col-sm-2"}, 
 	            React.DOM.div({className: "btn-group btn-group-justified", role: "group", 'aria-label': "..."}, 

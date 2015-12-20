@@ -388,42 +388,48 @@ var DailyPage = React.createClass({
     );
   },
 
-  onPrevClicked: function(e) {
-    var currentDate = this.state.currentDate;
-    var prevDate = currentDate.add(-1, 'days');
-
+  setNewDate: function(moment) {
     TaskActions.find({
       q: {
         _user: this.currentUser,
-        date: prevDate.format('YYYYMMDD')
+        date: moment.format('YYYYMMDD')
       },
       l: {}
     });
 
     this.setState({
-      currentDate: prevDate,
-      currentDateStr: prevDate.format('DD/MM/YYYY'),
-      dateList: [this.getNewDate(prevDate)]
+      currentDate: moment,
+      currentDateStr: moment.format('DD/MM/YYYY'),
+      dateList: [this.getNewDate(moment)]
     });
+  },
+
+  onPrevClicked: function(e) {
+    var currentDate = this.state.currentDate;
+    var prevDate = currentDate.add(-1, 'days');
+    this.setNewDate(prevDate);
   },
 
   onNextClicked: function(e) {
     var currentDate = this.state.currentDate;
     var nextDate = currentDate.add(1, 'days');
+    this.setNewDate(nextDate);
+  },
 
-    TaskActions.find({
-      q: {
-        _user: this.currentUser,
-        date: nextDate.format('YYYYMMDD')
-      },
-      l: {}
-    });
+  inputDateOnKeyDown: function(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      e.stopPropagation();
 
-    this.setState({
-      currentDate: nextDate,
-      currentDateStr: nextDate.format('DD/MM/YYYY'),
-      dateList: [this.getNewDate(nextDate)]
-    });
+      var dateStr = this.state.currentDateStr;
+      var m = moment(dateStr, 'DD/MM/YYYY');
+
+      if (m == null || !m.isValid()) {
+        alert('Input date is not valid!');
+      } else {
+        this.setNewDate(m);
+      }
+    }
   },
 
   onDateChanged: function(e) {
@@ -447,6 +453,7 @@ var DailyPage = React.createClass({
               <input className="form-control" placeholder="dd/mm/yyyy"
                 type="text" name="inputCurrentDate"
                 value={this.state.currentDateStr}
+                onKeyDown={this.inputDateOnKeyDown}
                 onChange={this.onDateChanged} />
             </div>
           </div>

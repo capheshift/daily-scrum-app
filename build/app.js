@@ -22087,42 +22087,48 @@
 	    );
 	  },
 
-	  onPrevClicked: function(e) {
-	    var currentDate = this.state.currentDate;
-	    var prevDate = currentDate.add(-1, 'days');
-
+	  setNewDate: function(moment) {
 	    TaskActions.find({
 	      q: {
 	        _user: this.currentUser,
-	        date: prevDate.format('YYYYMMDD')
+	        date: moment.format('YYYYMMDD')
 	      },
 	      l: {}
 	    });
 
 	    this.setState({
-	      currentDate: prevDate,
-	      currentDateStr: prevDate.format('DD/MM/YYYY'),
-	      dateList: [this.getNewDate(prevDate)]
+	      currentDate: moment,
+	      currentDateStr: moment.format('DD/MM/YYYY'),
+	      dateList: [this.getNewDate(moment)]
 	    });
+	  },
+
+	  onPrevClicked: function(e) {
+	    var currentDate = this.state.currentDate;
+	    var prevDate = currentDate.add(-1, 'days');
+	    this.setNewDate(prevDate);
 	  },
 
 	  onNextClicked: function(e) {
 	    var currentDate = this.state.currentDate;
 	    var nextDate = currentDate.add(1, 'days');
+	    this.setNewDate(nextDate);
+	  },
 
-	    TaskActions.find({
-	      q: {
-	        _user: this.currentUser,
-	        date: nextDate.format('YYYYMMDD')
-	      },
-	      l: {}
-	    });
+	  inputDateOnKeyDown: function(e) {
+	    if (e.keyCode === 13) {
+	      e.preventDefault();
+	      e.stopPropagation();
 
-	    this.setState({
-	      currentDate: nextDate,
-	      currentDateStr: nextDate.format('DD/MM/YYYY'),
-	      dateList: [this.getNewDate(nextDate)]
-	    });
+	      var dateStr = this.state.currentDateStr;
+	      var m = moment(dateStr, 'DD/MM/YYYY');
+
+	      if (m == null || !m.isValid()) {
+	        alert('Input date is not valid!');
+	      } else {
+	        this.setNewDate(m);
+	      }
+	    }
 	  },
 
 	  onDateChanged: function(e) {
@@ -22146,6 +22152,7 @@
 	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
 	                type: "text", name: "inputCurrentDate", 
 	                value: this.state.currentDateStr, 
+	                onKeyDown: this.inputDateOnKeyDown, 
 	                onChange: this.onDateChanged})
 	            )
 	          ), 
@@ -60408,7 +60415,6 @@
 	      userList: [],
 	      currentDate: currentDate,
 	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: true,
 	      filterProject: null
 	    };
 	  },
@@ -60582,44 +60588,26 @@
 	    return renderList;
 	  },
 
-	  onPrevClicked: function(e) {
-	    var currentDate = this.state.currentDate.add(-1, 'days');
-	    var isCurrent = false;
-
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	    }
-
+	  setNewDate: function(m) {
 	    TaskActions.find({
-	      q: { date: currentDate.format('YYYYMMDD') },
+	      q: { date: m.format('YYYYMMDD') },
 	      l: {}
 	    });
 
 	    this.setState({
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
+	      currentDate: m,
+	      currentDateStr: m.format('DD/MM/YYYY'),
 	    });
+	  },
+
+	  onPrevClicked: function(e) {
+	    var currentDate = this.state.currentDate.add(-1, 'days');
+	    this.setNewDate(currentDate);
 	  },
 
 	  onNextClicked: function(e) {
 	    var currentDate = this.state.currentDate.add(1, 'days');
-	    var isCurrent = false;
-
-	    if (currentDate.format('DDMMYYYY') === moment().format('DDMMYYYY')) {
-	      isCurrent = true;
-	    }
-
-	    TaskActions.find({
-	      q: { date: currentDate.format('YYYYMMDD') },
-	      l: {}
-	    });
-
-	    this.setState({
-	      currentDate: currentDate,
-	      currentDateStr: currentDate.format('DD/MM/YYYY'),
-	      isCurrent: isCurrent
-	    });
+	    this.setNewDate(currentDate);
 	  },
 
 	  onDateChanged: function(e) {
@@ -60637,6 +60625,22 @@
 	    this.setState({
 	      filterProject: value
 	    });
+	  },
+
+	  inputDateOnKeyDown: function(e) {
+	    if (e.keyCode === 13) {
+	      e.preventDefault();
+	      e.stopPropagation();
+
+	      var dateStr = this.state.currentDateStr;
+	      var m = moment(dateStr, 'DD/MM/YYYY');
+
+	      if (m == null || !m.isValid()) {
+	        alert('Input date is not valid!');
+	      } else {
+	        this.setNewDate(m);
+	      }
+	    }
 	  },
 
 	  render: function() {
@@ -60691,6 +60695,7 @@
 	              React.DOM.input({className: "form-control", placeholder: "dd/mm/yyyy", 
 	                type: "text", name: "inputCurrentDate", 
 	                value: this.state.currentDateStr, 
+	                onKeyDown: this.inputDateOnKeyDown, 
 	                onChange: this.onDateChanged})
 	            )
 	          ), 
